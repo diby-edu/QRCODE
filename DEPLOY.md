@@ -7,7 +7,18 @@
 - Projet Supabase (les clés sont dans `.env.local`)
 - Compte PayDunya avec clés API (mode test puis live)
 
-## 2. Variables d'environnement
+## 2. Récupérer le code
+
+```bash
+mkdir -p /var/www/qrhub && cd /var/www/qrhub
+git clone https://github.com/diby-edu/QRCODE.git .
+```
+
+Le dépôt ne contient jamais `.env.local` (il est dans `.gitignore` — seul
+`.env.example`, sans secrets, y est) : à créer manuellement à l'étape
+suivante.
+
+## 3. Variables d'environnement
 
 Copier `.env.example` vers `.env.local` et remplir :
 
@@ -25,7 +36,7 @@ Copier `.env.example` vers `.env.local` et remplir :
 (`<APP_URL>/q/<slug>`). La changer après coup n'invalide pas les QR déjà
 imprimés tant que le domaine continue de répondre.
 
-## 3. Migrations de base de données
+## 4. Migrations de base de données
 
 ```bash
 npm install
@@ -35,7 +46,7 @@ npm run db:migrate
 Le script applique `supabase/migrations/*.sql` dans l'ordre et note ce qui a
 déjà été appliqué (table `_migrations`) : on peut le relancer sans risque.
 
-## 4. Compte administrateur
+## 5. Compte administrateur
 
 Après avoir créé votre compte via l'interface (`/auth/register`), dans le
 SQL Editor de Supabase :
@@ -45,7 +56,7 @@ update public.profiles set role = 'admin'
 where email = 'votre-email@exemple.com';
 ```
 
-## 5. VPS mutualisé : choisir un port libre
+## 6. VPS mutualisé : choisir un port libre
 
 Plusieurs projets tournent déjà sur ce VPS. **nginx ne pose aucun problème**
 (tous les sites partagent 80/443, chacun avec son bloc `server_name`) ; seul
@@ -61,7 +72,7 @@ est pris, changez `PORT` dans ce fichier (et dans le bloc nginx ci-dessous).
 L'app écoute sur `127.0.0.1` uniquement : elle n'est joignable que via nginx,
 jamais directement depuis l'extérieur.
 
-## 6. Build et démarrage
+## 7. Build et démarrage
 
 ```bash
 npm run build
@@ -77,7 +88,7 @@ pm2 save && pm2 startup     # relance au reboot (une seule fois)
 `pm2 logs qrhub` pour vérifier le démarrage, `pm2 restart qrhub` après une
 mise à jour.
 
-## 7. nginx (reverse proxy)
+## 8. nginx (reverse proxy)
 
 Un bloc de plus à côté de ceux de vos autres projets —
 `/etc/nginx/sites-available/qrhub` :
@@ -106,7 +117,7 @@ ln -s /etc/nginx/sites-available/qrhub /etc/nginx/sites-enabled/
 nginx -t && systemctl reload nginx
 ```
 
-## 8. HTTPS (Let's Encrypt)
+## 9. HTTPS (Let's Encrypt)
 
 ```bash
 apt install certbot python3-certbot-nginx   # déjà installé si un autre projet l'utilise
@@ -116,7 +127,7 @@ certbot --nginx -d qrcode.numerik360.com
 Certbot ajoute le certificat de ce sous-domaine sans toucher à ceux de vos
 autres projets, et renouvelle automatiquement.
 
-## 9. PayDunya
+## 10. PayDunya
 
 - L'IPN (`https://votre-sous-domaine/api/paydunya/ipn`) doit être accessible
   publiquement — il l'est dès que le site est en ligne. En local, la page de
@@ -126,10 +137,10 @@ autres projets, et renouvelle automatiquement.
 - Passage en production : `PAYDUNYA_MODE=live` + clés live, puis
   `pm2 restart qrhub`.
 
-## 10. Mises à jour
+## 11. Mises à jour
 
 ```bash
-git pull            # ou transfert des fichiers
+git pull
 npm install
 npm run db:migrate  # nouvelles migrations éventuelles
 npm run build
