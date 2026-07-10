@@ -594,6 +594,44 @@ export const QR_TYPES: QrTypeDef[] = [
     scanBehavior: "landing",
   },
   {
+    id: "videofile",
+    category: "content",
+    icon: "📹",
+    name: { fr: "Vidéo (fichier)", en: "Video (file)" },
+    description: {
+      fr: "Hébergez votre vidéo, lue directement au scan",
+      en: "Host your video, played right on scan",
+    },
+    fields: [
+      { name: "title", type: "text", label: { fr: "Titre", en: "Title" }, required: true },
+      {
+        name: "description",
+        type: "textarea",
+        label: { fr: "Description", en: "Description" },
+        rows: 2,
+      },
+      {
+        name: "file",
+        type: "file",
+        label: { fr: "Fichier vidéo", en: "Video file" },
+        accept: "video/*",
+        required: true,
+        hint: {
+          fr: "MP4 recommandé. Gardez le fichier léger (moins de 50 Mo) pour un chargement rapide au scan.",
+          en: "MP4 recommended. Keep the file small (under 50 MB) so it loads fast on scan.",
+        },
+      },
+      {
+        name: "cover",
+        type: "file",
+        label: { fr: "Miniature (optionnelle)", en: "Thumbnail (optional)" },
+        accept: "image/*",
+      },
+    ],
+    canBeStatic: false,
+    scanBehavior: "landing",
+  },
+  {
     id: "text",
     category: "content",
     icon: "📝",

@@ -12,6 +12,7 @@ import {
   Mp3Landing,
   PdfLanding,
   TextLanding,
+  VideoFileLanding,
 } from "./content";
 import { EventLanding, WifiLanding } from "./utility";
 
@@ -33,10 +34,17 @@ export const LANDINGS: Record<
   pdf: PdfLanding,
   images: ImagesLanding,
   mp3: Mp3Landing,
+  videofile: VideoFileLanding,
   text: TextLanding,
   wifi: WifiLanding,
   event: EventLanding,
 };
 
 /** Landings plus larges que la carte standard (lecture confortable). */
-export const WIDE_LANDINGS = new Set(["menu", "pdf", "images", "business"]);
+export const WIDE_LANDINGS = new Set([
+  "menu",
+  "pdf",
+  "images",
+  "business",
+  "videofile",
+]);

@@ -120,6 +120,38 @@ export async function Mp3Landing({ title, data }: LandingProps) {
   );
 }
 
+/** Lecteur vidéo (fichier hébergé sur Supabase Storage). */
+export async function VideoFileLanding({ title, data }: LandingProps) {
+  const url = str(data.file);
+  const cover = str(data.cover);
+  const videoTitle = str(data.title) || title;
+
+  return (
+    <div className="card overflow-hidden">
+      {url && (
+        <video
+          controls
+          playsInline
+          preload="metadata"
+          poster={cover || undefined}
+          src={url}
+          className="aspect-video w-full bg-slate-950"
+        >
+          {videoTitle}
+        </video>
+      )}
+      <div className="p-6">
+        <h1 className="text-lg font-bold text-slate-900">{videoTitle}</h1>
+        {str(data.description) && (
+          <p className="mt-1.5 text-sm leading-relaxed text-slate-500">
+            {str(data.description)}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 /** Texte simple. */
 export async function TextLanding({ title, data }: LandingProps) {
   const textTitle = str(data.title) || title;
