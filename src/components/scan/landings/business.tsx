@@ -8,6 +8,7 @@ import { objArr, str, strArr, type LandingProps } from "./util";
 export async function BusinessLanding({ data }: LandingProps) {
   const t = await getTranslations("scan.business");
   const name = str(data.name);
+  const logo = str(data.logo);
   const cover = str(data.cover);
   const photos = strArr(data.photos);
   const video = str(data.video);
@@ -29,9 +30,18 @@ export async function BusinessLanding({ data }: LandingProps) {
         />
       )}
       <div className="bg-gradient-to-br from-slate-900 to-slate-700 px-8 pb-6 pt-8 text-center text-white">
-        <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 text-3xl ring-4 ring-white/10">
-          🏢
-        </span>
+        {logo ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={logo}
+            alt={name}
+            className="mx-auto h-16 w-16 rounded-2xl bg-white object-cover ring-4 ring-white/10"
+          />
+        ) : (
+          <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 text-3xl ring-4 ring-white/10">
+            🏢
+          </span>
+        )}
         <h1 className="mt-4 text-xl font-bold">{name}</h1>
         {str(data.tagline) && (
           <p className="mt-1 text-sm text-slate-300">{str(data.tagline)}</p>

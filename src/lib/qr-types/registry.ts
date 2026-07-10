@@ -405,6 +405,12 @@ export const QR_TYPES: QrTypeDef[] = [
     fields: [
       { name: "name", type: "text", label: { fr: "Nom de l'entreprise", en: "Company name" }, required: true },
       { name: "tagline", type: "text", label: { fr: "Slogan", en: "Tagline" } },
+      {
+        name: "logo",
+        type: "file",
+        label: { fr: "Logo (optionnel)", en: "Logo (optional)" },
+        accept: "image/*",
+      },
       { name: "description", type: "textarea", label: { fr: "Description", en: "Description" }, rows: 3 },
       { name: "phone", type: "tel", label: { fr: "Téléphone", en: "Phone" }, half: true },
       { name: "email", type: "email", label: { fr: "Email", en: "Email" }, half: true },
