@@ -1,0 +1,21 @@
+{
+  "title": "Tableau de bord",
+  "greeting": "Bonjour {name} 👋",
+  "subtitle": "Voici l'activité de vos QR codes.",
+  "kpi": {
+    "totalQr": "QR codes",
+    "totalScans": "Scans totaux",
+    "scans30d": "Scans (30 jours)",
+    "dynamicQr": "QR dynamiques",
+    "ofLimit": "sur {limit}"
+  },
+  "chart": {
+    "title": "Scans des 30 derniers jours",
+    "empty": "Aucun scan pour l'instant. Partagez vos QR codes pour voir les statistiques ici."
+  },
+  "recent": {
+    "title": "QR codes récents",
+    "empty": "Vous n'avez pas encore de QR code.",
+    "cta": "Créer mon premier QR code"
+  }
+}

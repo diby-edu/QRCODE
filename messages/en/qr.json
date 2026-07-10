@@ -1,0 +1,118 @@
+{
+  "typePicker": {
+    "title": "What type of QR code do you want to create?",
+    "subtitle": "Pick a type: the form adapts automatically."
+  },
+  "builder": {
+    "newTitle": "New QR code",
+    "editTitle": "Edit QR code",
+    "contentSection": "Content",
+    "designSection": "Customization",
+    "optionsSection": "Advanced options",
+    "titleLabel": "QR code name",
+    "titlePlaceholder": "E.g.: Restaurant menu",
+    "modeLabel": "Mode",
+    "dynamicToggle": "Dynamic QR code",
+    "dynamicHint": "Editable anytime without reprinting, with scan analytics.",
+    "staticHint": "Content encoded directly: no analytics and no editing.",
+    "staticWarning": "Static QR: if you change the content, the QR code changes and must be reprinted.",
+    "folderLabel": "Folder",
+    "noFolder": "No folder",
+    "activeToggle": "QR code active",
+    "expiresLabel": "Expiration date (optional)",
+    "expiresHint": "After this date, the QR shows an “expired” page.",
+    "passwordLabel": "Password (optional)",
+    "passwordHint": "Visitors will need this password to access the content.",
+    "passwordSet": "A password is set. Leave empty to keep it, type a new one to replace it.",
+    "removePassword": "Remove password",
+    "featureLocked": "Available on a higher plan",
+    "previewTitle": "Preview",
+    "previewUrlHint": "This QR will point to:",
+    "save": "Save QR code",
+    "creating": "Creating…",
+    "qrLimitReached": "QR code limit reached for your plan ({limit}).",
+    "dynamicLimitReached": "Dynamic QR limit reached for your plan ({limit}).",
+    "upgradeCta": "Upgrade plan"
+  },
+  "form": {
+    "addItem": "Add",
+    "chooseFile": "Click to choose a file",
+    "uploading": "Uploading…",
+    "uploadError": "File upload failed. Please try again."
+  },
+  "customize": {
+    "fgColor": "QR code color",
+    "bgColor": "Background color",
+    "dotStyle": "Dot style",
+    "dotStyles": {
+      "square": "Square",
+      "rounded": "Rounded",
+      "dots": "Dots",
+      "classy": "Classy",
+      "classy-rounded": "Classy rounded",
+      "extra-rounded": "Extra rounded"
+    },
+    "cornerStyle": "Corner style",
+    "cornerStyles": {
+      "square": "Square",
+      "dot": "Dot",
+      "extra-rounded": "Rounded"
+    },
+    "logo": "Logo",
+    "uploadLogo": "Add a logo",
+    "removeLogo": "Remove",
+    "logoLocked": "Adding a logo requires the Pro plan.",
+    "upgradeLink": "Upgrade"
+  },
+  "download": {
+    "title": "Download",
+    "png": "PNG",
+    "svg": "SVG",
+    "pdf": "PDF",
+    "locked": "Format available on a higher plan"
+  },
+  "list": {
+    "title": "My QR codes",
+    "subtitle": "{count, plural, =0 {No QR codes} one {# QR code} other {# QR codes}}",
+    "empty": "You don't have any QR codes yet.",
+    "emptyCta": "Create my first QR code",
+    "noResults": "No results for these filters.",
+    "searchPlaceholder": "Search by name…",
+    "allTypes": "All types",
+    "allStatuses": "All statuses",
+    "allFolders": "All folders",
+    "columns": {
+      "name": "Name",
+      "type": "Type",
+      "scans": "Scans",
+      "status": "Status",
+      "created": "Created"
+    },
+    "actions": {
+      "stats": "Analytics",
+      "edit": "Edit",
+      "download": "Download",
+      "duplicate": "Duplicate",
+      "delete": "Delete",
+      "open": "Open page"
+    }
+  },
+  "folders": {
+    "title": "Folders",
+    "subtitle": "Organize your QR codes into folders.",
+    "empty": "No folders yet.",
+    "namePlaceholder": "Folder name",
+    "create": "Create folder",
+    "qrCount": "{count, plural, =0 {No QR codes} one {# QR code} other {# QR codes}}",
+    "locked": "Folders are available on a higher plan.",
+    "viewQr": "View QR codes",
+    "confirmDelete": "The QR codes inside this folder will not be deleted."
+  },
+  "detail": {
+    "shortUrl": "QR code URL",
+    "notScannable": "Content encoded directly in the QR",
+    "createdBanner": "QR code created successfully! Download it below.",
+    "updatedBanner": "QR code updated successfully.",
+    "info": "Details"
+  }
+}

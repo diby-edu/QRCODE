@@ -1,0 +1,80 @@
+{
+  "notFound": {
+    "title": "QR code introuvable",
+    "message": "Ce QR code n'existe pas ou a été supprimé."
+  },
+  "inactive": {
+    "title": "QR code désactivé",
+    "message": "Ce QR code a été désactivé par son propriétaire."
+  },
+  "expired": {
+    "title": "QR code expiré",
+    "message": "Ce QR code n'est plus valide."
+  },
+  "unavailable": {
+    "title": "Contenu indisponible",
+    "message": "Le contenu de ce QR code est introuvable ou incomplet."
+  },
+  "password": {
+    "title": "Contenu protégé",
+    "message": "Entrez le mot de passe pour accéder à ce contenu.",
+    "placeholder": "Mot de passe",
+    "submit": "Accéder",
+    "checking": "Vérification…",
+    "error": "Mot de passe incorrect."
+  },
+  "poweredBy": "Créé avec",
+  "copy": "Copier",
+  "copied": "Copié !",
+  "openLink": "Ouvrir le lien",
+  "autoOpen": "Ouverture automatique… Si rien ne se passe, utilisez le bouton ci-dessous.",
+  "app": {
+    "download": "Télécharger l'application",
+    "playStore": "Disponible sur Google Play",
+    "appStore": "Télécharger sur l'App Store",
+    "fallback": "Ouvrir le site web"
+  },
+  "vcard": {
+    "download": "Enregistrer le contact",
+    "phone": "Téléphone",
+    "mobile": "Mobile",
+    "email": "Email",
+    "website": "Site web",
+    "address": "Adresse"
+  },
+  "wifi": {
+    "title": "Connexion Wi-Fi",
+    "network": "Réseau",
+    "security": "Sécurité",
+    "password": "Mot de passe",
+    "open": "Réseau ouvert (aucun mot de passe)",
+    "hint": "Scannez ce QR code avec l'appareil photo de votre téléphone pour vous connecter automatiquement."
+  },
+  "event": {
+    "addGoogle": "Ajouter à Google Agenda",
+    "downloadIcs": "Télécharger (.ics)",
+    "location": "Lieu",
+    "link": "Lien"
+  },
+  "coupon": {
+    "yourCode": "Votre code promo",
+    "validUntil": "Valable jusqu'au {date}",
+    "terms": "Conditions"
+  },
+  "payment": {
+    "amount": "Montant à payer",
+    "pay": "Payer maintenant",
+    "instructions": "Instructions"
+  },
+  "pdf": {
+    "open": "Ouvrir le PDF",
+    "download": "Télécharger"
+  },
+  "images": {
+    "photos": "{count, plural, one {# photo} other {# photos}}"
+  },
+  "business": {
+    "hours": "Horaires",
+    "contact": "Contact"
+  }
+}

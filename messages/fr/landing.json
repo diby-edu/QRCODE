@@ -1,0 +1,69 @@
+{
+  "hero": {
+    "badge": "QR codes dynamiques · Statistiques · Paiement mobile",
+    "title": "Créez des QR codes qui travaillent pour vous",
+    "subtitle": "Générez des QR codes personnalisés, modifiez leur contenu à tout moment sans réimprimer, et suivez chaque scan : pays, ville, appareil, navigateur.",
+    "ctaPrimary": "Commencer gratuitement",
+    "ctaSecondary": "Voir les tarifs",
+    "noCard": "Aucune carte bancaire requise"
+  },
+  "features": {
+    "title": "Tout ce qu'il faut pour vos QR codes",
+    "subtitle": "De la création au suivi, une seule plateforme.",
+    "items": {
+      "dynamic": {
+        "title": "QR dynamiques",
+        "description": "Changez la destination à tout moment, sans réimprimer le QR code."
+      },
+      "stats": {
+        "title": "Statistiques en temps réel",
+        "description": "Scans par jour, pays, villes, appareils, systèmes et navigateurs."
+      },
+      "design": {
+        "title": "Personnalisation complète",
+        "description": "Couleurs, styles de points, coins et logo au centre du QR code."
+      },
+      "types": {
+        "title": "20+ types de contenus",
+        "description": "Site web, vCard, Wi-Fi, menu de restaurant, PDF, MP3, événement…"
+      },
+      "organize": {
+        "title": "Organisation",
+        "description": "Dossiers, recherche, filtres et duplication pour tout retrouver."
+      },
+      "secure": {
+        "title": "Contrôle total",
+        "description": "Activez, désactivez, protégez par mot de passe ou date d'expiration."
+      }
+    }
+  },
+  "types": {
+    "title": "Un QR code pour chaque usage",
+    "subtitle": "Choisissez un type, le formulaire s'adapte."
+  },
+  "steps": {
+    "title": "Prêt en 3 étapes",
+    "one": { "title": "Créez", "description": "Choisissez un type de contenu et remplissez le formulaire." },
+    "two": { "title": "Personnalisez", "description": "Couleurs, style et logo — aperçu en direct." },
+    "three": { "title": "Partagez et mesurez", "description": "Téléchargez en PNG, SVG ou PDF et suivez les scans." }
+  },
+  "pricing": {
+    "title": "Des tarifs simples",
+    "subtitle": "Commencez gratuitement, passez au niveau supérieur quand vous en avez besoin.",
+    "cta": "Créer un compte",
+    "payWith": "Payez par Orange Money, MTN MoMo, Moov, Wave ou carte bancaire."
+  },
+  "finalCta": {
+    "title": "Créez votre premier QR code en 2 minutes",
+    "subtitle": "Gratuit, sans carte bancaire.",
+    "button": "Commencer maintenant"
+  },
+  "footer": {
+    "product": "Produit",
+    "features": "Fonctionnalités",
+    "pricing": "Tarifs",
+    "account": "Compte",
+    "login": "Connexion",
+    "register": "Créer un compte"
+  }
+}

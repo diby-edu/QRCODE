@@ -1,0 +1,61 @@
+{
+  "title": "Subscription",
+  "subtitle": "Your plan, usage and payments.",
+  "banners": {
+    "success": "Payment confirmed: your subscription is active. Thank you!",
+    "pending": "Payment being confirmed. Your plan will be activated once validated.",
+    "cancelled": "Payment cancelled. You can try again anytime.",
+    "error": "Could not verify the payment. Contact support if the problem persists."
+  },
+  "current": {
+    "title": "Current plan",
+    "renewsOn": "Valid until {date}",
+    "free": "Free plan — never expires",
+    "perMonth": "/month"
+  },
+  "usage": {
+    "title": "Usage",
+    "qrCodes": "QR codes",
+    "dynamic": "Dynamic QR codes",
+    "scansMonth": "Scans (last 30 days)",
+    "of": "{used} / {limit}",
+    "unlimited": "{used} / Unlimited"
+  },
+  "plans": {
+    "title": "Available plans",
+    "current": "Current plan",
+    "choose": "Choose this plan",
+    "redirecting": "Redirecting to payment…",
+    "features": {
+      "qrCodes": "{count} QR codes",
+      "qrCodesUnlimited": "Unlimited QR codes",
+      "dynamic": "{count} dynamic QR codes",
+      "dynamicUnlimited": "Unlimited dynamic QR codes",
+      "scans": "{count} scans / month",
+      "scansUnlimited": "Unlimited scans",
+      "formats": "{formats} export",
+      "logo": "Logo on QR codes",
+      "statsFull": "Detailed analytics",
+      "statsBasic": "Basic analytics",
+      "folders": "Folders",
+      "password": "Password protection"
+    },
+    "payWith": "Orange Money, MTN MoMo, Moov, Wave, bank card"
+  },
+  "history": {
+    "title": "Payment history",
+    "empty": "No payments yet.",
+    "date": "Date",
+    "amount": "Amount",
+    "status": "Status",
+    "statuses": {
+      "completed": "Paid",
+      "pending": "Pending",
+      "failed": "Failed",
+      "cancelled": "Cancelled"
+    }
+  },
+  "errors": {
+    "checkoutFailed": "Could not start the payment. Please try again shortly."
+  }
+}

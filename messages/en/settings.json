@@ -1,0 +1,28 @@
+{
+  "title": "Settings",
+  "subtitle": "Your profile and preferences.",
+  "profile": {
+    "title": "Profile",
+    "fullName": "Full name",
+    "email": "Email",
+    "emailHint": "The login email cannot be changed here.",
+    "saved": "Profile updated."
+  },
+  "password": {
+    "title": "Password",
+    "new": "New password",
+    "confirm": "Confirm password",
+    "hint": "At least 8 characters.",
+    "saved": "Password changed.",
+    "errors": {
+      "weakPassword": "The password must be at least 8 characters long.",
+      "mismatch": "The two passwords do not match.",
+      "generic": "Could not change the password. Please try again."
+    }
+  },
+  "language": {
+    "title": "Language",
+    "hint": "Language of the interface and emails.",
+    "saved": "Language updated."
+  }
+}

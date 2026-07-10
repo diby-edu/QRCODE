@@ -1,0 +1,80 @@
+{
+  "notFound": {
+    "title": "QR code not found",
+    "message": "This QR code does not exist or has been deleted."
+  },
+  "inactive": {
+    "title": "QR code disabled",
+    "message": "This QR code has been disabled by its owner."
+  },
+  "expired": {
+    "title": "QR code expired",
+    "message": "This QR code is no longer valid."
+  },
+  "unavailable": {
+    "title": "Content unavailable",
+    "message": "The content of this QR code is missing or incomplete."
+  },
+  "password": {
+    "title": "Protected content",
+    "message": "Enter the password to access this content.",
+    "placeholder": "Password",
+    "submit": "Access",
+    "checking": "Checking…",
+    "error": "Incorrect password."
+  },
+  "poweredBy": "Made with",
+  "copy": "Copy",
+  "copied": "Copied!",
+  "openLink": "Open link",
+  "autoOpen": "Opening automatically… If nothing happens, use the button below.",
+  "app": {
+    "download": "Download the app",
+    "playStore": "Get it on Google Play",
+    "appStore": "Download on the App Store",
+    "fallback": "Open the website"
+  },
+  "vcard": {
+    "download": "Save contact",
+    "phone": "Phone",
+    "mobile": "Mobile",
+    "email": "Email",
+    "website": "Website",
+    "address": "Address"
+  },
+  "wifi": {
+    "title": "Wi-Fi connection",
+    "network": "Network",
+    "security": "Security",
+    "password": "Password",
+    "open": "Open network (no password)",
+    "hint": "Scan this QR code with your phone camera to connect automatically."
+  },
+  "event": {
+    "addGoogle": "Add to Google Calendar",
+    "downloadIcs": "Download (.ics)",
+    "location": "Location",
+    "link": "Link"
+  },
+  "coupon": {
+    "yourCode": "Your promo code",
+    "validUntil": "Valid until {date}",
+    "terms": "Terms"
+  },
+  "payment": {
+    "amount": "Amount to pay",
+    "pay": "Pay now",
+    "instructions": "Instructions"
+  },
+  "pdf": {
+    "open": "Open PDF",
+    "download": "Download"
+  },
+  "images": {
+    "photos": "{count, plural, one {# photo} other {# photos}}"
+  },
+  "business": {
+    "hours": "Opening hours",
+    "contact": "Contact"
+  }
+}

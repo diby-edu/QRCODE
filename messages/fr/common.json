@@ -1,0 +1,73 @@
+{
+  "appName": "QRHub",
+  "tagline": "QR codes dynamiques & statistiques",
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "qrcodes": "Mes QR codes",
+    "folders": "Dossiers",
+    "billing": "Abonnement",
+    "settings": "Paramètres",
+    "admin": "Administration",
+    "logout": "Déconnexion",
+    "create": "Créer un QR code",
+    "login": "Connexion",
+    "register": "Créer un compte",
+    "pricing": "Tarifs",
+    "features": "Fonctionnalités"
+  },
+  "actions": {
+    "save": "Enregistrer",
+    "saving": "Enregistrement…",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "duplicate": "Dupliquer",
+    "download": "Télécharger",
+    "search": "Rechercher",
+    "back": "Retour",
+    "confirm": "Confirmer",
+    "close": "Fermer",
+    "copy": "Copier le lien",
+    "copied": "Copié !",
+    "loading": "Chargement…",
+    "seeAll": "Tout voir",
+    "add": "Ajouter",
+    "remove": "Retirer",
+    "continue": "Continuer",
+    "create": "Créer",
+    "activate": "Activer",
+    "deactivate": "Désactiver",
+    "upgrade": "Passer au plan supérieur"
+  },
+  "status": {
+    "active": "Actif",
+    "inactive": "Désactivé",
+    "expired": "Expiré",
+    "dynamic": "Dynamique",
+    "static": "Statique",
+    "protected": "Protégé",
+    "suspended": "Suspendu"
+  },
+  "confirmDelete": {
+    "title": "Confirmer la suppression",
+    "message": "Cette action est définitive. Voulez-vous vraiment supprimer « {name} » ?",
+    "confirm": "Oui, supprimer"
+  },
+  "errors": {
+    "generic": "Une erreur est survenue. Veuillez réessayer.",
+    "notFound": "Introuvable",
+    "unauthorized": "Accès non autorisé",
+    "limitReached": "Vous avez atteint la limite de votre plan. Passez au plan supérieur pour continuer."
+  },
+  "language": {
+    "label": "Langue",
+    "fr": "Français",
+    "en": "English"
+  },
+  "footer": {
+    "rights": "Tous droits réservés.",
+    "madeWith": "QR codes dynamiques pour l'Afrique et le monde."
+  },
+  "scans": "{count, plural, =0 {Aucun scan} one {# scan} other {# scans}}",
+  "unlimited": "Illimité"
+}

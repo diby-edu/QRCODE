@@ -1,0 +1,61 @@
+{
+  "title": "Abonnement",
+  "subtitle": "Votre plan, votre consommation et vos paiements.",
+  "banners": {
+    "success": "Paiement confirmé : votre abonnement est actif. Merci !",
+    "pending": "Paiement en cours de confirmation. Votre plan sera activé dès validation.",
+    "cancelled": "Paiement annulé. Vous pouvez réessayer à tout moment.",
+    "error": "Impossible de vérifier le paiement. Contactez le support si le problème persiste."
+  },
+  "current": {
+    "title": "Plan actuel",
+    "renewsOn": "Valable jusqu'au {date}",
+    "free": "Plan gratuit — sans expiration",
+    "perMonth": "/mois"
+  },
+  "usage": {
+    "title": "Consommation",
+    "qrCodes": "QR codes",
+    "dynamic": "QR dynamiques",
+    "scansMonth": "Scans (30 derniers jours)",
+    "of": "{used} / {limit}",
+    "unlimited": "{used} / Illimité"
+  },
+  "plans": {
+    "title": "Plans disponibles",
+    "current": "Plan actuel",
+    "choose": "Choisir ce plan",
+    "redirecting": "Redirection vers le paiement…",
+    "features": {
+      "qrCodes": "{count} QR codes",
+      "qrCodesUnlimited": "QR codes illimités",
+      "dynamic": "{count} QR dynamiques",
+      "dynamicUnlimited": "QR dynamiques illimités",
+      "scans": "{count} scans / mois",
+      "scansUnlimited": "Scans illimités",
+      "formats": "Export {formats}",
+      "logo": "Logo sur les QR codes",
+      "statsFull": "Statistiques détaillées",
+      "statsBasic": "Statistiques de base",
+      "folders": "Dossiers",
+      "password": "Protection par mot de passe"
+    },
+    "payWith": "Orange Money, MTN MoMo, Moov, Wave, carte bancaire"
+  },
+  "history": {
+    "title": "Historique des paiements",
+    "empty": "Aucun paiement pour l'instant.",
+    "date": "Date",
+    "amount": "Montant",
+    "status": "Statut",
+    "statuses": {
+      "completed": "Payé",
+      "pending": "En attente",
+      "failed": "Échoué",
+      "cancelled": "Annulé"
+    }
+  },
+  "errors": {
+    "checkoutFailed": "Impossible de démarrer le paiement. Réessayez dans un instant."
+  }
+}

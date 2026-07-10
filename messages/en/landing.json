@@ -1,0 +1,69 @@
+{
+  "hero": {
+    "badge": "Dynamic QR codes · Analytics · Mobile money",
+    "title": "Create QR codes that work for you",
+    "subtitle": "Generate custom QR codes, change their content anytime without reprinting, and track every scan: country, city, device, browser.",
+    "ctaPrimary": "Start for free",
+    "ctaSecondary": "See pricing",
+    "noCard": "No credit card required"
+  },
+  "features": {
+    "title": "Everything you need for your QR codes",
+    "subtitle": "From creation to tracking, one platform.",
+    "items": {
+      "dynamic": {
+        "title": "Dynamic QR codes",
+        "description": "Change the destination anytime, without reprinting the QR code."
+      },
+      "stats": {
+        "title": "Real-time analytics",
+        "description": "Scans per day, countries, cities, devices, systems and browsers."
+      },
+      "design": {
+        "title": "Full customization",
+        "description": "Colors, dot styles, corners and your logo at the center of the QR."
+      },
+      "types": {
+        "title": "20+ content types",
+        "description": "Website, vCard, Wi-Fi, restaurant menu, PDF, MP3, event…"
+      },
+      "organize": {
+        "title": "Organization",
+        "description": "Folders, search, filters and duplication to find everything."
+      },
+      "secure": {
+        "title": "Full control",
+        "description": "Enable, disable, protect with a password or an expiry date."
+      }
+    }
+  },
+  "types": {
+    "title": "A QR code for every use case",
+    "subtitle": "Pick a type, the form adapts."
+  },
+  "steps": {
+    "title": "Ready in 3 steps",
+    "one": { "title": "Create", "description": "Choose a content type and fill in the form." },
+    "two": { "title": "Customize", "description": "Colors, style and logo — live preview." },
+    "three": { "title": "Share and measure", "description": "Download as PNG, SVG or PDF and track scans." }
+  },
+  "pricing": {
+    "title": "Simple pricing",
+    "subtitle": "Start for free, upgrade when you need it.",
+    "cta": "Create an account",
+    "payWith": "Pay with Orange Money, MTN MoMo, Moov, Wave or bank card."
+  },
+  "finalCta": {
+    "title": "Create your first QR code in 2 minutes",
+    "subtitle": "Free, no credit card.",
+    "button": "Start now"
+  },
+  "footer": {
+    "product": "Product",
+    "features": "Features",
+    "pricing": "Pricing",
+    "account": "Account",
+    "login": "Log in",
+    "register": "Sign up"
+  }
+}

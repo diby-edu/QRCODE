@@ -1,0 +1,73 @@
+{
+  "appName": "QRHub",
+  "tagline": "Dynamic QR codes & analytics",
+  "nav": {
+    "dashboard": "Dashboard",
+    "qrcodes": "My QR codes",
+    "folders": "Folders",
+    "billing": "Subscription",
+    "settings": "Settings",
+    "admin": "Administration",
+    "logout": "Log out",
+    "create": "Create QR code",
+    "login": "Log in",
+    "register": "Sign up",
+    "pricing": "Pricing",
+    "features": "Features"
+  },
+  "actions": {
+    "save": "Save",
+    "saving": "Saving…",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "duplicate": "Duplicate",
+    "download": "Download",
+    "search": "Search",
+    "back": "Back",
+    "confirm": "Confirm",
+    "close": "Close",
+    "copy": "Copy link",
+    "copied": "Copied!",
+    "loading": "Loading…",
+    "seeAll": "See all",
+    "add": "Add",
+    "remove": "Remove",
+    "continue": "Continue",
+    "create": "Create",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "upgrade": "Upgrade"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Disabled",
+    "expired": "Expired",
+    "dynamic": "Dynamic",
+    "static": "Static",
+    "protected": "Protected",
+    "suspended": "Suspended"
+  },
+  "confirmDelete": {
+    "title": "Confirm deletion",
+    "message": "This action is permanent. Do you really want to delete “{name}”?",
+    "confirm": "Yes, delete"
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "notFound": "Not found",
+    "unauthorized": "Unauthorized",
+    "limitReached": "You have reached your plan limit. Upgrade to continue."
+  },
+  "language": {
+    "label": "Language",
+    "fr": "Français",
+    "en": "English"
+  },
+  "footer": {
+    "rights": "All rights reserved.",
+    "madeWith": "Dynamic QR codes for Africa and the world."
+  },
+  "scans": "{count, plural, =0 {No scans} one {# scan} other {# scans}}",
+  "unlimited": "Unlimited"
+}

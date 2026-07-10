@@ -1,0 +1,118 @@
+{
+  "typePicker": {
+    "title": "Quel type de QR code voulez-vous créer ?",
+    "subtitle": "Choisissez un type : le formulaire s'adapte automatiquement."
+  },
+  "builder": {
+    "newTitle": "Nouveau QR code",
+    "editTitle": "Modifier le QR code",
+    "contentSection": "Contenu",
+    "designSection": "Personnalisation",
+    "optionsSection": "Options avancées",
+    "titleLabel": "Nom du QR code",
+    "titlePlaceholder": "Ex. : Menu du restaurant",
+    "modeLabel": "Mode",
+    "dynamicToggle": "QR code dynamique",
+    "dynamicHint": "Modifiable à tout moment sans réimprimer, avec statistiques de scans.",
+    "staticHint": "Contenu encodé directement : pas de statistiques ni de modification possible.",
+    "staticWarning": "QR statique : si vous modifiez le contenu, le QR code change et devra être réimprimé.",
+    "folderLabel": "Dossier",
+    "noFolder": "Aucun dossier",
+    "activeToggle": "QR code actif",
+    "expiresLabel": "Date d'expiration (optionnelle)",
+    "expiresHint": "Après cette date, le QR affichera une page « expiré ».",
+    "passwordLabel": "Mot de passe (optionnel)",
+    "passwordHint": "Les visiteurs devront saisir ce mot de passe pour accéder au contenu.",
+    "passwordSet": "Un mot de passe est défini. Laissez vide pour le conserver, saisissez un nouveau pour le remplacer.",
+    "removePassword": "Supprimer le mot de passe",
+    "featureLocked": "Disponible avec le plan supérieur",
+    "previewTitle": "Aperçu",
+    "previewUrlHint": "Ce QR pointera vers :",
+    "save": "Enregistrer le QR code",
+    "creating": "Création…",
+    "qrLimitReached": "Limite de QR codes atteinte pour votre plan ({limit}).",
+    "dynamicLimitReached": "Limite de QR dynamiques atteinte pour votre plan ({limit}).",
+    "upgradeCta": "Passer au plan supérieur"
+  },
+  "form": {
+    "addItem": "Ajouter",
+    "chooseFile": "Cliquez pour choisir un fichier",
+    "uploading": "Envoi en cours…",
+    "uploadError": "Échec de l'envoi du fichier. Réessayez."
+  },
+  "customize": {
+    "fgColor": "Couleur du QR code",
+    "bgColor": "Couleur de fond",
+    "dotStyle": "Style des points",
+    "dotStyles": {
+      "square": "Carré",
+      "rounded": "Arrondi",
+      "dots": "Points",
+      "classy": "Élégant",
+      "classy-rounded": "Élégant arrondi",
+      "extra-rounded": "Très arrondi"
+    },
+    "cornerStyle": "Style des coins",
+    "cornerStyles": {
+      "square": "Carré",
+      "dot": "Rond",
+      "extra-rounded": "Arrondi"
+    },
+    "logo": "Logo",
+    "uploadLogo": "Ajouter un logo",
+    "removeLogo": "Retirer",
+    "logoLocked": "L'ajout de logo est réservé au plan Pro.",
+    "upgradeLink": "Mettre à niveau"
+  },
+  "download": {
+    "title": "Télécharger",
+    "png": "PNG",
+    "svg": "SVG",
+    "pdf": "PDF",
+    "locked": "Format réservé au plan supérieur"
+  },
+  "list": {
+    "title": "Mes QR codes",
+    "subtitle": "{count, plural, =0 {Aucun QR code} one {# QR code} other {# QR codes}}",
+    "empty": "Vous n'avez pas encore de QR code.",
+    "emptyCta": "Créer mon premier QR code",
+    "noResults": "Aucun résultat pour ces filtres.",
+    "searchPlaceholder": "Rechercher par nom…",
+    "allTypes": "Tous les types",
+    "allStatuses": "Tous les statuts",
+    "allFolders": "Tous les dossiers",
+    "columns": {
+      "name": "Nom",
+      "type": "Type",
+      "scans": "Scans",
+      "status": "Statut",
+      "created": "Créé le"
+    },
+    "actions": {
+      "stats": "Statistiques",
+      "edit": "Modifier",
+      "download": "Télécharger",
+      "duplicate": "Dupliquer",
+      "delete": "Supprimer",
+      "open": "Ouvrir la page"
+    }
+  },
+  "folders": {
+    "title": "Dossiers",
+    "subtitle": "Organisez vos QR codes par dossier.",
+    "empty": "Aucun dossier pour l'instant.",
+    "namePlaceholder": "Nom du dossier",
+    "create": "Créer le dossier",
+    "qrCount": "{count, plural, =0 {Aucun QR code} one {# QR code} other {# QR codes}}",
+    "locked": "Les dossiers sont disponibles avec le plan supérieur.",
+    "viewQr": "Voir les QR codes",
+    "confirmDelete": "Les QR codes de ce dossier ne seront pas supprimés."
+  },
+  "detail": {
+    "shortUrl": "URL du QR code",
+    "notScannable": "Contenu encodé directement dans le QR",
+    "createdBanner": "QR code créé avec succès ! Téléchargez-le ci-dessous.",
+    "updatedBanner": "QR code mis à jour avec succès.",
+    "info": "Informations"
+  }
+}

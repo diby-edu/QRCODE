@@ -1,65 +1,205 @@
-import Image from "next/image";
+import Link from "next/link";
+import { getLocale, getTranslations } from "next-intl/server";
+import { CATEGORIES, QR_TYPES } from "@/lib/qr-types/registry";
+import { SiteFooter, SiteHeader } from "@/components/marketing/SiteChrome";
 
-export default function Home() {
+/** Visuel décoratif : QR stylisé avec le dégradé de la marque. */
+function HeroQr() {
+  const cells = [
+    "1111111010011111111",
+    "1000001001010000001",
+    "1011101110101011101",
+    "1011101011001011101",
+    "1011101100111011101",
+    "1000001010010000001",
+    "1111111010101111111",
+    "0000000110100000000",
+    "1101011011011010110",
+    "0110100101100111010",
+    "1010111001010110011",
+    "0000000101101001010",
+    "1111111011010110101",
+    "1000001001110011010",
+    "1011101010011010111",
+    "1011101101010110010",
+    "1011101011101011101",
+    "1000001110010100110",
+    "1111111010110101011",
+  ];
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+    <svg viewBox="0 0 19 19" className="h-full w-full" aria-hidden>
+      <defs>
+        <linearGradient id="hero-qr-g" x1="0" y1="0" x2="19" y2="19">
+          <stop stopColor="#4f46e5" />
+          <stop offset="1" stopColor="#7c3aed" />
+        </linearGradient>
+      </defs>
+      {cells.flatMap((row, y) =>
+        row.split("").map((cell, x) =>
+          cell === "1" ? (
+            <rect
+              key={`${x}-${y}`}
+              x={x + 0.08}
+              y={y + 0.08}
+              width={0.84}
+              height={0.84}
+              rx={0.2}
+              fill="url(#hero-qr-g)"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+          ) : null
+        )
+      )}
+    </svg>
+  );
+}
+
+const FEATURE_ICONS: Record<string, string> = {
+  dynamic: "⚡",
+  stats: "📊",
+  design: "🎨",
+  types: "🧩",
+  organize: "📁",
+  secure: "🔒",
+};
+
+export default async function HomePage() {
+  const t = await getTranslations("landing");
+  const locale = (await getLocale()) as "fr" | "en";
+
+  return (
+    <div className="flex min-h-dvh flex-col bg-white">
+      <SiteHeader />
+
+      <main className="flex-1">
+        {/* Héros */}
+        <section className="relative overflow-hidden bg-gradient-to-b from-indigo-50/70 via-white to-white">
+          <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 pb-20 pt-16 lg:grid-cols-2 lg:px-8 lg:pt-24">
+            <div className="animate-fade-up">
+              <span className="badge-indigo">{t("hero.badge")}</span>
+              <h1 className="mt-4 text-4xl font-extrabold leading-tight tracking-tight text-slate-900 sm:text-5xl">
+                {t("hero.title")}
+              </h1>
+              <p className="mt-4 max-w-xl text-lg leading-relaxed text-slate-600">
+                {t("hero.subtitle")}
+              </p>
+              <div className="mt-8 flex flex-wrap items-center gap-3">
+                <Link href="/auth/register" className="btn-primary px-6 py-3 text-base">
+                  {t("hero.ctaPrimary")}
+                </Link>
+                <Link href="/pricing" className="btn-secondary px-6 py-3 text-base">
+                  {t("hero.ctaSecondary")}
+                </Link>
+              </div>
+              <p className="mt-3 text-sm text-slate-400">✓ {t("hero.noCard")}</p>
+            </div>
+
+            <div className="relative mx-auto w-full max-w-sm animate-fade-up">
+              <div className="absolute -inset-6 rounded-[2.5rem] bg-gradient-to-br from-indigo-200/60 to-violet-200/60 blur-2xl" />
+              <div className="card relative rotate-1 p-8 transition-transform duration-300 hover:rotate-0">
+                <HeroQr />
+                <div className="mt-5 flex items-center justify-between text-sm">
+                  <span className="font-semibold text-slate-800">qrhub.app/q/promo</span>
+                  <span className="badge-green">● 1 284 scans</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Fonctionnalités */}
+        <section id="features" className="mx-auto max-w-6xl px-4 py-20 lg:px-8">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="text-3xl font-bold tracking-tight text-slate-900">
+              {t("features.title")}
+            </h2>
+            <p className="mt-3 text-slate-500">{t("features.subtitle")}</p>
+          </div>
+          <div className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {Object.entries(FEATURE_ICONS).map(([key, icon]) => (
+              <div
+                key={key}
+                className="card p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
+              >
+                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-50 text-xl">
+                  {icon}
+                </span>
+                <h3 className="mt-4 text-base font-semibold text-slate-900">
+                  {t(`features.items.${key}.title`)}
+                </h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-slate-500">
+                  {t(`features.items.${key}.description`)}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Types de QR */}
+        <section className="bg-slate-50 py-20">
+          <div className="mx-auto max-w-6xl px-4 lg:px-8">
+            <div className="mx-auto max-w-2xl text-center">
+              <h2 className="text-3xl font-bold tracking-tight text-slate-900">
+                {t("types.title")}
+              </h2>
+              <p className="mt-3 text-slate-500">{t("types.subtitle")}</p>
+            </div>
+            <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+              {CATEGORIES.map((category) => {
+                const count = QR_TYPES.filter((qt) => qt.category === category.id).length;
+                return (
+                  <div key={category.id} className="card p-5 text-center">
+                    <span className="text-2xl">{category.icon}</span>
+                    <p className="mt-2 text-sm font-semibold text-slate-800">
+                      {category.name[locale]}
+                    </p>
+                    <p className="mt-0.5 text-xs text-slate-400">
+                      {count} types
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* 3 étapes */}
+        <section className="mx-auto max-w-6xl px-4 py-20 lg:px-8">
+          <h2 className="text-center text-3xl font-bold tracking-tight text-slate-900">
+            {t("steps.title")}
+          </h2>
+          <div className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-3">
+            {(["one", "two", "three"] as const).map((step, i) => (
+              <div key={step} className="relative text-center">
+                <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-600 text-lg font-bold text-white shadow-md">
+                  {i + 1}
+                </span>
+                <h3 className="mt-4 text-base font-semibold text-slate-900">
+                  {t(`steps.${step}.title`)}
+                </h3>
+                <p className="mt-1.5 text-sm text-slate-500">
+                  {t(`steps.${step}.description`)}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* CTA final */}
+        <section className="mx-auto max-w-6xl px-4 pb-20 lg:px-8">
+          <div className="card overflow-hidden bg-gradient-to-br from-indigo-600 to-violet-600 p-10 text-center text-white sm:p-14">
+            <h2 className="text-3xl font-bold tracking-tight">{t("finalCta.title")}</h2>
+            <p className="mt-2 text-indigo-100">{t("finalCta.subtitle")}</p>
+            <Link
+              href="/auth/register"
+              className="btn mt-7 bg-white px-6 py-3 text-base font-semibold text-indigo-700 shadow-md hover:bg-indigo-50"
+            >
+              {t("finalCta.button")} →
+            </Link>
+          </div>
+        </section>
       </main>
+
+      <SiteFooter />
     </div>
   );
 }

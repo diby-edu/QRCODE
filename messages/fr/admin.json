@@ -1,0 +1,99 @@
+{
+  "title": "Administration",
+  "nav": {
+    "overview": "Vue d'ensemble",
+    "users": "Utilisateurs",
+    "plans": "Plans",
+    "payments": "Paiements",
+    "qrcodes": "QR codes",
+    "settings": "Paramètres",
+    "backToApp": "Retour à l'application"
+  },
+  "overview": {
+    "users": "Utilisateurs",
+    "qrcodes": "QR codes",
+    "scans": "Scans totaux",
+    "revenue": "Revenus encaissés",
+    "chartTitle": "Scans des 30 derniers jours (toute la plateforme)",
+    "latestUsers": "Derniers inscrits",
+    "latestPayments": "Derniers paiements"
+  },
+  "users": {
+    "searchPlaceholder": "Rechercher par email ou nom…",
+    "columns": {
+      "user": "Utilisateur",
+      "plan": "Plan",
+      "qrcodes": "QR codes",
+      "joined": "Inscrit le",
+      "status": "Statut"
+    },
+    "noPlan": "Aucun",
+    "empty": "Aucun utilisateur trouvé.",
+    "actions": {
+      "suspend": "Suspendre",
+      "unsuspend": "Réactiver",
+      "changePlan": "Changer de plan",
+      "delete": "Supprimer",
+      "confirmDelete": "Le compte, ses QR codes et toutes ses données seront définitivement supprimés."
+    },
+    "adminBadge": "Admin"
+  },
+  "plans": {
+    "subtitle": "Prix et limites appliqués immédiatement à tous les abonnés du plan.",
+    "newPlan": "Nouveau plan",
+    "fields": {
+      "name": "Nom",
+      "description": "Description",
+      "price": "Prix mensuel",
+      "currency": "Devise",
+      "sortOrder": "Ordre d'affichage",
+      "isActive": "Plan actif (visible et souscriptible)",
+      "maxQr": "QR codes max (-1 = illimité)",
+      "maxDynamic": "QR dynamiques max (-1 = illimité)",
+      "maxScans": "Scans par mois (-1 = illimité)",
+      "formats": "Formats d'export",
+      "statsLevel": "Niveau de statistiques",
+      "statsBasic": "Basiques",
+      "statsFull": "Détaillées",
+      "logo": "Logo sur les QR",
+      "folders": "Dossiers",
+      "password": "Protection par mot de passe"
+    },
+    "saved": "Plan enregistré.",
+    "subscribers": "{count, plural, =0 {Aucun abonné} one {# abonné} other {# abonnés}}"
+  },
+  "payments": {
+    "columns": {
+      "date": "Date",
+      "user": "Utilisateur",
+      "amount": "Montant",
+      "gateway": "Passerelle",
+      "reference": "Référence",
+      "status": "Statut"
+    },
+    "empty": "Aucun paiement enregistré."
+  },
+  "qrcodes": {
+    "searchPlaceholder": "Rechercher par titre…",
+    "columns": {
+      "title": "Titre",
+      "owner": "Propriétaire",
+      "type": "Type",
+      "scans": "Scans",
+      "status": "Statut",
+      "created": "Créé le"
+    },
+    "empty": "Aucun QR code."
+  },
+  "settings": {
+    "subtitle": "Paramètres généraux du site.",
+    "siteName": "Nom du site",
+    "supportEmail": "Email de support",
+    "announcement": "Bannière d'annonce (vide = masquée)",
+    "saved": "Paramètres enregistrés."
+  },
+  "errors": {
+    "forbidden": "Action réservée aux administrateurs.",
+    "generic": "Une erreur est survenue."
+  }
+}

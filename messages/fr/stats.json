@@ -1,0 +1,42 @@
+{
+  "title": "Statistiques",
+  "backToQr": "Retour au QR code",
+  "kpi": {
+    "totalScans": "Scans totaux",
+    "scans30d": "Scans (30 jours)",
+    "today": "Aujourd'hui",
+    "topDevice": "Appareil principal"
+  },
+  "chart": {
+    "title": "Scans des 30 derniers jours"
+  },
+  "breakdown": {
+    "countries": "Pays",
+    "cities": "Villes",
+    "devices": "Appareils",
+    "os": "Systèmes",
+    "browsers": "Navigateurs",
+    "empty": "Pas encore de données."
+  },
+  "table": {
+    "title": "Derniers scans",
+    "date": "Date",
+    "location": "Localisation",
+    "device": "Appareil",
+    "os": "Système",
+    "browser": "Navigateur",
+    "empty": "Aucun scan enregistré pour l'instant.",
+    "unknown": "Inconnu"
+  },
+  "staticNote": "Ce QR code est statique : son contenu est encodé directement dans l'image, les scans ne passent pas par nos serveurs et ne peuvent donc pas être comptés. Créez un QR dynamique pour suivre les scans.",
+  "upgrade": {
+    "title": "Débloquez les statistiques détaillées",
+    "message": "Pays, villes, appareils, navigateurs et historique complet des scans sont disponibles avec le plan supérieur.",
+    "cta": "Voir les plans"
+  },
+  "devices": {
+    "desktop": "Ordinateur",
+    "mobile": "Mobile",
+    "tablet": "Tablette"
+  }
+}

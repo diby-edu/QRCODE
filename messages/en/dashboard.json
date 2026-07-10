@@ -1,0 +1,21 @@
+{
+  "title": "Dashboard",
+  "greeting": "Hello {name} 👋",
+  "subtitle": "Here is your QR codes activity.",
+  "kpi": {
+    "totalQr": "QR codes",
+    "totalScans": "Total scans",
+    "scans30d": "Scans (30 days)",
+    "dynamicQr": "Dynamic QR codes",
+    "ofLimit": "of {limit}"
+  },
+  "chart": {
+    "title": "Scans over the last 30 days",
+    "empty": "No scans yet. Share your QR codes to see statistics here."
+  },
+  "recent": {
+    "title": "Recent QR codes",
+    "empty": "You don't have any QR codes yet.",
+    "cta": "Create my first QR code"
+  }
+}
