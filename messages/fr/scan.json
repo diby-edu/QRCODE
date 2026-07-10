@@ -75,6 +75,8 @@
   },
   "business": {
     "hours": "Horaires",
-    "contact": "Contact"
+    "contact": "Contact",
+    "photos": "Photos",
+    "video": "Vidéo"
   }
 }

@@ -2,12 +2,15 @@ import { getTranslations } from "next-intl/server";
 import { ensureHttp, normalizePhone } from "@/lib/qr-types/encoders";
 import { formatDate } from "@/lib/utils";
 import { CopyChip } from "@/components/scan/CopyChip";
-import { objArr, str, type LandingProps } from "./util";
+import { objArr, str, strArr, type LandingProps } from "./util";
 
 /** Page de présentation d'entreprise. */
 export async function BusinessLanding({ data }: LandingProps) {
   const t = await getTranslations("scan.business");
   const name = str(data.name);
+  const cover = str(data.cover);
+  const photos = strArr(data.photos);
+  const video = str(data.video);
   const contacts = [
     { icon: "📞", value: str(data.phone), href: `tel:${normalizePhone(data.phone)}` },
     { icon: "✉️", value: str(data.email), href: `mailto:${str(data.email)}` },
@@ -17,6 +20,14 @@ export async function BusinessLanding({ data }: LandingProps) {
 
   return (
     <div className="card overflow-hidden">
+      {cover && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={cover}
+          alt={name}
+          className="h-44 w-full object-cover"
+        />
+      )}
       <div className="bg-gradient-to-br from-slate-900 to-slate-700 px-8 pb-6 pt-8 text-center text-white">
         <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 text-3xl ring-4 ring-white/10">
           🏢
@@ -71,6 +82,50 @@ export async function BusinessLanding({ data }: LandingProps) {
             <p className="whitespace-pre-line rounded-xl bg-slate-50 px-4 py-3 text-sm text-slate-700">
               {str(data.hours)}
             </p>
+          </div>
+        )}
+
+        {video && (
+          <div>
+            <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
+              {t("video")}
+            </h2>
+            <video
+              controls
+              playsInline
+              preload="metadata"
+              src={video}
+              className="aspect-video w-full rounded-xl bg-slate-950"
+            >
+              {name}
+            </video>
+          </div>
+        )}
+
+        {photos.length > 0 && (
+          <div>
+            <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
+              {t("photos")}
+            </h2>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              {photos.map((url, i) => (
+                <a
+                  key={i}
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group overflow-hidden rounded-xl border border-slate-100 bg-slate-50"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={url}
+                    alt={`${name} ${i + 1}`}
+                    loading="lazy"
+                    className="aspect-square w-full object-cover transition-transform duration-200 group-hover:scale-105"
+                  />
+                </a>
+              ))}
+            </div>
           </div>
         )}
       </div>

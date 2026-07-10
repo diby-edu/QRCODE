@@ -75,6 +75,8 @@
   },
   "business": {
     "hours": "Opening hours",
-    "contact": "Contact"
+    "contact": "Contact",
+    "photos": "Photos",
+    "video": "Video"
   }
 }
