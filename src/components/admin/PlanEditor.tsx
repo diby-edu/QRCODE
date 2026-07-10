@@ -9,7 +9,9 @@ const DEFAULT_LIMITS: PlanLimits = {
   max_qr_codes: 5,
   max_dynamic: 3,
   max_scans_month: 300,
+  max_storage_mb: 20,
   logo_enabled: false,
+  video_enabled: false,
   formats: ["png"],
   stats_level: "basic",
   folders_enabled: false,
@@ -190,6 +192,9 @@ export function PlanEditor({
         {numberInput(t("fields.maxScans"), form.limits.max_scans_month, (v) =>
           setLimits({ max_scans_month: v })
         )}
+        {numberInput(t("fields.maxStorage"), form.limits.max_storage_mb, (v) =>
+          setLimits({ max_storage_mb: v })
+        )}
       </div>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -232,6 +237,11 @@ export function PlanEditor({
           label={t("fields.logo")}
           checked={form.limits.logo_enabled}
           onChange={(v) => setLimits({ logo_enabled: v })}
+        />
+        <Toggle
+          label={t("fields.video")}
+          checked={form.limits.video_enabled}
+          onChange={(v) => setLimits({ video_enabled: v })}
         />
         <Toggle
           label={t("fields.folders")}

@@ -51,6 +51,8 @@
       "maxQr": "Max QR codes (-1 = unlimited)",
       "maxDynamic": "Max dynamic QR codes (-1 = unlimited)",
       "maxScans": "Scans per month (-1 = unlimited)",
+      "maxStorage": "Storage in MB (-1 = unlimited)",
+      "video": "Hosted videos",
       "formats": "Export formats",
       "statsLevel": "Analytics level",
       "statsBasic": "Basic",

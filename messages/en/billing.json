@@ -18,6 +18,7 @@
     "qrCodes": "QR codes",
     "dynamic": "Dynamic QR codes",
     "scansMonth": "Scans (last 30 days)",
+    "storage": "Storage (MB)",
     "of": "{used} / {limit}",
     "unlimited": "{used} / Unlimited"
   },
@@ -33,6 +34,9 @@
       "dynamicUnlimited": "Unlimited dynamic QR codes",
       "scans": "{count} scans / month",
       "scansUnlimited": "Unlimited scans",
+      "storage": "{count} MB of storage",
+      "storageUnlimited": "Unlimited storage",
+      "videoHosting": "Hosted videos",
       "formats": "{formats} export",
       "logo": "Logo on QR codes",
       "statsFull": "Detailed analytics",

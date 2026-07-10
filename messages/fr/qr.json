@@ -38,7 +38,9 @@
     "addItem": "Ajouter",
     "chooseFile": "Cliquez pour choisir un fichier",
     "uploading": "Envoi en cours…",
-    "uploadError": "Échec de l'envoi du fichier. Réessayez."
+    "uploadError": "Échec de l'envoi du fichier. Réessayez.",
+    "storageQuota": "Quota de stockage de votre plan atteint ({limit} Mo). Supprimez des fichiers ou passez au plan supérieur.",
+    "videoLocked": "L'hébergement de vidéos est réservé au plan supérieur."
   },
   "customize": {
     "fgColor": "Couleur du QR code",

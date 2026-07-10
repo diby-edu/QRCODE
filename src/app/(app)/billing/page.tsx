@@ -37,7 +37,7 @@ export default async function BillingPage({
     data: { user },
   } = await supabase.auth.getUser();
 
-  const [userPlan, { count: totalQr }, { count: dynamicQr }, days, { data: plansRaw }, { data: paymentsRaw }] =
+  const [userPlan, { count: totalQr }, { count: dynamicQr }, { data: storageBytes }, days, { data: plansRaw }, { data: paymentsRaw }] =
     await Promise.all([
       getUserPlan(supabase, user!.id),
       supabase.from("qr_codes").select("id", { count: "exact", head: true }),
@@ -45,6 +45,7 @@ export default async function BillingPage({
         .from("qr_codes")
         .select("id", { count: "exact", head: true })
         .eq("is_dynamic", true),
+      supabase.rpc("user_storage_bytes"),
       fetchScansPerDay(supabase, 30),
       supabase
         .from("plans")
@@ -65,6 +66,7 @@ export default async function BillingPage({
     "id" | "amount" | "currency" | "status" | "created_at"
   >[];
   const scans30d = days.reduce((sum, d) => sum + d.scans, 0);
+  const storageMb = Math.round((Number(storageBytes ?? 0) / 1024 / 1024) * 10) / 10;
 
   const bannerStyles: Record<Exclude<Banner, null>, string> = {
     success: "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
@@ -134,6 +136,12 @@ export default async function BillingPage({
             label={t("usage.scansMonth")}
             used={scans30d}
             limit={limits.max_scans_month}
+            locale={locale}
+          />
+          <UsageMeter
+            label={t("usage.storage")}
+            used={storageMb}
+            limit={limits.max_storage_mb}
             locale={locale}
           />
         </div>

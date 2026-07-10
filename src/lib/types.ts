@@ -20,7 +20,9 @@ export interface PlanLimits {
   max_qr_codes: number; // -1 = unlimited
   max_dynamic: number;
   max_scans_month: number;
+  max_storage_mb: number; // fichiers uploadés (photos, vidéos, PDF…)
   logo_enabled: boolean;
+  video_enabled: boolean; // hébergement de fichiers vidéo
   formats: string[]; // ["png"] | ["png","svg","pdf"]
   stats_level: "basic" | "full";
   folders_enabled: boolean;

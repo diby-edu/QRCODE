@@ -232,3 +232,39 @@ export async function moveQrToFolder(id: string, folderId: string | null) {
   await supabase.from("qr_codes").update({ folder_id: folderId }).eq("id", id);
   revalidatePath("/qr");
 }
+
+export type UploadCheck =
+  | { ok: true }
+  | { ok: false; error: "video" }
+  | { ok: false; error: "storage"; limitMb: number };
+
+/**
+ * Vérifie le quota de stockage et le droit vidéo du plan AVANT que le
+ * navigateur n'envoie les fichiers vers Supabase Storage.
+ */
+export async function checkUpload(
+  totalBytes: number,
+  hasVideo: boolean
+): Promise<UploadCheck> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "storage", limitMb: 0 };
+
+  const { limits } = await getUserPlan(supabase, user.id);
+
+  if (hasVideo && !limits.video_enabled) {
+    return { ok: false, error: "video" };
+  }
+
+  if (!isUnlimited(limits.max_storage_mb)) {
+    const { data: usedBytes } = await supabase.rpc("user_storage_bytes");
+    const quotaBytes = limits.max_storage_mb * 1024 * 1024;
+    if (Number(usedBytes ?? 0) + Math.max(totalBytes, 0) > quotaBytes) {
+      return { ok: false, error: "storage", limitMb: limits.max_storage_mb };
+    }
+  }
+
+  return { ok: true };
+}

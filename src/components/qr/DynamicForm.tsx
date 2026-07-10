@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import type { FieldDef, LString } from "@/lib/qr-types/registry";
+import { checkUpload } from "@/app/(app)/qr/actions";
 
 type Data = Record<string, unknown>;
 
@@ -167,6 +169,12 @@ function Labeled({
 // Upload de fichiers vers Supabase Storage (bucket "uploads")
 // ------------------------------------------------------------------
 
+type UploadError =
+  | null
+  | { type: "generic" }
+  | { type: "video" }
+  | { type: "storage"; limitMb: number };
+
 function FileField({
   field,
   value,
@@ -178,7 +186,7 @@ function FileField({
 }) {
   const t = useTranslations("qr");
   const [uploading, setUploading] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<UploadError>(null);
 
   const urls: string[] = field.multiple
     ? Array.isArray(value)
@@ -191,25 +199,41 @@ function FileField({
   async function handleFiles(files: FileList | null) {
     if (!files || files.length === 0) return;
     setUploading(true);
-    setError(false);
+    setError(null);
+
+    // Quota de stockage + droit vidéo du plan, vérifiés avant l'envoi
+    const list = Array.from(files);
+    const totalBytes = list.reduce((sum, f) => sum + f.size, 0);
+    const hasVideo = list.some((f) => f.type.startsWith("video/"));
+    const check = await checkUpload(totalBytes, hasVideo);
+    if (!check.ok) {
+      setError(
+        check.error === "video"
+          ? { type: "video" }
+          : { type: "storage", limitMb: check.limitMb }
+      );
+      setUploading(false);
+      return;
+    }
+
     const supabase = createClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) {
       setUploading(false);
-      setError(true);
+      setError({ type: "generic" });
       return;
     }
     const uploaded: string[] = [];
-    for (const file of Array.from(files)) {
+    for (const file of list) {
       const ext = file.name.split(".").pop() ?? "bin";
       const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
       const { error: upErr } = await supabase.storage
         .from("uploads")
         .upload(path, file);
       if (upErr) {
-        setError(true);
+        setError({ type: "generic" });
         continue;
       }
       const { data } = supabase.storage.from("uploads").getPublicUrl(path);
@@ -226,6 +250,14 @@ function FileField({
       onChange(urls.filter((u) => u !== url));
     } else {
       onChange("");
+    }
+    // Libère réellement l'espace de stockage (le quota mesure les fichiers)
+    const path = url.split("/object/public/uploads/")[1];
+    if (path) {
+      createClient()
+        .storage.from("uploads")
+        .remove([decodeURIComponent(path)])
+        .catch(() => {});
     }
   }
 
@@ -248,7 +280,17 @@ function FileField({
         />
       </label>
       {error && (
-        <p className="text-xs text-red-600">{t("form.uploadError")}</p>
+        <p className="text-xs text-red-600">
+          {error.type === "generic" && t("form.uploadError")}
+          {error.type === "video" && t("form.videoLocked")}
+          {error.type === "storage" &&
+            t("form.storageQuota", { limit: error.limitMb })}{" "}
+          {error.type !== "generic" && (
+            <Link href="/billing" className="font-semibold underline">
+              {t("builder.upgradeCta")}
+            </Link>
+          )}
+        </p>
       )}
       {urls.length > 0 && (
         <ul className="space-y-1.5">
