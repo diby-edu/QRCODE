@@ -21,6 +21,7 @@
   },
   "table": {
     "title": "Latest scans",
+    "exportCsv": "Export CSV",
     "date": "Date",
     "location": "Location",
     "device": "Device",

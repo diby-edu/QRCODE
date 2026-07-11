@@ -6,6 +6,7 @@
     "plans": "Plans",
     "payments": "Payments",
     "qrcodes": "QR codes",
+    "activity": "Activity",
     "settings": "Settings",
     "backToApp": "Back to app"
   },
@@ -15,15 +16,18 @@
     "scans": "Total scans",
     "revenue": "Collected revenue",
     "chartTitle": "Scans over the last 30 days (whole platform)",
+    "revenueChartTitle": "Revenue over the last 30 days",
     "latestUsers": "Latest signups",
     "latestPayments": "Latest payments"
   },
   "users": {
     "searchPlaceholder": "Search by email or name…",
+    "allPlans": "All plans",
     "columns": {
       "user": "User",
       "plan": "Plan",
       "qrcodes": "QR codes",
+      "storage": "Storage",
       "joined": "Joined",
       "status": "Status"
     },
@@ -79,7 +83,22 @@
       "reference": "Reference",
       "status": "Status"
     },
-    "empty": "No payments recorded."
+    "empty": "No payments recorded.",
+    "refund": "Refund",
+    "confirmRefundTitle": "Mark this payment as refunded?",
+    "confirmRefundMessage": "Remember to actually process the refund with the customer (PayDunya or bank transfer) — this only updates the status here.",
+    "manualPayment": {
+      "cta": "Manual payment",
+      "title": "Record an offline payment",
+      "hint": "Bank transfer, cash… Activates the customer's subscription for 30 days immediately.",
+      "email": "Customer email",
+      "plan": "Plan",
+      "amount": "Amount (XOF)",
+      "note": "Note (optional)",
+      "notePlaceholder": "E.g.: transfer received on 07/10",
+      "saved": "Payment recorded, subscription activated.",
+      "userNotFound": "No account with this email."
+    }
   },
   "qrcodes": {
     "searchPlaceholder": "Search by title…",
@@ -116,6 +135,35 @@
       "privateKey": "Private Key",
       "publicKey": "Public Key",
       "token": "Token"
+    }
+  },
+  "activity": {
+    "subtitle": "History of actions performed by administrators.",
+    "empty": "No activity recorded yet.",
+    "columns": {
+      "date": "Date",
+      "admin": "Administrator",
+      "action": "Action",
+      "target": "Target",
+      "details": "Details"
+    },
+    "actions": {
+      "user.suspend": "User suspended",
+      "user.unsuspend": "User reactivated",
+      "user.promote": "Promoted to administrator",
+      "user.demote": "Administrator rights removed",
+      "user.changePlan": "Plan changed",
+      "user.delete": "User deleted",
+      "plan.update": "Plan updated",
+      "plan.create": "Plan created",
+      "qr.activate": "QR code activated",
+      "qr.deactivate": "QR code deactivated",
+      "qr.edit": "QR code edited",
+      "qr.delete": "QR code deleted",
+      "payment.refund": "Payment refunded",
+      "payment.manual": "Manual payment recorded",
+      "settings.update": "Site settings updated",
+      "settings.paydunya": "PayDunya configuration updated"
     }
   },
   "errors": {

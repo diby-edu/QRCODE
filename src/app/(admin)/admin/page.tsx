@@ -1,10 +1,11 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
-import { fetchScansPerDay } from "@/lib/stats";
+import { fetchRevenuePerDay, fetchScansPerDay } from "@/lib/stats";
 import { formatDate, formatDateTime, formatMoney, formatNumber } from "@/lib/utils";
 import type { Payment, Profile } from "@/lib/types";
 import { StatTile } from "@/components/stats/StatTile";
 import { ScansAreaChart } from "@/components/stats/ScansAreaChart";
+import { RevenueAreaChart } from "@/components/stats/RevenueAreaChart";
 
 export default async function AdminOverviewPage() {
   const t = await getTranslations("admin.overview");
@@ -18,6 +19,7 @@ export default async function AdminOverviewPage() {
     { data: totalScans },
     { data: revenue },
     days,
+    revenueDays,
     { data: latestUsersRaw },
     { data: latestPaymentsRaw },
   ] = await Promise.all([
@@ -26,6 +28,7 @@ export default async function AdminOverviewPage() {
     supabase.rpc("total_scan_count"),
     supabase.rpc("total_revenue"),
     fetchScansPerDay(supabase, 30),
+    fetchRevenuePerDay(supabase, 30),
     supabase
       .from("profiles")
       .select("id, email, full_name, created_at")
@@ -66,15 +69,27 @@ export default async function AdminOverviewPage() {
         />
       </div>
 
-      <div className="card mt-6 p-6">
-        <h2 className="mb-4 text-base font-semibold text-slate-900">
-          {t("chartTitle")}
-        </h2>
-        {scans30d === 0 ? (
-          <p className="py-12 text-center text-sm text-slate-400">—</p>
-        ) : (
-          <ScansAreaChart data={days} locale={locale} />
-        )}
+      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div className="card p-6">
+          <h2 className="mb-4 text-base font-semibold text-slate-900">
+            {t("chartTitle")}
+          </h2>
+          {scans30d === 0 ? (
+            <p className="py-12 text-center text-sm text-slate-400">—</p>
+          ) : (
+            <ScansAreaChart data={days} locale={locale} />
+          )}
+        </div>
+        <div className="card p-6">
+          <h2 className="mb-4 text-base font-semibold text-slate-900">
+            {t("revenueChartTitle")}
+          </h2>
+          {revenueDays.every((d) => d.amount === 0) ? (
+            <p className="py-12 text-center text-sm text-slate-400">—</p>
+          ) : (
+            <RevenueAreaChart data={revenueDays} locale={locale} />
+          )}
+        </div>
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">

@@ -5,6 +5,11 @@ export interface DayPoint {
   scans: number;
 }
 
+export interface RevenueDayPoint {
+  day: string;
+  amount: number;
+}
+
 export interface BreakdownItem {
   label: string;
   count: number;
@@ -41,6 +46,18 @@ export async function fetchScansPerDay(
   return ((data ?? []) as { day: string; scans: number }[]).map((r) => ({
     day: r.day,
     scans: Number(r.scans),
+  }));
+}
+
+/** Revenus (paiements complétés) par jour — RLS de payments (admin voit tout). */
+export async function fetchRevenuePerDay(
+  supabase: SupabaseClient,
+  days = 30
+): Promise<RevenueDayPoint[]> {
+  const { data } = await supabase.rpc("revenue_per_day", { p_days: days });
+  return ((data ?? []) as { day: string; amount: number }[]).map((r) => ({
+    day: r.day,
+    amount: Number(r.amount),
   }));
 }
 

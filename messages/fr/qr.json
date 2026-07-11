@@ -87,6 +87,11 @@
     "allTypes": "Tous les types",
     "allStatuses": "Tous les statuts",
     "allFolders": "Tous les dossiers",
+    "exportCsv": "Exporter CSV",
+    "selectAll": "Tout sélectionner",
+    "selectedCount": "{count, plural, one {# sélectionné} other {# sélectionnés}}",
+    "moveToFolder": "Déplacer vers…",
+    "confirmBulkDelete": "{count, plural, one {Supprimer ce QR code ?} other {Supprimer ces # QR codes ?}} Cette action est définitive.",
     "columns": {
       "name": "Nom",
       "type": "Type",

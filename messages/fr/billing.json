@@ -56,7 +56,8 @@
       "completed": "Payé",
       "pending": "En attente",
       "failed": "Échoué",
-      "cancelled": "Annulé"
+      "cancelled": "Annulé",
+      "refunded": "Remboursé"
     }
   },
   "errors": {

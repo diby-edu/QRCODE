@@ -248,6 +248,26 @@ export async function moveQrToFolder(id: string, folderId: string | null) {
   revalidatePath("/qr");
 }
 
+/** Actions groupées depuis la liste (sélection multiple) — RLS scope déjà
+ * le "in" aux QR du user courant, pas besoin de re-vérifier user_id ici. */
+export async function bulkDeleteQr(ids: string[]): Promise<void> {
+  if (ids.length === 0) return;
+  const supabase = await createClient();
+  await supabase.from("qr_codes").delete().in("id", ids);
+  revalidatePath("/qr");
+  revalidatePath("/dashboard");
+}
+
+export async function bulkMoveToFolder(
+  ids: string[],
+  folderId: string | null
+): Promise<void> {
+  if (ids.length === 0) return;
+  const supabase = await createClient();
+  await supabase.from("qr_codes").update({ folder_id: folderId }).in("id", ids);
+  revalidatePath("/qr");
+}
+
 export type UploadCheck =
   | { ok: true }
   | { ok: false; error: "auth" }

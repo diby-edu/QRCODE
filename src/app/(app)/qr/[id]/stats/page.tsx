@@ -187,9 +187,16 @@ export default async function QrStatsPage({
 
           {/* Derniers scans */}
           <div className="card mt-6 overflow-hidden">
-            <h2 className="px-6 pt-6 text-base font-semibold text-slate-900">
-              {t("table.title")}
-            </h2>
+            <div className="flex items-center justify-between px-6 pt-6">
+              <h2 className="text-base font-semibold text-slate-900">
+                {t("table.title")}
+              </h2>
+              {recentScans.length > 0 && (
+                <a href={`/api/export/scans/${qr.id}`} className="btn-secondary btn-sm">
+                  ⬇ {t("table.exportCsv")}
+                </a>
+              )}
+            </div>
             {recentScans.length === 0 ? (
               <p className="px-6 py-10 text-center text-sm text-slate-400">
                 {t("table.empty")}

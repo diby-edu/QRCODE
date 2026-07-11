@@ -21,7 +21,25 @@ async function requireAdmin() {
     .select("role")
     .eq("id", user.id)
     .single();
-  return profile?.role === "admin" ? { supabase, userId: user.id } : null;
+  return profile?.role === "admin"
+    ? { supabase, userId: user.id, email: user.email ?? null }
+    : null;
+}
+
+/** Trace une action admin dans admin_activity_log (visible sur /admin/activity). */
+async function logAction(
+  ctx: { supabase: Awaited<ReturnType<typeof createClient>>; userId: string; email: string | null },
+  action: string,
+  target?: string,
+  details?: Record<string, unknown>
+) {
+  await ctx.supabase.from("admin_activity_log").insert({
+    admin_id: ctx.userId,
+    admin_email: ctx.email,
+    action,
+    target: target ?? null,
+    details: details ?? {},
+  });
 }
 
 // ------------------------------------------------------------ Utilisateurs
@@ -39,6 +57,7 @@ export async function setUserSuspended(
     .update({ is_suspended: suspended })
     .eq("id", userId);
   if (error) return { error: "generic" };
+  await logAction(ctx, suspended ? "user.suspend" : "user.unsuspend", userId);
   revalidatePath("/admin/users");
 }
 
@@ -55,6 +74,7 @@ export async function setUserRole(
     .update({ role })
     .eq("id", userId);
   if (error) return { error: "generic" };
+  await logAction(ctx, role === "admin" ? "user.promote" : "user.demote", userId);
   revalidatePath("/admin/users");
 }
 
@@ -67,7 +87,7 @@ export async function setUserPlan(
 
   const { data: plan } = await ctx.supabase
     .from("plans")
-    .select("id, price_monthly")
+    .select("id, name, price_monthly")
     .eq("id", planId)
     .single();
   if (!plan) return { error: "generic" };
@@ -95,6 +115,7 @@ export async function setUserPlan(
     gateway: "admin",
   });
   if (error) return { error: "generic" };
+  await logAction(ctx, "user.changePlan", userId, { plan: plan.name });
   revalidatePath("/admin/users");
 }
 
@@ -107,6 +128,7 @@ export async function deleteUser(userId: string): Promise<AdminActionResult> {
   const admin = createAdminClient();
   const { error } = await admin.auth.admin.deleteUser(userId);
   if (error) return { error: "generic" };
+  await logAction(ctx, "user.delete", userId);
   revalidatePath("/admin/users");
 }
 
@@ -163,6 +185,10 @@ export async function savePlan(
     : await ctx.supabase.from("plans").insert(row);
   if (error) return { error: "generic" };
 
+  await logAction(ctx, planId ? "plan.update" : "plan.create", planId ?? row.name, {
+    name: row.name,
+    price_monthly: row.price_monthly,
+  });
   revalidatePath("/admin/plans");
   revalidatePath("/billing");
 }
@@ -182,6 +208,7 @@ export async function adminToggleQr(
     .update({ is_active: isActive })
     .eq("id", id);
   if (error) return { error: "generic" };
+  await logAction(ctx, isActive ? "qr.activate" : "qr.deactivate", id);
   revalidatePath("/admin/qrcodes");
 }
 
@@ -228,6 +255,7 @@ export async function adminUpdateQrCode(
     .upsert({ qr_code_id: id, data: payload.data }, { onConflict: "qr_code_id" });
   if (dataError) return { error: "generic" };
 
+  await logAction(ctx, "qr.edit", id, { title });
   revalidatePath("/admin/qrcodes");
   revalidatePath(`/admin/qrcodes/${id}`);
 }
@@ -238,7 +266,104 @@ export async function adminDeleteQr(id: string): Promise<AdminActionResult> {
 
   const { error } = await ctx.supabase.from("qr_codes").delete().eq("id", id);
   if (error) return { error: "generic" };
+  await logAction(ctx, "qr.delete", id);
   revalidatePath("/admin/qrcodes");
+}
+
+// ------------------------------------------------------------ Paiements
+
+export async function refundPayment(paymentId: string): Promise<AdminActionResult> {
+  const ctx = await requireAdmin();
+  if (!ctx) return { error: "forbidden" };
+
+  const admin = createAdminClient();
+  const { data: payment } = await admin
+    .from("payments")
+    .select("id, status")
+    .eq("id", paymentId)
+    .single();
+  if (!payment || payment.status !== "completed") return { error: "generic" };
+
+  const { error } = await admin
+    .from("payments")
+    .update({ status: "refunded" })
+    .eq("id", paymentId);
+  if (error) return { error: "generic" };
+
+  await logAction(ctx, "payment.refund", paymentId);
+  revalidatePath("/admin/payments");
+}
+
+export interface ManualPaymentPayload {
+  email: string;
+  planId: string;
+  amount: number;
+  note: string;
+}
+
+/**
+ * Enregistre un paiement hors-ligne (virement bancaire, espèces…) et active
+ * l'abonnement correspondant — même logique d'activation que verifyAndActivate
+ * pour PayDunya, mais déclenchée manuellement par un admin.
+ */
+export async function recordManualPayment(
+  payload: ManualPaymentPayload
+): Promise<AdminActionResult> {
+  const ctx = await requireAdmin();
+  if (!ctx) return { error: "forbidden" };
+
+  const email = payload.email.trim().toLowerCase();
+  const amount = Math.max(Number(payload.amount) || 0, 0);
+  if (!email || !payload.planId || amount <= 0) return { error: "generic" };
+
+  const admin = createAdminClient();
+  const [{ data: profile }, { data: plan }] = await Promise.all([
+    admin.from("profiles").select("id").eq("email", email).maybeSingle(),
+    admin.from("plans").select("id, name, price_monthly").eq("id", payload.planId).single(),
+  ]);
+  if (!profile) return { error: "userNotFound" };
+  if (!plan) return { error: "generic" };
+
+  await admin
+    .from("subscriptions")
+    .update({ status: "cancelled" })
+    .eq("user_id", profile.id)
+    .eq("status", "active");
+
+  const periodEnd = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+  const { data: sub, error: subError } = await admin
+    .from("subscriptions")
+    .insert({
+      user_id: profile.id,
+      plan_id: plan.id,
+      status: "active",
+      current_period_start: new Date().toISOString(),
+      current_period_end: periodEnd,
+      gateway: "manual",
+    })
+    .select("id")
+    .single();
+  if (subError) return { error: "generic" };
+
+  const { error: paymentError } = await admin.from("payments").insert({
+    user_id: profile.id,
+    subscription_id: sub?.id ?? null,
+    gateway: "manual",
+    gateway_ref: null,
+    amount,
+    currency: "XOF",
+    status: "completed",
+    raw_response: { note: payload.note.trim(), recorded_by: ctx.email },
+  });
+  if (paymentError) return { error: "generic" };
+
+  await logAction(ctx, "payment.manual", profile.id, {
+    plan: plan.name,
+    amount,
+    note: payload.note.trim(),
+  });
+  revalidatePath("/admin/payments");
+  revalidatePath("/admin/users");
 }
 
 // ------------------------------------------------------------ Paramètres
@@ -264,6 +389,7 @@ export async function saveSiteSettings(
     .from("site_settings")
     .upsert(entries, { onConflict: "key" });
   if (error) return { error: "generic" };
+  await logAction(ctx, "settings.update");
   revalidatePath("/admin/settings");
 }
 
@@ -280,5 +406,6 @@ export async function savePaydunyaSettings(
     token: config.token.trim(),
     mode: config.mode === "live" ? "live" : "test",
   });
+  await logAction(ctx, "settings.paydunya", undefined, { mode: config.mode });
   revalidatePath("/admin/settings");
 }

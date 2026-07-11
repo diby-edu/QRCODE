@@ -87,6 +87,11 @@
     "allTypes": "All types",
     "allStatuses": "All statuses",
     "allFolders": "All folders",
+    "exportCsv": "Export CSV",
+    "selectAll": "Select all",
+    "selectedCount": "{count, plural, one {# selected} other {# selected}}",
+    "moveToFolder": "Move to…",
+    "confirmBulkDelete": "{count, plural, one {Delete this QR code?} other {Delete these # QR codes?}} This cannot be undone.",
     "columns": {
       "name": "Name",
       "type": "Type",

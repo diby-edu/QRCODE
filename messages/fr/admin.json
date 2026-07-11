@@ -6,6 +6,7 @@
     "plans": "Plans",
     "payments": "Paiements",
     "qrcodes": "QR codes",
+    "activity": "Activité",
     "settings": "Paramètres",
     "backToApp": "Retour à l'application"
   },
@@ -15,15 +16,18 @@
     "scans": "Scans totaux",
     "revenue": "Revenus encaissés",
     "chartTitle": "Scans des 30 derniers jours (toute la plateforme)",
+    "revenueChartTitle": "Revenus des 30 derniers jours",
     "latestUsers": "Derniers inscrits",
     "latestPayments": "Derniers paiements"
   },
   "users": {
     "searchPlaceholder": "Rechercher par email ou nom…",
+    "allPlans": "Tous les plans",
     "columns": {
       "user": "Utilisateur",
       "plan": "Plan",
       "qrcodes": "QR codes",
+      "storage": "Stockage",
       "joined": "Inscrit le",
       "status": "Statut"
     },
@@ -79,7 +83,22 @@
       "reference": "Référence",
       "status": "Statut"
     },
-    "empty": "Aucun paiement enregistré."
+    "empty": "Aucun paiement enregistré.",
+    "refund": "Rembourser",
+    "confirmRefundTitle": "Marquer ce paiement comme remboursé ?",
+    "confirmRefundMessage": "N'oubliez pas d'effectuer le remboursement réel auprès du client (PayDunya ou virement) — cette action met seulement à jour le statut ici.",
+    "manualPayment": {
+      "cta": "Paiement manuel",
+      "title": "Enregistrer un paiement hors-ligne",
+      "hint": "Virement bancaire, espèces… Active immédiatement l'abonnement du client pour 30 jours.",
+      "email": "Email du client",
+      "plan": "Plan",
+      "amount": "Montant (FCFA)",
+      "note": "Note (optionnelle)",
+      "notePlaceholder": "Ex. : virement reçu le 10/07",
+      "saved": "Paiement enregistré, abonnement activé.",
+      "userNotFound": "Aucun compte avec cet email."
+    }
   },
   "qrcodes": {
     "searchPlaceholder": "Rechercher par titre…",
@@ -116,6 +135,35 @@
       "privateKey": "Private Key",
       "publicKey": "Public Key",
       "token": "Token"
+    }
+  },
+  "activity": {
+    "subtitle": "Historique des actions effectuées par les administrateurs.",
+    "empty": "Aucune activité enregistrée pour l'instant.",
+    "columns": {
+      "date": "Date",
+      "admin": "Administrateur",
+      "action": "Action",
+      "target": "Cible",
+      "details": "Détails"
+    },
+    "actions": {
+      "user.suspend": "Utilisateur suspendu",
+      "user.unsuspend": "Utilisateur réactivé",
+      "user.promote": "Promu administrateur",
+      "user.demote": "Droits administrateur retirés",
+      "user.changePlan": "Plan changé",
+      "user.delete": "Utilisateur supprimé",
+      "plan.update": "Plan modifié",
+      "plan.create": "Plan créé",
+      "qr.activate": "QR code activé",
+      "qr.deactivate": "QR code désactivé",
+      "qr.edit": "QR code modifié",
+      "qr.delete": "QR code supprimé",
+      "payment.refund": "Paiement remboursé",
+      "payment.manual": "Paiement manuel enregistré",
+      "settings.update": "Paramètres du site modifiés",
+      "settings.paydunya": "Configuration PayDunya modifiée"
     }
   },
   "errors": {

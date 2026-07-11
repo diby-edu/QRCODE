@@ -70,5 +70,18 @@
     "madeWith": "QR codes dynamiques pour l'Afrique et le monde."
   },
   "scans": "{count, plural, =0 {Aucun scan} one {# scan} other {# scans}}",
-  "unlimited": "Illimité"
+  "unlimited": "Illimité",
+  "notifications": {
+    "labels": {
+      "qrCodes": "QR codes",
+      "dynamicQr": "QR dynamiques",
+      "scans": "Scans mensuels",
+      "storage": "Stockage"
+    },
+    "limitApproaching": "Vous approchez de votre limite « {label} ».",
+    "limitReached": "Vous avez atteint votre limite « {label} ».",
+    "upgrade": "Passer au plan supérieur",
+    "expiringSoon": "{days, plural, =0 {Votre abonnement expire aujourd'hui.} one {Votre abonnement expire dans # jour.} other {Votre abonnement expire dans # jours.}}",
+    "renew": "Renouveler"
+  }
 }

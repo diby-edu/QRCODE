@@ -2,6 +2,8 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { formatDateTime, formatMoney } from "@/lib/utils";
 import type { Payment } from "@/lib/types";
+import { ManualPaymentForm } from "@/components/admin/ManualPaymentForm";
+import { PaymentRowActions } from "@/components/admin/PaymentRowActions";
 
 export default async function AdminPaymentsPage() {
   const t = await getTranslations("admin.payments");
@@ -10,16 +12,24 @@ export default async function AdminPaymentsPage() {
   const locale = await getLocale();
   const supabase = await createClient();
 
-  const { data: paymentsRaw } = await supabase
-    .from("payments")
-    .select("id, user_id, gateway, gateway_ref, amount, currency, status, created_at")
-    .order("created_at", { ascending: false })
-    .limit(200);
+  const [{ data: paymentsRaw }, { data: plansRaw }] = await Promise.all([
+    supabase
+      .from("payments")
+      .select("id, user_id, gateway, gateway_ref, amount, currency, status, created_at")
+      .order("created_at", { ascending: false })
+      .limit(200),
+    supabase
+      .from("plans")
+      .select("id, name, price_monthly")
+      .eq("is_active", true)
+      .order("sort_order"),
+  ]);
 
   const payments = (paymentsRaw ?? []) as Pick<
     Payment,
     "id" | "user_id" | "gateway" | "gateway_ref" | "amount" | "currency" | "status" | "created_at"
   >[];
+  const plans = (plansRaw ?? []) as { id: string; name: string; price_monthly: number }[];
 
   // Emails des payeurs (pas de FK profiles↔payments : jointure applicative)
   const userIds = [...new Set(payments.map((p) => p.user_id))];
@@ -32,7 +42,11 @@ export default async function AdminPaymentsPage() {
 
   return (
     <div className="animate-fade-up">
-      <h1 className="mb-6 text-2xl font-bold text-slate-900">{tNav("payments")}</h1>
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-2xl font-bold text-slate-900">{tNav("payments")}</h1>
+        {plans.length > 0 && <ManualPaymentForm plans={plans} />}
+      </div>
+
       <div className="card overflow-hidden">
       {payments.length === 0 ? (
         <p className="px-6 py-10 text-center text-sm text-slate-400">{t("empty")}</p>
@@ -47,6 +61,7 @@ export default async function AdminPaymentsPage() {
                 <th className="px-4 py-3 font-medium">{t("columns.gateway")}</th>
                 <th className="px-4 py-3 font-medium">{t("columns.reference")}</th>
                 <th className="px-4 py-3 font-medium">{t("columns.status")}</th>
+                <th className="px-4 py-3" />
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -78,11 +93,16 @@ export default async function AdminPaymentsPage() {
                             ? "badge-green"
                             : p.status === "pending"
                               ? "badge-amber"
-                              : "badge-red"
+                              : p.status === "refunded"
+                                ? "badge-gray"
+                                : "badge-red"
                         }
                       >
                         {tb(p.status)}
                       </span>
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      {p.status === "completed" && <PaymentRowActions paymentId={p.id} />}
                     </td>
                   </tr>
                 );

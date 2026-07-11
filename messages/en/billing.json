@@ -56,7 +56,8 @@
       "completed": "Paid",
       "pending": "Pending",
       "failed": "Failed",
-      "cancelled": "Cancelled"
+      "cancelled": "Cancelled",
+      "refunded": "Refunded"
     }
   },
   "errors": {

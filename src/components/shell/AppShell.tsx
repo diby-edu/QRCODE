@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { LogoIcon } from "@/components/brand/Logo";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { NotificationBanner } from "./NotificationBanner";
 import { signOut } from "@/app/auth/actions";
 
 const NAV_ICONS: Record<string, React.ReactNode> = {
@@ -54,11 +55,21 @@ export interface ShellUser {
   isAdmin: boolean;
 }
 
+export interface AppNotification {
+  id: string;
+  level: "warning" | "info";
+  message: string;
+  href?: string;
+  cta?: string;
+}
+
 export function AppShell({
   user,
+  notifications = [],
   children,
 }: {
   user: ShellUser;
+  notifications?: AppNotification[];
   children: React.ReactNode;
 }) {
   const t = useTranslations("common");
@@ -196,7 +207,10 @@ export function AppShell({
             </Link>
           </div>
         </header>
-        <main className="flex-1 px-4 py-6 lg:px-8 lg:py-8">{children}</main>
+        <main className="flex-1 px-4 py-6 lg:px-8 lg:py-8">
+          <NotificationBanner notifications={notifications} />
+          {children}
+        </main>
       </div>
     </div>
   );

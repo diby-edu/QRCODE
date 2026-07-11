@@ -21,6 +21,7 @@
   },
   "table": {
     "title": "Derniers scans",
+    "exportCsv": "Exporter CSV",
     "date": "Date",
     "location": "Localisation",
     "device": "Appareil",

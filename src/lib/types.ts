@@ -3,7 +3,7 @@
 
 export type Role = "user" | "admin";
 export type SubscriptionStatus = "active" | "expired" | "cancelled";
-export type PaymentStatus = "pending" | "completed" | "failed" | "cancelled";
+export type PaymentStatus = "pending" | "completed" | "failed" | "cancelled" | "refunded";
 
 export interface Profile {
   id: string;
