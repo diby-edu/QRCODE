@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getQrType } from "@/lib/qr-types/registry";
@@ -5,13 +6,18 @@ import { formatDate, formatNumber } from "@/lib/utils";
 import type { QrCode } from "@/lib/types";
 import { AdminSearch } from "@/components/admin/AdminSearch";
 import { QrRowActions } from "@/components/admin/QrRowActions";
+import { readSort, SortHeader } from "@/components/ui/SortHeader";
+
+const SORT_COLUMNS = ["title", "type", "scan_count", "created_at"] as const;
 
 export default async function AdminQrCodesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string }>;
+  searchParams: Promise<{ q?: string; sort?: string; dir?: string }>;
 }) {
-  const { q = "" } = await searchParams;
+  const params = await searchParams;
+  const { q = "" } = params;
+  const { field: sortField, dir: sortDir } = readSort(params, SORT_COLUMNS, "created_at");
   const t = await getTranslations("admin.qrcodes");
   const tNav = await getTranslations("admin.nav");
   const tc = await getTranslations("common");
@@ -21,7 +27,7 @@ export default async function AdminQrCodesPage({
   let query = supabase
     .from("qr_codes")
     .select("id, user_id, type, title, is_dynamic, is_active, scan_count, created_at")
-    .order("created_at", { ascending: false })
+    .order(sortField, { ascending: sortDir === "asc" })
     .limit(200);
   if (q) query = query.ilike("title", `%${q}%`);
 
@@ -54,12 +60,14 @@ export default async function AdminQrCodesPage({
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50/60 text-left text-xs uppercase tracking-wide text-slate-400">
-                  <th className="px-6 py-3 font-medium">{t("columns.title")}</th>
+                  <SortHeader field="title" className="px-6">
+                    {t("columns.title")}
+                  </SortHeader>
                   <th className="px-4 py-3 font-medium">{t("columns.owner")}</th>
-                  <th className="px-4 py-3 font-medium">{t("columns.type")}</th>
-                  <th className="px-4 py-3 font-medium">{t("columns.scans")}</th>
+                  <SortHeader field="type">{t("columns.type")}</SortHeader>
+                  <SortHeader field="scan_count">{t("columns.scans")}</SortHeader>
                   <th className="px-4 py-3 font-medium">{t("columns.status")}</th>
-                  <th className="px-4 py-3 font-medium">{t("columns.created")}</th>
+                  <SortHeader field="created_at">{t("columns.created")}</SortHeader>
                   <th className="px-4 py-3" />
                 </tr>
               </thead>
@@ -69,14 +77,17 @@ export default async function AdminQrCodesPage({
                   return (
                     <tr key={qr.id} className="text-slate-700 hover:bg-slate-50/60">
                       <td className="px-6 py-3.5">
-                        <div className="flex items-center gap-2.5">
+                        <Link
+                          href={`/admin/qrcodes/${qr.id}`}
+                          className="flex items-center gap-2.5 hover:text-indigo-700"
+                        >
                           <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-sm">
                             {qtype?.icon ?? "🔳"}
                           </span>
                           <span className="max-w-52 truncate font-semibold text-slate-800">
                             {qr.title}
                           </span>
-                        </div>
+                        </Link>
                       </td>
                       <td className="px-4 py-3.5">
                         <span className="block max-w-44 truncate text-slate-500">

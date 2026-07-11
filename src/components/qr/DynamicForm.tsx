@@ -19,10 +19,13 @@ export function DynamicForm({
   fields,
   data,
   onChange,
+  readOnlyFiles = false,
 }: {
   fields: FieldDef[];
   data: Data;
   onChange: (patch: Data) => void;
+  /** Admin éditant le QR d'un autre utilisateur : fichiers affichés, pas modifiables (évite d'appliquer le quota du plan de l'admin). */
+  readOnlyFiles?: boolean;
 }) {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -35,6 +38,7 @@ export function DynamicForm({
             field={field}
             value={data[field.name]}
             onChange={(v) => onChange({ [field.name]: v })}
+            readOnlyFiles={readOnlyFiles}
           />
         </div>
       ))}
@@ -46,10 +50,12 @@ function Field({
   field,
   value,
   onChange,
+  readOnlyFiles = false,
 }: {
   field: FieldDef;
   value: unknown;
   onChange: (v: unknown) => void;
+  readOnlyFiles?: boolean;
 }) {
   const L = useL();
 
@@ -112,7 +118,11 @@ function Field({
     case "file":
       return (
         <Labeled field={field}>
-          <FileField field={field} value={value} onChange={onChange} />
+          {readOnlyFiles ? (
+            <ReadOnlyFiles field={field} value={value} />
+          ) : (
+            <FileField field={field} value={value} onChange={onChange} />
+          )}
         </Labeled>
       );
     case "list":
@@ -163,6 +173,39 @@ function Labeled({
         <p className="mt-1 text-xs text-slate-400">{L(field.hint)}</p>
       )}
     </div>
+  );
+}
+
+/** Affichage des fichiers d'un champ sans upload possible (édition admin). */
+function ReadOnlyFiles({ field, value }: { field: FieldDef; value: unknown }) {
+  const t = useTranslations("qr");
+  const urls: string[] = field.multiple
+    ? Array.isArray(value)
+      ? (value as string[])
+      : []
+    : typeof value === "string" && value
+      ? [value]
+      : [];
+
+  if (urls.length === 0) {
+    return <p className="text-xs text-slate-400">{t("form.noFile")}</p>;
+  }
+
+  return (
+    <ul className="space-y-1.5">
+      {urls.map((url) => (
+        <li key={url}>
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block truncate rounded-lg bg-slate-100 px-3 py-1.5 text-xs text-indigo-600 hover:underline"
+          >
+            {decodeURIComponent(url.split("/").pop() ?? url)}
+          </a>
+        </li>
+      ))}
+    </ul>
   );
 }
 

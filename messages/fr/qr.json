@@ -41,7 +41,8 @@
     "uploadError": "Échec de l'envoi du fichier. Réessayez.",
     "storageQuota": "Quota de stockage de votre plan atteint ({limit} Mo). Supprimez des fichiers ou passez au plan supérieur.",
     "videoLocked": "L'hébergement de vidéos est réservé au plan supérieur.",
-    "authError": "Votre session a expiré. Reconnectez-vous pour envoyer un fichier."
+    "authError": "Votre session a expiré. Reconnectez-vous pour envoyer un fichier.",
+    "noFile": "Aucun fichier."
   },
   "customize": {
     "fgColor": "Couleur du QR code",

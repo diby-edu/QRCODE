@@ -11,20 +11,27 @@ import {
   DeleteQrButton,
   DuplicateButton,
 } from "@/components/qr/qr-actions-ui";
+import { readSort, SortHeader } from "@/components/ui/SortHeader";
 
 interface QrListSearchParams {
   q?: string;
   type?: string;
   status?: string;
   folder?: string;
+  sort?: string;
+  dir?: string;
 }
+
+const SORT_COLUMNS = ["title", "type", "scan_count", "created_at"] as const;
 
 export default async function QrListPage({
   searchParams,
 }: {
   searchParams: Promise<QrListSearchParams>;
 }) {
-  const { q = "", type = "", status = "", folder = "" } = await searchParams;
+  const params = await searchParams;
+  const { q = "", type = "", status = "", folder = "" } = params;
+  const { field: sortField, dir: sortDir } = readSort(params, SORT_COLUMNS, "created_at");
   const t = await getTranslations("qr");
   const tc = await getTranslations("common");
   const locale = (await getLocale()) as "fr" | "en";
@@ -34,7 +41,7 @@ export default async function QrListPage({
   let query = supabase
     .from("qr_codes")
     .select("id, type, title, slug, is_dynamic, is_active, expires_at, scan_count, folder_id, created_at")
-    .order("created_at", { ascending: false });
+    .order(sortField, { ascending: sortDir === "asc" });
 
   if (q) query = query.ilike("title", `%${q}%`);
   if (type) query = query.eq("type", type);
@@ -104,11 +111,13 @@ export default async function QrListPage({
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50/60 text-left text-xs uppercase tracking-wide text-slate-400">
-                  <th className="px-6 py-3 font-medium">{t("list.columns.name")}</th>
-                  <th className="px-4 py-3 font-medium">{t("list.columns.type")}</th>
-                  <th className="px-4 py-3 font-medium">{t("list.columns.scans")}</th>
+                  <SortHeader field="title" className="px-6">
+                    {t("list.columns.name")}
+                  </SortHeader>
+                  <SortHeader field="type">{t("list.columns.type")}</SortHeader>
+                  <SortHeader field="scan_count">{t("list.columns.scans")}</SortHeader>
                   <th className="px-4 py-3 font-medium">{t("list.columns.status")}</th>
-                  <th className="px-4 py-3 font-medium">{t("list.columns.created")}</th>
+                  <SortHeader field="created_at">{t("list.columns.created")}</SortHeader>
                   <th className="px-4 py-3" />
                 </tr>
               </thead>

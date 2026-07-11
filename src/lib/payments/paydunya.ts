@@ -1,6 +1,7 @@
 // Passerelle PayDunya (Orange Money, MTN MoMo, Moov, Wave, cartes).
 // Docs : https://developers.paydunya.com — API "Checkout Invoice".
-// PAYDUNYA_MODE=test → API sandbox (paiements fictifs), live → production.
+// Mode test → API sandbox (paiements fictifs), live → production.
+// Clés éditables dans /admin/settings (voir ./config.ts).
 
 import { createHash } from "node:crypto";
 import type {
@@ -9,19 +10,20 @@ import type {
   PaymentGateway,
   VerifiedPayment,
 } from "./gateway";
+import { getPaydunyaConfig, type PaydunyaConfig } from "./config";
 
-function apiBase() {
-  return process.env.PAYDUNYA_MODE === "live"
+function apiBase(config: PaydunyaConfig) {
+  return config.mode === "live"
     ? "https://app.paydunya.com/api/v1"
     : "https://app.paydunya.com/sandbox-api/v1";
 }
 
-function apiHeaders() {
+function apiHeaders(config: PaydunyaConfig) {
   return {
     "Content-Type": "application/json",
-    "PAYDUNYA-MASTER-KEY": process.env.PAYDUNYA_MASTER_KEY ?? "",
-    "PAYDUNYA-PRIVATE-KEY": process.env.PAYDUNYA_PRIVATE_KEY ?? "",
-    "PAYDUNYA-TOKEN": process.env.PAYDUNYA_TOKEN ?? "",
+    "PAYDUNYA-MASTER-KEY": config.masterKey,
+    "PAYDUNYA-PRIVATE-KEY": config.privateKey,
+    "PAYDUNYA-TOKEN": config.token,
   };
 }
 
@@ -47,9 +49,10 @@ export const paydunya: PaymentGateway = {
   id: "paydunya",
 
   async createCheckout(req: CheckoutRequest): Promise<CheckoutSession> {
-    const res = await fetch(`${apiBase()}/checkout-invoice/create`, {
+    const config = await getPaydunyaConfig();
+    const res = await fetch(`${apiBase(config)}/checkout-invoice/create`, {
       method: "POST",
-      headers: apiHeaders(),
+      headers: apiHeaders(config),
       cache: "no-store",
       body: JSON.stringify({
         invoice: {
@@ -77,7 +80,7 @@ export const paydunya: PaymentGateway = {
       redirectUrl:
         json.response_text?.startsWith("http") === true
           ? json.response_text
-          : process.env.PAYDUNYA_MODE === "live"
+          : config.mode === "live"
             ? `https://paydunya.com/checkout/invoice/${json.token}`
             : `https://paydunya.com/sandbox-checkout/invoice/${json.token}`,
       reference: json.token,
@@ -85,9 +88,10 @@ export const paydunya: PaymentGateway = {
   },
 
   async verifyPayment(reference: string): Promise<VerifiedPayment> {
+    const config = await getPaydunyaConfig();
     const res = await fetch(
-      `${apiBase()}/checkout-invoice/confirm/${encodeURIComponent(reference)}`,
-      { headers: apiHeaders(), cache: "no-store" }
+      `${apiBase(config)}/checkout-invoice/confirm/${encodeURIComponent(reference)}`,
+      { headers: apiHeaders(config), cache: "no-store" }
     );
     const json = (await res.json()) as PayDunyaConfirmResponse;
 
@@ -116,11 +120,11 @@ export const paydunya: PaymentGateway = {
  * Vérifie le hash d'une notification IPN : PayDunya envoie
  * hash = SHA-512(master key). Rejette toute notification forgée.
  */
-export function verifyIpnHash(hash: string | null | undefined): boolean {
-  const masterKey = process.env.PAYDUNYA_MASTER_KEY;
-  if (!hash || !masterKey) return false;
+export async function verifyIpnHash(hash: string | null | undefined): Promise<boolean> {
+  const config = await getPaydunyaConfig();
+  if (!hash || !config.masterKey) return false;
   return (
-    createHash("sha512").update(masterKey).digest("hex").toLowerCase() ===
+    createHash("sha512").update(config.masterKey).digest("hex").toLowerCase() ===
     hash.toLowerCase()
   );
 }

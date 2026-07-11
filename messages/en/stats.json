@@ -1,5 +1,6 @@
 {
   "title": "Statistics",
+  "subtitle": "Overview of scans across all your QR codes.",
   "backToQr": "Back to QR code",
   "kpi": {
     "totalScans": "Total scans",
@@ -38,5 +39,14 @@
     "desktop": "Desktop",
     "mobile": "Mobile",
     "tablet": "Tablet"
+  },
+  "topQr": {
+    "title": "Most scanned QR codes",
+    "empty": "No dynamic QR codes yet.",
+    "scans": "scans"
+  },
+  "noDynamic": {
+    "title": "No dynamic QR codes",
+    "message": "Statistics only apply to dynamic QR codes. Create one to start tracking scans."
   }
 }

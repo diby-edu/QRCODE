@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import {
   deleteUser,
   setUserPlan,
+  setUserRole,
   setUserSuspended,
 } from "@/app/(admin)/admin/actions";
 
@@ -12,19 +13,23 @@ export function UserRowActions({
   userId,
   isSuspended,
   isSelf,
+  role,
   planId,
   plans,
 }: {
   userId: string;
   isSuspended: boolean;
   isSelf: boolean;
+  role: string;
   planId: string | null;
   plans: { id: string; name: string }[];
 }) {
   const t = useTranslations("admin.users.actions");
   const tc = useTranslations("common");
   const [confirming, setConfirming] = useState(false);
+  const [confirmingRole, setConfirmingRole] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const isAdmin = role === "admin";
 
   if (isSelf) return null;
 
@@ -69,11 +74,59 @@ export function UserRowActions({
       <button
         type="button"
         disabled={isPending}
+        className="btn-ghost btn-sm"
+        onClick={() => setConfirmingRole(true)}
+      >
+        {isAdmin ? t("demote") : t("promote")}
+      </button>
+
+      <button
+        type="button"
+        disabled={isPending}
         className="btn-ghost btn-sm text-red-600 hover:bg-red-50"
         onClick={() => setConfirming(true)}
       >
         {t("delete")}
       </button>
+
+      {confirmingRole && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-slate-900/40"
+            onClick={() => setConfirmingRole(false)}
+          />
+          <div className="card relative w-full max-w-sm p-6 animate-fade-up text-left">
+            <h3 className="text-base font-semibold text-slate-900">
+              {isAdmin ? t("confirmDemoteTitle") : t("confirmPromoteTitle")}
+            </h3>
+            <p className="mt-2 text-sm text-slate-500">
+              {isAdmin ? t("confirmDemoteMessage") : t("confirmPromoteMessage")}
+            </p>
+            <div className="mt-5 flex justify-end gap-2">
+              <button
+                type="button"
+                className="btn-secondary btn-sm"
+                onClick={() => setConfirmingRole(false)}
+              >
+                {tc("actions.cancel")}
+              </button>
+              <button
+                type="button"
+                disabled={isPending}
+                className="btn-primary btn-sm"
+                onClick={() =>
+                  startTransition(async () => {
+                    await setUserRole(userId, isAdmin ? "user" : "admin");
+                    setConfirmingRole(false);
+                  })
+                }
+              >
+                {isPending ? "…" : tc("actions.confirm")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {confirming && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">

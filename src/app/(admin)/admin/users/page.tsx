@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { formatDate, formatNumber } from "@/lib/utils";
 import { AdminSearch } from "@/components/admin/AdminSearch";
 import { UserRowActions } from "@/components/admin/UserRowActions";
+import { readSort, SortHeader } from "@/components/ui/SortHeader";
 
 interface AdminUserRow {
   id: string;
@@ -16,12 +17,16 @@ interface AdminUserRow {
   qr_count: number;
 }
 
+const SORT_COLUMNS = ["full_name", "plan_name", "qr_count", "created_at"] as const;
+
 export default async function AdminUsersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string }>;
+  searchParams: Promise<{ q?: string; sort?: string; dir?: string }>;
 }) {
-  const { q = "" } = await searchParams;
+  const params = await searchParams;
+  const { q = "" } = params;
+  const { field: sortField, dir: sortDir } = readSort(params, SORT_COLUMNS, "created_at");
   const t = await getTranslations("admin.users");
   const tNav = await getTranslations("admin.nav");
   const tc = await getTranslations("common");
@@ -37,7 +42,18 @@ export default async function AdminUsersPage({
     supabase.from("plans").select("id, name").eq("is_active", true).order("sort_order"),
   ]);
 
-  const users = (usersRaw ?? []) as AdminUserRow[];
+  // Le RPC trie par date d'inscription ; les autres tris se font ici même
+  // (jusqu'à 100 lignes, largement suffisant côté performance).
+  const users = ((usersRaw ?? []) as AdminUserRow[]).slice().sort((a, b) => {
+    const dir = sortDir === "asc" ? 1 : -1;
+    if (sortField === "qr_count") return (a.qr_count - b.qr_count) * dir;
+    if (sortField === "created_at") {
+      return (new Date(a.created_at).getTime() - new Date(b.created_at).getTime()) * dir;
+    }
+    const av = (sortField === "plan_name" ? a.plan_name : a.full_name || a.email) ?? "";
+    const bv = (sortField === "plan_name" ? b.plan_name : b.full_name || b.email) ?? "";
+    return av.localeCompare(bv) * dir;
+  });
   const plans = (plansRaw ?? []) as { id: string; name: string }[];
 
   return (
@@ -57,10 +73,12 @@ export default async function AdminUsersPage({
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50/60 text-left text-xs uppercase tracking-wide text-slate-400">
-                  <th className="px-6 py-3 font-medium">{t("columns.user")}</th>
-                  <th className="px-4 py-3 font-medium">{t("columns.plan")}</th>
-                  <th className="px-4 py-3 font-medium">{t("columns.qrcodes")}</th>
-                  <th className="px-4 py-3 font-medium">{t("columns.joined")}</th>
+                  <SortHeader field="full_name" className="px-6">
+                    {t("columns.user")}
+                  </SortHeader>
+                  <SortHeader field="plan_name">{t("columns.plan")}</SortHeader>
+                  <SortHeader field="qr_count">{t("columns.qrcodes")}</SortHeader>
+                  <SortHeader field="created_at">{t("columns.joined")}</SortHeader>
                   <th className="px-4 py-3 font-medium">{t("columns.status")}</th>
                   <th className="px-4 py-3" />
                 </tr>
@@ -105,6 +123,7 @@ export default async function AdminUsersPage({
                         userId={u.id}
                         isSuspended={u.is_suspended}
                         isSelf={u.id === me?.id}
+                        role={u.role}
                         planId={u.plan_id}
                         plans={plans}
                       />

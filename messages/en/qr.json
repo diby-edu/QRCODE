@@ -41,7 +41,8 @@
     "uploadError": "File upload failed. Please try again.",
     "storageQuota": "Your plan's storage quota is reached ({limit} MB). Delete some files or upgrade.",
     "videoLocked": "Video hosting is available on a higher plan.",
-    "authError": "Your session has expired. Please sign in again to upload a file."
+    "authError": "Your session has expired. Please sign in again to upload a file.",
+    "noFile": "No file."
   },
   "customize": {
     "fgColor": "QR code color",

@@ -4,6 +4,7 @@
   "nav": {
     "dashboard": "Dashboard",
     "qrcodes": "My QR codes",
+    "stats": "Statistics",
     "folders": "Folders",
     "billing": "Subscription",
     "settings": "Settings",

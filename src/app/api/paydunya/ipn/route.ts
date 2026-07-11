@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
   };
 
   const hash = field("data[hash]") ?? field("hash");
-  if (!verifyIpnHash(hash)) {
+  if (!(await verifyIpnHash(hash))) {
     return NextResponse.json({ error: "invalid hash" }, { status: 403 });
   }
 

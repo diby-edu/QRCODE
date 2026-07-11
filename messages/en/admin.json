@@ -34,7 +34,13 @@
       "unsuspend": "Reactivate",
       "changePlan": "Change plan",
       "delete": "Delete",
-      "confirmDelete": "The account, its QR codes and all its data will be permanently deleted."
+      "confirmDelete": "The account, its QR codes and all its data will be permanently deleted.",
+      "promote": "Make admin",
+      "demote": "Remove admin",
+      "confirmPromoteTitle": "Grant administrator rights?",
+      "confirmPromoteMessage": "This user will be able to manage all accounts, plans, payments and QR codes on the platform.",
+      "confirmDemoteTitle": "Remove administrator rights?",
+      "confirmDemoteMessage": "This user will become a standard account and lose access to administration."
     },
     "adminBadge": "Admin"
   },
@@ -85,14 +91,32 @@
       "status": "Status",
       "created": "Created"
     },
-    "empty": "No QR codes."
+    "empty": "No QR codes.",
+    "backToList": "Back to list",
+    "editTitle": "General information",
+    "owner": "Owner",
+    "createdOn": "created on {date}",
+    "removePassword": "Remove this QR code's password",
+    "saved": "QR code saved."
   },
   "settings": {
     "subtitle": "General site settings.",
     "siteName": "Site name",
     "supportEmail": "Support email",
     "announcement": "Announcement banner (empty = hidden)",
-    "saved": "Settings saved."
+    "saved": "Settings saved.",
+    "paydunya": {
+      "title": "Payment — PayDunya",
+      "hint": "These keys initially come from the .env.local file; saving them here takes precedence, no redeploy needed.",
+      "mode": "Mode",
+      "modeTest": "Test (sandbox)",
+      "modeLive": "Live (real payments)",
+      "liveWarning": "Live mode: payments will be real and will actually charge your customers.",
+      "masterKey": "Master Key",
+      "privateKey": "Private Key",
+      "publicKey": "Public Key",
+      "token": "Token"
+    }
   },
   "errors": {
     "forbidden": "This action is restricted to administrators.",

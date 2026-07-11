@@ -34,7 +34,13 @@
       "unsuspend": "Réactiver",
       "changePlan": "Changer de plan",
       "delete": "Supprimer",
-      "confirmDelete": "Le compte, ses QR codes et toutes ses données seront définitivement supprimés."
+      "confirmDelete": "Le compte, ses QR codes et toutes ses données seront définitivement supprimés.",
+      "promote": "Rendre admin",
+      "demote": "Retirer admin",
+      "confirmPromoteTitle": "Donner les droits administrateur ?",
+      "confirmPromoteMessage": "Cet utilisateur pourra gérer tous les comptes, plans, paiements et QR codes de la plateforme.",
+      "confirmDemoteTitle": "Retirer les droits administrateur ?",
+      "confirmDemoteMessage": "Cet utilisateur redeviendra un compte standard et perdra l'accès à l'administration."
     },
     "adminBadge": "Admin"
   },
@@ -85,14 +91,32 @@
       "status": "Statut",
       "created": "Créé le"
     },
-    "empty": "Aucun QR code."
+    "empty": "Aucun QR code.",
+    "backToList": "Retour à la liste",
+    "editTitle": "Informations générales",
+    "owner": "Propriétaire",
+    "createdOn": "créé le {date}",
+    "removePassword": "Supprimer le mot de passe de ce QR code",
+    "saved": "QR code enregistré."
   },
   "settings": {
     "subtitle": "Paramètres généraux du site.",
     "siteName": "Nom du site",
     "supportEmail": "Email de support",
     "announcement": "Bannière d'annonce (vide = masquée)",
-    "saved": "Paramètres enregistrés."
+    "saved": "Paramètres enregistrés.",
+    "paydunya": {
+      "title": "Paiement — PayDunya",
+      "hint": "Ces clés viennent d'abord du fichier .env.local ; les enregistrer ici prend le dessus, sans redéploiement.",
+      "mode": "Mode",
+      "modeTest": "Test (bac à sable)",
+      "modeLive": "Live (paiements réels)",
+      "liveWarning": "Mode live : les paiements seront réels et débiteront vraiment vos clients.",
+      "masterKey": "Master Key",
+      "privateKey": "Private Key",
+      "publicKey": "Public Key",
+      "token": "Token"
+    }
   },
   "errors": {
     "forbidden": "Action réservée aux administrateurs.",
