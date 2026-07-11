@@ -186,6 +186,51 @@ export function QRBuilder({
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_360px]">
         <div className="space-y-6">
+          {/* Mode : statique ou dynamique — la toute première décision */}
+          {type.canBeStatic && mode === "create" && (
+            <Section title={t("builder.modeLabel")}>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <button
+                  type="button"
+                  onClick={() => setIsDynamic(true)}
+                  className={`relative rounded-xl border-2 p-4 text-left transition-colors cursor-pointer ${
+                    isDynamic
+                      ? "border-indigo-600 bg-indigo-50/60"
+                      : "border-slate-200 bg-white hover:border-slate-300"
+                  }`}
+                >
+                  <span className="badge-indigo absolute right-3 top-3">
+                    {t("builder.recommended")}
+                  </span>
+                  <span className="text-2xl">⚡</span>
+                  <p className="mt-2 text-sm font-semibold text-slate-900">
+                    {t("builder.dynamicToggle")}
+                  </p>
+                  <p className="mt-1 text-xs text-slate-500">
+                    {t("builder.dynamicHint")}
+                  </p>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsDynamic(false)}
+                  className={`rounded-xl border-2 p-4 text-left transition-colors cursor-pointer ${
+                    !isDynamic
+                      ? "border-indigo-600 bg-indigo-50/60"
+                      : "border-slate-200 bg-white hover:border-slate-300"
+                  }`}
+                >
+                  <span className="text-2xl">🖨️</span>
+                  <p className="mt-2 text-sm font-semibold text-slate-900">
+                    {t("builder.staticToggle")}
+                  </p>
+                  <p className="mt-1 text-xs text-slate-500">
+                    {t("builder.staticHint")}
+                  </p>
+                </button>
+              </div>
+            </Section>
+          )}
+
           {/* Contenu */}
           <Section title={t("builder.contentSection")}>
             <div className="mb-4">
@@ -221,20 +266,6 @@ export function QRBuilder({
           {/* Options avancées */}
           <Section title={t("builder.optionsSection")}>
             <div className="space-y-5">
-              {type.canBeStatic && mode === "create" && (
-                <div>
-                  <Toggle
-                    checked={isDynamic}
-                    onChange={setIsDynamic}
-                    label={t("builder.dynamicToggle")}
-                  />
-                  <p className="mt-1.5 pl-14 text-xs text-slate-400">
-                    {isDynamic
-                      ? t("builder.dynamicHint")
-                      : t("builder.staticHint")}
-                  </p>
-                </div>
-              )}
               {mode === "edit" && !isDynamic && (
                 <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">
                   {t("builder.staticWarning")}
