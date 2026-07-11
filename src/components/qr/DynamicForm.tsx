@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import type { FieldDef, LString } from "@/lib/qr-types/registry";
 import { checkUpload } from "@/app/(app)/qr/actions";
+import { deleteStorageUrl } from "@/lib/storage";
 
 type Data = Record<string, unknown>;
 
@@ -172,6 +173,7 @@ function Labeled({
 type UploadError =
   | null
   | { type: "generic" }
+  | { type: "auth" }
   | { type: "video" }
   | { type: "storage"; limitMb: number };
 
@@ -208,9 +210,9 @@ function FileField({
     const check = await checkUpload(totalBytes, hasVideo);
     if (!check.ok) {
       setError(
-        check.error === "video"
-          ? { type: "video" }
-          : { type: "storage", limitMb: check.limitMb }
+        check.error === "storage"
+          ? { type: "storage", limitMb: check.limitMb }
+          : { type: check.error }
       );
       setUploading(false);
       return;
@@ -222,7 +224,7 @@ function FileField({
     } = await supabase.auth.getUser();
     if (!user) {
       setUploading(false);
-      setError({ type: "generic" });
+      setError({ type: "auth" });
       return;
     }
     const uploaded: string[] = [];
@@ -251,14 +253,10 @@ function FileField({
     } else {
       onChange("");
     }
-    // Libère réellement l'espace de stockage (le quota mesure les fichiers)
-    const path = url.split("/object/public/uploads/")[1];
-    if (path) {
-      createClient()
-        .storage.from("uploads")
-        .remove([decodeURIComponent(path)])
-        .catch(() => {});
-    }
+    // Libère réellement l'espace de stockage (le quota mesure les fichiers).
+    // Sûr même si le QR a été dupliqué : chaque copie possède désormais son
+    // propre fichier (voir duplicateFileFields dans qr/actions.ts).
+    deleteStorageUrl(createClient(), url).catch(() => {});
   }
 
   return (
@@ -282,13 +280,17 @@ function FileField({
       {error && (
         <p className="text-xs text-red-600">
           {error.type === "generic" && t("form.uploadError")}
+          {error.type === "auth" && t("form.authError")}
           {error.type === "video" && t("form.videoLocked")}
           {error.type === "storage" &&
-            t("form.storageQuota", { limit: error.limitMb })}{" "}
-          {error.type !== "generic" && (
-            <Link href="/billing" className="font-semibold underline">
-              {t("builder.upgradeCta")}
-            </Link>
+            t("form.storageQuota", { limit: error.limitMb })}
+          {(error.type === "video" || error.type === "storage") && (
+            <>
+              {" "}
+              <Link href="/billing" className="font-semibold underline">
+                {t("builder.upgradeCta")}
+              </Link>
+            </>
           )}
         </p>
       )}

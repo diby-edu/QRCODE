@@ -5,6 +5,8 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { QrDesign } from "@/lib/types";
+import { checkUpload } from "@/app/(app)/qr/actions";
+import { deleteStorageUrl } from "@/lib/storage";
 
 const DOT_STYLES: QrDesign["dotStyle"][] = [
   "square",
@@ -66,24 +68,56 @@ export function QRCustomizer({
 }) {
   const t = useTranslations("qr");
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   async function uploadLogo(file: File | undefined) {
     if (!file) return;
     setUploadingLogo(true);
+    setUploadError(null);
+
+    // Même garde-fou que les autres uploads (quota de stockage du plan) —
+    // sans ça ce champ contournait totalement le quota.
+    const check = await checkUpload(file.size, false);
+    if (!check.ok) {
+      setUploadError(
+        check.error === "storage"
+          ? t("form.storageQuota", { limit: check.limitMb })
+          : t("form.authError")
+      );
+      setUploadingLogo(false);
+      return;
+    }
+
     const supabase = createClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (user) {
-      const ext = file.name.split(".").pop() ?? "png";
-      const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
-      const { error } = await supabase.storage.from("logos").upload(path, file);
-      if (!error) {
-        const { data } = supabase.storage.from("logos").getPublicUrl(path);
-        onChange({ logoUrl: data.publicUrl });
-      }
+    if (!user) {
+      setUploadError(t("form.authError"));
+      setUploadingLogo(false);
+      return;
     }
+    const ext = file.name.split(".").pop() ?? "png";
+    const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabase.storage.from("logos").upload(path, file);
+    if (error) {
+      setUploadError(t("form.uploadError"));
+      setUploadingLogo(false);
+      return;
+    }
+    const { data } = supabase.storage.from("logos").getPublicUrl(path);
+    const previousUrl = design.logoUrl;
+    onChange({ logoUrl: data.publicUrl });
+    // Le remplacement ne doit pas laisser l'ancien logo orphelin dans le
+    // Storage (il continuerait de compter dans le quota sans être visible).
+    if (previousUrl) deleteStorageUrl(supabase, previousUrl).catch(() => {});
     setUploadingLogo(false);
+  }
+
+  function removeLogo() {
+    const previousUrl = design.logoUrl;
+    onChange({ logoUrl: null });
+    if (previousUrl) deleteStorageUrl(createClient(), previousUrl).catch(() => {});
   }
 
   return (
@@ -165,7 +199,7 @@ export function QRCustomizer({
                 />
                 <button
                   type="button"
-                  onClick={() => onChange({ logoUrl: null })}
+                  onClick={removeLogo}
                   className="text-xs font-semibold text-red-500 hover:text-red-700 cursor-pointer"
                 >
                   {t("customize.removeLogo")}
@@ -178,6 +212,14 @@ export function QRCustomizer({
             {t("customize.logoLocked")}{" "}
             <Link href="/billing" className="font-semibold underline">
               {t("customize.upgradeLink")}
+            </Link>
+          </p>
+        )}
+        {uploadError && (
+          <p className="mt-1.5 text-xs text-red-600">
+            {uploadError}{" "}
+            <Link href="/billing" className="font-semibold underline">
+              {t("builder.upgradeCta")}
             </Link>
           </p>
         )}

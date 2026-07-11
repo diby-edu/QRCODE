@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { str, strArr, type LandingProps } from "./util";
+import { PhotoGrid, VideoPlayer } from "./media";
 
 /** Document PDF : visionneuse intégrée + boutons ouvrir/télécharger. */
 export async function PdfLanding({ title, data }: LandingProps) {
@@ -63,25 +64,8 @@ export async function ImagesLanding({ title, data }: LandingProps) {
         </p>
       </div>
 
-      <div className="mt-5 grid grid-cols-2 gap-3">
-        {files.map((url, i) => (
-          <a
-            key={i}
-            href={url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group overflow-hidden rounded-xl border border-slate-100 bg-slate-50"
-          >
-            {/* Fichiers Supabase Storage : domaine variable, next/image inutile ici */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={url}
-              alt={`${galleryTitle} ${i + 1}`}
-              loading="lazy"
-              className="aspect-square w-full object-cover transition-transform duration-200 group-hover:scale-105"
-            />
-          </a>
-        ))}
+      <div className="mt-5">
+        <PhotoGrid photos={files} altPrefix={galleryTitle} />
       </div>
     </div>
   );
@@ -128,18 +112,7 @@ export async function VideoFileLanding({ title, data }: LandingProps) {
 
   return (
     <div className="card overflow-hidden">
-      {url && (
-        <video
-          controls
-          playsInline
-          preload="metadata"
-          poster={cover || undefined}
-          src={url}
-          className="aspect-video w-full bg-slate-950"
-        >
-          {videoTitle}
-        </video>
-      )}
+      {url && <VideoPlayer src={url} poster={cover} title={videoTitle} />}
       <div className="p-6">
         <h1 className="text-lg font-bold text-slate-900">{videoTitle}</h1>
         {str(data.description) && (

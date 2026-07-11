@@ -3,6 +3,7 @@ import { ensureHttp, normalizePhone } from "@/lib/qr-types/encoders";
 import { formatDate } from "@/lib/utils";
 import { CopyChip } from "@/components/scan/CopyChip";
 import { objArr, str, strArr, type LandingProps } from "./util";
+import { PhotoGrid, VideoPlayer } from "./media";
 
 /** Page de présentation d'entreprise. */
 export async function BusinessLanding({ data }: LandingProps) {
@@ -100,15 +101,11 @@ export async function BusinessLanding({ data }: LandingProps) {
             <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
               {t("video")}
             </h2>
-            <video
-              controls
-              playsInline
-              preload="metadata"
+            <VideoPlayer
               src={video}
+              title={name}
               className="aspect-video w-full rounded-xl bg-slate-950"
-            >
-              {name}
-            </video>
+            />
           </div>
         )}
 
@@ -117,25 +114,7 @@ export async function BusinessLanding({ data }: LandingProps) {
             <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
               {t("photos")}
             </h2>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-              {photos.map((url, i) => (
-                <a
-                  key={i}
-                  href={url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group overflow-hidden rounded-xl border border-slate-100 bg-slate-50"
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={url}
-                    alt={`${name} ${i + 1}`}
-                    loading="lazy"
-                    className="aspect-square w-full object-cover transition-transform duration-200 group-hover:scale-105"
-                  />
-                </a>
-              ))}
-            </div>
+            <PhotoGrid photos={photos} altPrefix={name} />
           </div>
         )}
       </div>

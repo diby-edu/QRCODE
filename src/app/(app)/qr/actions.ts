@@ -9,6 +9,7 @@ import { getUserPlan, isUnlimited } from "@/lib/plans";
 import { getQrType } from "@/lib/qr-types/registry";
 import type { QrDesign } from "@/lib/types";
 import { DEFAULT_DESIGN } from "@/components/qr/qr-options";
+import { duplicateFileFields, duplicateStorageUrl } from "@/lib/storage";
 
 const makeSlug = customAlphabet("0123456789abcdefghijklmnopqrstuvwxyz", 8);
 
@@ -200,6 +201,14 @@ export async function duplicateQrCode(id: string): Promise<QrActionResult> {
     return { error: `qrLimit:${limits.max_qr_codes}` };
   }
 
+  // Chaque copie doit posséder ses propres fichiers (photos, vidéo, logo…) :
+  // partager l'URL Storage d'origine casserait l'une des deux QR dès que
+  // l'autre supprime ou remplace ce fichier depuis son formulaire d'édition.
+  const design = { ...(original.design as QrDesign) };
+  if (design.logoUrl) {
+    design.logoUrl = await duplicateStorageUrl(supabase, design.logoUrl, user.id);
+  }
+
   const { data: copy, error } = await supabase
     .from("qr_codes")
     .insert({
@@ -212,15 +221,21 @@ export async function duplicateQrCode(id: string): Promise<QrActionResult> {
       is_active: original.is_active,
       expires_at: original.expires_at,
       password: original.password,
-      design: original.design,
+      design,
     })
     .select("id")
     .single();
   if (error || !copy) return { error: "generic" };
 
+  const type = getQrType(original.type);
+  const originalData = (original.qr_code_data?.[0]?.data ?? {}) as Record<string, unknown>;
+  const data = type
+    ? await duplicateFileFields(supabase, type.fields, originalData, user.id)
+    : originalData;
+
   await supabase.from("qr_code_data").insert({
     qr_code_id: copy.id,
-    data: original.qr_code_data?.[0]?.data ?? {},
+    data,
   });
 
   revalidatePath("/qr");
@@ -235,12 +250,27 @@ export async function moveQrToFolder(id: string, folderId: string | null) {
 
 export type UploadCheck =
   | { ok: true }
+  | { ok: false; error: "auth" }
   | { ok: false; error: "video" }
   | { ok: false; error: "storage"; limitMb: number };
 
 /**
  * Vérifie le quota de stockage et le droit vidéo du plan AVANT que le
  * navigateur n'envoie les fichiers vers Supabase Storage.
+ *
+ * Le droit vidéo est aussi appliqué en base par une policy RLS restrictive
+ * (migration 005) : même un client qui appellerait l'API Storage
+ * directement ne peut pas contourner cette règle.
+ *
+ * Le quota de stockage, lui, reste uniquement vérifié ici. Testé
+ * empiriquement : une policy RLS équivalente basée sur la taille du
+ * fichier (metadata->>'size') ne bloque rien, cette information n'étant
+ * fiable qu'une fois le fichier entièrement reçu par Storage, à une étape
+ * qui ne semble pas passer par la RLS standard. checkUpload() est donc la
+ * seule ligne de défense pour le quota — suffisant contre un usage normal
+ * via l'UI, pas contre un client qui contournerait délibérément
+ * l'application (voir le commentaire de la migration 005 pour la
+ * discussion complète).
  */
 export async function checkUpload(
   totalBytes: number,
@@ -250,16 +280,20 @@ export async function checkUpload(
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { ok: false, error: "storage", limitMb: 0 };
+  if (!user) return { ok: false, error: "auth" };
 
-  const { limits } = await getUserPlan(supabase, user.id);
+  // Indépendants (dépendent seulement de l'utilisateur authentifié) :
+  // exécutés en parallèle pour économiser un aller-retour réseau.
+  const [{ limits }, { data: usedBytes }] = await Promise.all([
+    getUserPlan(supabase, user.id),
+    supabase.rpc("user_storage_bytes"),
+  ]);
 
   if (hasVideo && !limits.video_enabled) {
     return { ok: false, error: "video" };
   }
 
   if (!isUnlimited(limits.max_storage_mb)) {
-    const { data: usedBytes } = await supabase.rpc("user_storage_bytes");
     const quotaBytes = limits.max_storage_mb * 1024 * 1024;
     if (Number(usedBytes ?? 0) + Math.max(totalBytes, 0) > quotaBytes) {
       return { ok: false, error: "storage", limitMb: limits.max_storage_mb };

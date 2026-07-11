@@ -3,20 +3,8 @@
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import type { Plan, PlanLimits } from "@/lib/types";
+import { DEFAULT_LIMITS } from "@/lib/plans";
 import { savePlan, type PlanPayload } from "@/app/(admin)/admin/actions";
-
-const DEFAULT_LIMITS: PlanLimits = {
-  max_qr_codes: 5,
-  max_dynamic: 3,
-  max_scans_month: 300,
-  max_storage_mb: 20,
-  logo_enabled: false,
-  video_enabled: false,
-  formats: ["png"],
-  stats_level: "basic",
-  folders_enabled: false,
-  password_enabled: false,
-};
 
 function Toggle({
   label,
