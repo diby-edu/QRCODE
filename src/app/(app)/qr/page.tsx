@@ -3,7 +3,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getUserPlan } from "@/lib/plans";
 import { QR_TYPES } from "@/lib/qr-types/registry";
-import { readSort } from "@/components/ui/SortHeader";
+import { readSort } from "@/lib/sort";
 import { QrFilters } from "@/components/qr/QrFilters";
 import { QrTable } from "@/components/qr/QrTable";
 import type { Folder, QrCode } from "@/lib/types";

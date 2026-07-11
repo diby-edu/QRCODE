@@ -6,7 +6,8 @@ import { formatDate, formatNumber } from "@/lib/utils";
 import type { QrCode } from "@/lib/types";
 import { AdminSearch } from "@/components/admin/AdminSearch";
 import { QrRowActions } from "@/components/admin/QrRowActions";
-import { readSort, SortHeader } from "@/components/ui/SortHeader";
+import { readSort } from "@/lib/sort";
+import { SortHeader } from "@/components/ui/SortHeader";
 
 const SORT_COLUMNS = ["title", "type", "scan_count", "created_at"] as const;
 

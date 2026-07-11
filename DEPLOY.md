@@ -139,6 +139,12 @@ autres projets, et renouvelle automatiquement.
 
 ## 11. Mises à jour
 
+⚠️ `npm run build` régénère entièrement `.next/standalone/` à chaque fois —
+**il faut recopier `.env.local` après CHAQUE build**, sinon l'app perd
+silencieusement toutes ses variables serveur (clés PayDunya, clé
+service_role Supabase…) au redémarrage suivant, sans erreur au démarrage :
+les échecs n'apparaissent qu'à l'usage (paiement, uploads, etc.).
+
 ```bash
 git pull
 npm install
@@ -146,5 +152,6 @@ npm run db:migrate  # nouvelles migrations éventuelles
 npm run build
 cp -r .next/static .next/standalone/.next/static
 cp -r public .next/standalone/public
+cp .env.local .next/standalone/
 pm2 restart qrhub
 ```

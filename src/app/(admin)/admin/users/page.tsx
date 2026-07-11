@@ -3,7 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { formatDate, formatNumber } from "@/lib/utils";
 import { AdminUsersFilters } from "@/components/admin/AdminUsersFilters";
 import { UserRowActions } from "@/components/admin/UserRowActions";
-import { readSort, SortHeader } from "@/components/ui/SortHeader";
+import { readSort } from "@/lib/sort";
+import { SortHeader } from "@/components/ui/SortHeader";
 
 interface AdminUserRow {
   id: string;
