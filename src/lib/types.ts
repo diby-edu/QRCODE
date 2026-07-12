@@ -27,6 +27,7 @@ export interface PlanLimits {
   stats_level: "basic" | "full";
   folders_enabled: boolean;
   password_enabled: boolean;
+  custom_domain_enabled: boolean;
 }
 
 export interface Plan {

@@ -1,6 +1,31 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextFetchEvent, type NextRequest } from "next/server";
 import { trackVisit } from "@/lib/analytics/track-visit";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { appUrl } from "@/lib/url";
+
+// Cache mémoire (process Node unique, pas serverless) : évite une requête
+// DB à chaque hit sur un domaine personnalisé. TTL court, acceptable pour
+// une opération admin-assistée à faible fréquence (voir DEPLOY.md § 13).
+const domainCache = new Map<string, { active: boolean; expires: number }>();
+const DOMAIN_CACHE_TTL_MS = 5 * 60 * 1000;
+
+async function isActiveCustomDomain(host: string): Promise<boolean> {
+  const cached = domainCache.get(host);
+  if (cached && cached.expires > Date.now()) return cached.active;
+
+  const { data } = await createAdminClient()
+    .from("custom_domains")
+    .select("id")
+    .eq("domain", host)
+    .eq("status", "active")
+    .limit(1)
+    .maybeSingle();
+
+  const active = Boolean(data);
+  domainCache.set(host, { active, expires: Date.now() + DOMAIN_CACHE_TTL_MS });
+  return active;
+}
 
 const PROTECTED_PREFIXES = [
   "/dashboard",
@@ -15,6 +40,20 @@ const PROTECTED_PREFIXES = [
 const AUTH_PAGES = ["/auth/login", "/auth/register"];
 
 export async function proxy(request: NextRequest, event: NextFetchEvent) {
+  // Domaine personnalisé client (go.exemple.com au lieu de
+  // qrcode.numerik360.com) : /q/[slug] résout déjà par slug seul et ignore
+  // le Host (voir src/app/q/[slug]/page.tsx), donc rien à faire pour les
+  // scans — mais le matcher ci-dessous exclut déjà /q/*, donc tout ce qui
+  // atteint cette fonction sur un domaine personnalisé actif n'est PAS un
+  // scan : on bloque plutôt que d'exposer /dashboard, /admin, etc. sur le
+  // domaine d'un client. Si le host ne correspond à aucun domaine actif
+  // connu, on laisse passer normalement (le server_name exact de nginx est
+  // déjà la protection primaire, ceci est une défense en profondeur).
+  const host = request.headers.get("host");
+  if (host && host !== new URL(appUrl()).host && (await isActiveCustomDomain(host))) {
+    return new NextResponse("Not Found", { status: 404 });
+  }
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(

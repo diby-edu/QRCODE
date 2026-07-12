@@ -17,10 +17,13 @@ export async function GET() {
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
-  const { data: qrRaw } = await supabase
-    .from("qr_codes")
-    .select("title, type, slug, is_dynamic, is_active, scan_count, created_at")
-    .order("created_at", { ascending: false });
+  const [{ data: qrRaw }, { data: customDomain }] = await Promise.all([
+    supabase
+      .from("qr_codes")
+      .select("title, type, slug, is_dynamic, is_active, scan_count, created_at")
+      .order("created_at", { ascending: false }),
+    supabase.rpc("active_custom_domain_for_user", { p_user_id: user.id }),
+  ]);
 
   const qrCodes = (qrRaw ?? []) as Pick<
     QrCode,
@@ -31,7 +34,7 @@ export async function GET() {
   const rows = qrCodes.map((qr) => [
     qr.title,
     getQrType(qr.type)?.name.fr ?? qr.type,
-    qr.is_dynamic ? qrShortUrl(qr.slug) : "",
+    qr.is_dynamic ? qrShortUrl(qr.slug, customDomain) : "",
     qr.is_dynamic ? "Oui" : "Non",
     qr.is_active ? "Actif" : "Désactivé",
     String(qr.scan_count),

@@ -88,6 +88,7 @@ export function QRBuilder({
   initial,
   folders,
   limits,
+  customDomain,
 }: {
   typeId: string;
   mode: "create" | "edit";
@@ -96,6 +97,7 @@ export function QRBuilder({
   initial?: QrInitial;
   folders: { id: string; name: string }[];
   limits: PlanLimits;
+  customDomain?: string | null;
 }) {
   const t = useTranslations("qr");
   const tc = useTranslations("common");
@@ -129,8 +131,8 @@ export function QRBuilder({
         return " ";
       }
     }
-    return qrShortUrl(slug ?? "apercu");
-  }, [type, isDynamic, data, slug]);
+    return qrShortUrl(slug ?? "apercu", customDomain);
+  }, [type, isDynamic, data, slug, customDomain]);
 
   if (!type) return null;
 
@@ -376,7 +378,7 @@ export function QRBuilder({
               <p className="mt-3 break-all text-center text-xs text-slate-400">
                 {t("builder.previewUrlHint")}{" "}
                 <span className="font-mono text-slate-600">
-                  {qrShortUrl(slug ?? "…")}
+                  {qrShortUrl(slug ?? "…", customDomain)}
                 </span>
               </p>
             )}

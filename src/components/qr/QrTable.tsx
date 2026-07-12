@@ -26,11 +26,13 @@ export function QrTable({
   folders,
   foldersEnabled,
   locale,
+  customDomain,
 }: {
   qrCodes: Row[];
   folders: { id: string; name: string }[];
   foldersEnabled: boolean;
   locale: "fr" | "en";
+  customDomain?: string | null;
 }) {
   const t = useTranslations("qr");
   const tc = useTranslations("common");
@@ -119,7 +121,7 @@ export function QrTable({
                         </span>
                         {qr.is_dynamic && (
                           <span className="block max-w-56 truncate text-xs text-slate-400">
-                            {qrShortUrl(qr.slug)}
+                            {qrShortUrl(qr.slug, customDomain)}
                           </span>
                         )}
                       </span>

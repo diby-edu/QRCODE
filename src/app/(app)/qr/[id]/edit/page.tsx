@@ -16,11 +16,13 @@ export default async function EditQrPage({
     data: { user },
   } = await supabase.auth.getUser();
 
-  const [{ data: qrRaw }, { limits }, { data: folders }] = await Promise.all([
-    supabase.from("qr_codes").select("*, qr_code_data(data)").eq("id", id).single(),
-    getUserPlan(supabase, user!.id),
-    supabase.from("folders").select("id, name").order("name"),
-  ]);
+  const [{ data: qrRaw }, { limits }, { data: folders }, { data: customDomain }] =
+    await Promise.all([
+      supabase.from("qr_codes").select("*, qr_code_data(data)").eq("id", id).single(),
+      getUserPlan(supabase, user!.id),
+      supabase.from("folders").select("id, name").order("name"),
+      supabase.rpc("active_custom_domain_for_user", { p_user_id: user!.id }),
+    ]);
   if (!qrRaw) notFound();
 
   const qr = qrRaw as QrCode & { qr_code_data: QrCodeData[] };
@@ -34,6 +36,7 @@ export default async function EditQrPage({
       slug={qr.slug}
       folders={folders ?? []}
       limits={limits}
+      customDomain={customDomain}
       initial={{
         title: qr.title,
         data: (qr.qr_code_data?.[0]?.data ?? {}) as Record<string, unknown>,

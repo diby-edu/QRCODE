@@ -6,6 +6,7 @@
     "plans": "Plans",
     "payments": "Paiements",
     "qrcodes": "QR codes",
+    "domains": "Domaines",
     "activity": "Activité",
     "settings": "Paramètres",
     "backToApp": "Retour à l'application"
@@ -70,7 +71,8 @@
       "statsFull": "Détaillées",
       "logo": "Logo sur les QR",
       "folders": "Dossiers",
-      "password": "Protection par mot de passe"
+      "password": "Protection par mot de passe",
+      "customDomain": "Domaine personnalisé"
     },
     "saved": "Plan enregistré.",
     "subscribers": "{count, plural, =0 {Aucun abonné} one {# abonné} other {# abonnés}}"
@@ -174,8 +176,32 @@
       "settings": {
         "update": "Paramètres du site modifiés",
         "paydunya": "Configuration PayDunya modifiée"
+      },
+      "domain": {
+        "activate": "Domaine personnalisé activé",
+        "reject": "Domaine personnalisé rejeté"
       }
     }
+  },
+  "domains": {
+    "subtitle": "Demandes de domaine personnalisé pour les QR dynamiques. Activer après avoir exécuté scripts/add-custom-domain.sh sur le VPS (voir DEPLOY.md).",
+    "empty": "Aucune demande de domaine personnalisé.",
+    "columns": {
+      "domain": "Domaine",
+      "user": "Utilisateur",
+      "date": "Demandé le",
+      "status": "Statut",
+      "notes": "Note"
+    },
+    "status": {
+      "pending": "En attente",
+      "active": "Actif",
+      "failed": "Échec"
+    },
+    "activate": "Activer",
+    "reject": "Rejeter",
+    "confirmRejectTitle": "Rejeter cette demande ?",
+    "rejectNotePlaceholder": "Raison (optionnelle, visible par vous seul)"
   },
   "errors": {
     "forbidden": "Action réservée aux administrateurs.",

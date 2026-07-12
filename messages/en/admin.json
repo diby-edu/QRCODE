@@ -6,6 +6,7 @@
     "plans": "Plans",
     "payments": "Payments",
     "qrcodes": "QR codes",
+    "domains": "Domains",
     "activity": "Activity",
     "settings": "Settings",
     "backToApp": "Back to app"
@@ -70,7 +71,8 @@
       "statsFull": "Detailed",
       "logo": "Logo on QR codes",
       "folders": "Folders",
-      "password": "Password protection"
+      "password": "Password protection",
+      "customDomain": "Custom domain"
     },
     "saved": "Plan saved.",
     "subscribers": "{count, plural, =0 {No subscribers} one {# subscriber} other {# subscribers}}"
@@ -174,8 +176,32 @@
       "settings": {
         "update": "Site settings updated",
         "paydunya": "PayDunya configuration updated"
+      },
+      "domain": {
+        "activate": "Custom domain activated",
+        "reject": "Custom domain rejected"
       }
     }
+  },
+  "domains": {
+    "subtitle": "Custom domain requests for dynamic QR codes. Activate after running scripts/add-custom-domain.sh on the VPS (see DEPLOY.md).",
+    "empty": "No custom domain requests.",
+    "columns": {
+      "domain": "Domain",
+      "user": "User",
+      "date": "Requested on",
+      "status": "Status",
+      "notes": "Note"
+    },
+    "status": {
+      "pending": "Pending",
+      "active": "Active",
+      "failed": "Failed"
+    },
+    "activate": "Activate",
+    "reject": "Reject",
+    "confirmRejectTitle": "Reject this request?",
+    "rejectNotePlaceholder": "Reason (optional, visible to you only)"
   },
   "errors": {
     "forbidden": "This action is restricted to administrators.",

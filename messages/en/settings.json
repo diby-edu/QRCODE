@@ -24,5 +24,26 @@
     "title": "Language",
     "hint": "Language of the interface and emails.",
     "saved": "Language updated."
+  },
+  "customDomain": {
+    "title": "Custom domain",
+    "hint": "Use a domain you already own for your dynamic QR codes instead of qrcode.numerik360.com. Point it to us first (CNAME), then request it here.",
+    "domainLabel": "Domain (e.g. go.mysite.com)",
+    "requested": "Request sent.",
+    "locked": "Available on a higher plan.",
+    "upgradeLink": "Upgrade",
+    "pendingHint": "Request received — the team activates it manually once the CNAME is verified.",
+    "failedHint": "Activation failed. Contact support for details.",
+    "status": {
+      "pending": "Pending",
+      "active": "Active",
+      "failed": "Failed"
+    },
+    "errors": {
+      "notEnabled": "Available on a higher plan.",
+      "invalidDomain": "Invalid domain name.",
+      "domainTaken": "This domain is already in use.",
+      "generic": "Request failed. Please try again."
+    }
   }
 }

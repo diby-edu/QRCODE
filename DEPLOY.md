@@ -194,3 +194,37 @@ cp -r public .next/standalone/public
 cp .env.local .next/standalone/
 pm2 restart qrhub
 ```
+
+## 13. Domaine personnalisé (client Pro)
+
+Un client sur un plan avec l'option "Domaine personnalisé" peut brancher un
+domaine qu'il possède déjà (ex. `go.sonentreprise.com`) sur ses QR codes
+dynamiques, à la place de `qrcode.numerik360.com`. Processus **assisté par
+l'admin** (pas de self-service) :
+
+1. **Le client** configure chez son propre fournisseur de domaine un
+   enregistrement CNAME : `go.sonentreprise.com` → `qrcode.numerik360.com`.
+2. **Le client** fait sa demande dans `/settings` (visible seulement si son
+   plan a `custom_domain_enabled`) — statut `pending`.
+3. **Vous (admin)**, une fois le CNAME propagé (vérifiable avec `dig
+   go.sonentreprise.com`), lancez sur le VPS :
+   ```bash
+   ./scripts/add-custom-domain.sh go.sonentreprise.com
+   ```
+   Le script vérifie le DNS, ajoute un bloc nginx dédié (proxy vers le même
+   port `3100` que le site principal — un seul process Node sert tous les
+   domaines, le routage se fait applicativement via le header Host) et
+   obtient un certificat SSL (certbot). Il ne touche à rien d'autre sur le
+   VPS (les autres projets/domaines ne sont pas affectés).
+4. **Vous (admin)**, dans `/admin/domains`, cliquez "Activer" sur la
+   demande — c'est cette étape, séparée du script, qui bascule le statut en
+   base et fait apparaître le nouveau domaine dans les URLs courtes du
+   client.
+
+Pourquoi deux étapes séparées (script VPS puis clic admin) plutôt qu'une
+automatisation complète : le script a besoin des droits root pour
+configurer nginx/certbot, et l'app web ne doit jamais avoir la capacité
+d'exécuter des commandes shell sur le serveur (ce VPS héberge d'autres
+projets — une faille dans ce code mettrait en danger bien plus que QRHub).
+Garder ce geste manuel, hors du processus qui reçoit les requêtes
+Internet, élimine ce risque.

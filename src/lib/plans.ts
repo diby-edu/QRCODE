@@ -12,6 +12,7 @@ export const DEFAULT_LIMITS: PlanLimits = {
   stats_level: "basic",
   folders_enabled: false,
   password_enabled: false,
+  custom_domain_enabled: false,
 };
 
 export function normalizeLimits(raw: unknown): PlanLimits {
@@ -27,6 +28,7 @@ export function normalizeLimits(raw: unknown): PlanLimits {
     stats_level: r.stats_level === "full" ? "full" : "basic",
     folders_enabled: r.folders_enabled === true,
     password_enabled: r.password_enabled === true,
+    custom_domain_enabled: r.custom_domain_enabled === true,
   };
 }
 

@@ -29,11 +29,10 @@ export default async function AdminQrDetailPage({
   const type = getQrType(qr.type);
   const data = (qr.qr_code_data?.[0]?.data ?? {}) as Record<string, unknown>;
 
-  const { data: owner } = await supabase
-    .from("profiles")
-    .select("email, full_name")
-    .eq("id", qr.user_id)
-    .single();
+  const [{ data: owner }, { data: customDomain }] = await Promise.all([
+    supabase.from("profiles").select("email, full_name").eq("id", qr.user_id).single(),
+    supabase.rpc("active_custom_domain_for_user", { p_user_id: qr.user_id }),
+  ]);
 
   return (
     <div className="animate-fade-up">
@@ -58,7 +57,7 @@ export default async function AdminQrDetailPage({
             {t("createdOn", { date: formatDate(qr.created_at, locale) })}
           </p>
           {qr.is_dynamic && (
-            <p className="mt-1 text-xs text-slate-400">{qrShortUrl(qr.slug)}</p>
+            <p className="mt-1 text-xs text-slate-400">{qrShortUrl(qr.slug, customDomain)}</p>
           )}
         </div>
       </div>

@@ -48,11 +48,13 @@ export default async function QrListPage({
   if (status === "inactive") query = query.eq("is_active", false);
   if (status === "expired") query = query.lt("expires_at", new Date().toISOString());
 
-  const [{ data: qrRaw }, { data: foldersRaw }, { limits }] = await Promise.all([
-    query,
-    supabase.from("folders").select("id, name").order("name"),
-    getUserPlan(supabase, user!.id),
-  ]);
+  const [{ data: qrRaw }, { data: foldersRaw }, { limits }, { data: customDomain }] =
+    await Promise.all([
+      query,
+      supabase.from("folders").select("id, name").order("name"),
+      getUserPlan(supabase, user!.id),
+      supabase.rpc("active_custom_domain_for_user", { p_user_id: user!.id }),
+    ]);
 
   const qrCodes = (qrRaw ?? []) as Pick<
     QrCode,
@@ -112,6 +114,7 @@ export default async function QrListPage({
           folders={folders}
           foldersEnabled={limits.folders_enabled}
           locale={locale}
+          customDomain={customDomain}
         />
       )}
     </div>

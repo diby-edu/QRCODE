@@ -166,6 +166,7 @@ function sanitizePlanPayload(p: PlanPayload) {
       stats_level: p.limits.stats_level === "full" ? "full" : "basic",
       folders_enabled: p.limits.folders_enabled === true,
       password_enabled: p.limits.password_enabled === true,
+      custom_domain_enabled: p.limits.custom_domain_enabled === true,
     },
   };
 }
@@ -408,4 +409,44 @@ export async function savePaydunyaSettings(
   });
   await logAction(ctx, "settings.paydunya", undefined, { mode: config.mode });
   revalidatePath("/admin/settings");
+}
+
+// ------------------------------------------------------------ Domaines personnalisés
+
+/**
+ * Bascule une demande en "active" — l'admin exécute ceci APRÈS avoir lancé
+ * scripts/add-custom-domain.sh sur le VPS (nginx + certbot), pas avant :
+ * cette action ne touche jamais à l'infra elle-même (voir DEPLOY.md).
+ */
+export async function activateCustomDomain(id: string): Promise<AdminActionResult> {
+  const ctx = await requireAdmin();
+  if (!ctx) return { error: "forbidden" };
+
+  const { error } = await ctx.supabase
+    .from("custom_domains")
+    .update({
+      status: "active",
+      verified_at: new Date().toISOString(),
+      activated_by: ctx.userId,
+    })
+    .eq("id", id);
+  if (error) return { error: "generic" };
+  await logAction(ctx, "domain.activate", id);
+  revalidatePath("/admin/domains");
+}
+
+export async function rejectCustomDomain(
+  id: string,
+  note: string
+): Promise<AdminActionResult> {
+  const ctx = await requireAdmin();
+  if (!ctx) return { error: "forbidden" };
+
+  const { error } = await ctx.supabase
+    .from("custom_domains")
+    .update({ status: "failed", notes: note.trim() || null })
+    .eq("id", id);
+  if (error) return { error: "generic" };
+  await logAction(ctx, "domain.reject", id, { note: note.trim() });
+  revalidatePath("/admin/domains");
 }

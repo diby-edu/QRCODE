@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { getUserPlan } from "@/lib/plans";
 import { isLocale, LOCALE_COOKIE } from "@/i18n/config";
 
 export type SettingsResult = { error?: string; success?: boolean } | undefined;
@@ -34,6 +35,39 @@ export async function changePassword(
   const supabase = await createClient();
   const { error } = await supabase.auth.updateUser({ password });
   if (error) return { error: "generic" };
+  return { success: true };
+}
+
+const HOSTNAME_RE =
+  /^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+$/;
+
+/**
+ * Enregistre une demande de domaine personnalisé (statut "pending"). Le
+ * client doit déjà posséder ce domaine et l'avoir pointé (CNAME) vers
+ * l'app — l'activation réelle (nginx + certbot) est un geste manuel de
+ * l'admin sur le VPS, voir scripts/add-custom-domain.sh et DEPLOY.md.
+ */
+export async function requestCustomDomain(domain: string): Promise<SettingsResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "generic" };
+
+  const { limits } = await getUserPlan(supabase, user.id);
+  if (!limits.custom_domain_enabled) return { error: "notEnabled" };
+
+  const clean = domain.trim().toLowerCase();
+  if (!HOSTNAME_RE.test(clean)) return { error: "invalidDomain" };
+
+  const { error } = await supabase
+    .from("custom_domains")
+    .insert({ user_id: user.id, domain: clean, status: "pending" });
+  if (error) {
+    return { error: error.code === "23505" ? "domainTaken" : "generic" };
+  }
+
+  revalidatePath("/settings");
   return { success: true };
 }
 

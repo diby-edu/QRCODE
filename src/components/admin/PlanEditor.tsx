@@ -242,6 +242,11 @@ export function PlanEditor({
           onChange={(v) => setLimits({ password_enabled: v })}
         />
         <Toggle
+          label={t("fields.customDomain")}
+          checked={form.limits.custom_domain_enabled}
+          onChange={(v) => setLimits({ custom_domain_enabled: v })}
+        />
+        <Toggle
           label={t("fields.isActive")}
           checked={form.is_active}
           onChange={(v) => set({ is_active: v })}

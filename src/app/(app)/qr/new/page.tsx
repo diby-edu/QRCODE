@@ -21,9 +21,10 @@ export default async function NewQrPage({
     data: { user },
   } = await supabase.auth.getUser();
 
-  const [{ limits }, { data: folders }] = await Promise.all([
+  const [{ limits }, { data: folders }, { data: customDomain }] = await Promise.all([
     getUserPlan(supabase, user!.id),
     supabase.from("folders").select("id, name").order("name"),
+    supabase.rpc("active_custom_domain_for_user", { p_user_id: user!.id }),
   ]);
 
   return (
@@ -32,6 +33,7 @@ export default async function NewQrPage({
       mode="create"
       folders={folders ?? []}
       limits={limits}
+      customDomain={customDomain}
     />
   );
 }

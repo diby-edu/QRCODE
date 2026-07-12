@@ -24,5 +24,26 @@
     "title": "Langue",
     "hint": "Langue de l'interface et des emails.",
     "saved": "Langue mise à jour."
+  },
+  "customDomain": {
+    "title": "Domaine personnalisé",
+    "hint": "Utilisez un domaine que vous possédez déjà pour vos QR codes dynamiques, à la place de qrcode.numerik360.com. Pointez-le d'abord vers nous (CNAME), puis faites votre demande ici.",
+    "domainLabel": "Domaine (ex. go.monsite.com)",
+    "requested": "Demande envoyée.",
+    "locked": "Fonctionnalité réservée à un plan supérieur.",
+    "upgradeLink": "Mettre à niveau",
+    "pendingHint": "Demande reçue — l'équipe l'active manuellement une fois le CNAME vérifié.",
+    "failedHint": "L'activation a échoué. Contactez le support pour plus de détails.",
+    "status": {
+      "pending": "En attente",
+      "active": "Actif",
+      "failed": "Échec"
+    },
+    "errors": {
+      "notEnabled": "Fonctionnalité réservée à un plan supérieur.",
+      "invalidDomain": "Nom de domaine invalide.",
+      "domainTaken": "Ce domaine est déjà utilisé.",
+      "generic": "Échec de la demande. Réessayez."
+    }
   }
 }
