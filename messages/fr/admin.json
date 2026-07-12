@@ -17,6 +17,7 @@
     "revenue": "Revenus encaissés",
     "chartTitle": "Scans des 30 derniers jours (toute la plateforme)",
     "revenueChartTitle": "Revenus des 30 derniers jours",
+    "visitsChartTitle": "Trafic du site (30 derniers jours)",
     "latestUsers": "Derniers inscrits",
     "latestPayments": "Derniers paiements"
   },

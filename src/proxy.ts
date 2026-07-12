@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse, type NextFetchEvent, type NextRequest } from "next/server";
+import { trackVisit } from "@/lib/analytics/track-visit";
 
 const PROTECTED_PREFIXES = [
   "/dashboard",
@@ -13,7 +14,7 @@ const PROTECTED_PREFIXES = [
 
 const AUTH_PAGES = ["/auth/login", "/auth/register"];
 
-export async function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest, event: NextFetchEvent) {
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -44,6 +45,15 @@ export async function proxy(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
+
+  // Trafic du site (pages vues) — exclut l'usage admin et les appels API,
+  // qui ne sont pas du "trafic visiteur". Les scans de QR (/q/*) sont déjà
+  // exclus par le matcher ci-dessous et trackés séparément (record_scan).
+  if (!pathname.startsWith("/admin") && !pathname.startsWith("/api")) {
+    event.waitUntil(
+      trackVisit(pathname, request.headers.get("user-agent"), request.headers.get("referer"))
+    );
+  }
 
   if (!user && PROTECTED_PREFIXES.some((p) => pathname.startsWith(p))) {
     const url = request.nextUrl.clone();

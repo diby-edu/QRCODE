@@ -10,6 +10,11 @@ export interface RevenueDayPoint {
   amount: number;
 }
 
+export interface VisitDayPoint {
+  day: string;
+  visits: number;
+}
+
 export interface BreakdownItem {
   label: string;
   count: number;
@@ -58,6 +63,18 @@ export async function fetchRevenuePerDay(
   return ((data ?? []) as { day: string; amount: number }[]).map((r) => ({
     day: r.day,
     amount: Number(r.amount),
+  }));
+}
+
+/** Visites du site par jour (jours vides à 0) — réservé admin (RLS de site_visits). */
+export async function fetchSiteVisitsPerDay(
+  supabase: SupabaseClient,
+  days = 30
+): Promise<VisitDayPoint[]> {
+  const { data } = await supabase.rpc("site_visits_per_day", { p_days: days });
+  return ((data ?? []) as { day: string; visits: number }[]).map((r) => ({
+    day: r.day,
+    visits: Number(r.visits),
   }));
 }
 

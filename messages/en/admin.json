@@ -17,6 +17,7 @@
     "revenue": "Collected revenue",
     "chartTitle": "Scans over the last 30 days (whole platform)",
     "revenueChartTitle": "Revenue over the last 30 days",
+    "visitsChartTitle": "Site traffic (last 30 days)",
     "latestUsers": "Latest signups",
     "latestPayments": "Latest payments"
   },
