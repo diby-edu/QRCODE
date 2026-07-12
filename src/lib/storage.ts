@@ -8,6 +8,38 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 const USER_BUCKETS = ["logos", "uploads", "qr-previews"] as const;
 export type UserBucket = (typeof USER_BUCKETS)[number];
 
+export type UploadFileResult =
+  | { ok: true; url: string }
+  | { ok: false; error: "auth" | "video" | "storage" | "generic"; limitMb?: number };
+
+/**
+ * Envoie un fichier via /api/upload (quota + droit vidéo vérifiés côté
+ * serveur avec la taille réelle reçue — voir supabase/migrations/007).
+ * Remplace un appel direct à `supabase.storage.from(bucket).upload()`
+ * depuis le navigateur, qui ne peut plus écrire dans ces buckets (RLS).
+ */
+export async function uploadFile(
+  bucket: "uploads" | "logos",
+  file: File
+): Promise<UploadFileResult> {
+  const body = new FormData();
+  body.set("bucket", bucket);
+  body.set("file", file);
+  const res = await fetch("/api/upload", { method: "POST", body });
+  if (!res.ok) {
+    const payload = (await res.json().catch(() => null)) as
+      | { error?: string; limitMb?: number }
+      | null;
+    const error = payload?.error;
+    if (error === "auth" || error === "video" || error === "storage") {
+      return { ok: false, error, limitMb: payload?.limitMb };
+    }
+    return { ok: false, error: "generic" };
+  }
+  const { url } = (await res.json()) as { url: string };
+  return { ok: true, url };
+}
+
 export interface StorageRef {
   bucket: UserBucket;
   path: string;

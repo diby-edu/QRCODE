@@ -6,7 +6,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { QrDesign } from "@/lib/types";
 import { checkUpload } from "@/app/(app)/qr/actions";
-import { deleteStorageUrl } from "@/lib/storage";
+import { deleteStorageUrl, uploadFile } from "@/lib/storage";
 
 const DOT_STYLES: QrDesign["dotStyle"][] = [
   "square",
@@ -88,29 +88,21 @@ export function QRCustomizer({
       return;
     }
 
-    const supabase = createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      setUploadError(t("form.authError"));
+    const result = await uploadFile("logos", file);
+    if (!result.ok) {
+      setUploadError(
+        result.error === "storage"
+          ? t("form.storageQuota", { limit: result.limitMb ?? 0 })
+          : t("form.authError")
+      );
       setUploadingLogo(false);
       return;
     }
-    const ext = file.name.split(".").pop() ?? "png";
-    const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
-    const { error } = await supabase.storage.from("logos").upload(path, file);
-    if (error) {
-      setUploadError(t("form.uploadError"));
-      setUploadingLogo(false);
-      return;
-    }
-    const { data } = supabase.storage.from("logos").getPublicUrl(path);
     const previousUrl = design.logoUrl;
-    onChange({ logoUrl: data.publicUrl });
+    onChange({ logoUrl: result.url });
     // Le remplacement ne doit pas laisser l'ancien logo orphelin dans le
     // Storage (il continuerait de compter dans le quota sans être visible).
-    if (previousUrl) deleteStorageUrl(supabase, previousUrl).catch(() => {});
+    if (previousUrl) deleteStorageUrl(createClient(), previousUrl).catch(() => {});
     setUploadingLogo(false);
   }
 

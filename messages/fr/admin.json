@@ -148,22 +148,32 @@
       "details": "Détails"
     },
     "actions": {
-      "user.suspend": "Utilisateur suspendu",
-      "user.unsuspend": "Utilisateur réactivé",
-      "user.promote": "Promu administrateur",
-      "user.demote": "Droits administrateur retirés",
-      "user.changePlan": "Plan changé",
-      "user.delete": "Utilisateur supprimé",
-      "plan.update": "Plan modifié",
-      "plan.create": "Plan créé",
-      "qr.activate": "QR code activé",
-      "qr.deactivate": "QR code désactivé",
-      "qr.edit": "QR code modifié",
-      "qr.delete": "QR code supprimé",
-      "payment.refund": "Paiement remboursé",
-      "payment.manual": "Paiement manuel enregistré",
-      "settings.update": "Paramètres du site modifiés",
-      "settings.paydunya": "Configuration PayDunya modifiée"
+      "user": {
+        "suspend": "Utilisateur suspendu",
+        "unsuspend": "Utilisateur réactivé",
+        "promote": "Promu administrateur",
+        "demote": "Droits administrateur retirés",
+        "changePlan": "Plan changé",
+        "delete": "Utilisateur supprimé"
+      },
+      "plan": {
+        "update": "Plan modifié",
+        "create": "Plan créé"
+      },
+      "qr": {
+        "activate": "QR code activé",
+        "deactivate": "QR code désactivé",
+        "edit": "QR code modifié",
+        "delete": "QR code supprimé"
+      },
+      "payment": {
+        "refund": "Paiement remboursé",
+        "manual": "Paiement manuel enregistré"
+      },
+      "settings": {
+        "update": "Paramètres du site modifiés",
+        "paydunya": "Configuration PayDunya modifiée"
+      }
     }
   },
   "errors": {

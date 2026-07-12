@@ -1,0 +1,13 @@
+-- Ferme réellement la faille de quota documentée dans 005_storage_enforcement.sql :
+-- tous les uploads passent désormais par la route serveur /api/upload
+-- (src/app/api/upload/route.ts), qui vérifie la taille RÉELLEMENT reçue via
+-- checkUpload() puis écrit dans Storage avec le client service_role
+-- (bypass RLS, c'est le seul écrivain légitime restant pour ces buckets).
+--
+-- Sans policy INSERT permissive pour "authenticated", un client qui
+-- appellerait l'API Storage directement avec sa clé anon/authenticated est
+-- désormais bloqué par RLS elle-même — même mécanisme que
+-- storage_video_check (RESTRICTIVE), qui reste en place en défense en
+-- profondeur même si elle est maintenant redondante avec la vérification
+-- côté route.
+drop policy if exists "storage_user_insert" on storage.objects;

@@ -2,7 +2,7 @@
 
 ## 1. Prérequis
 
-- VPS Linux (Ubuntu 22.04+ recommandé) avec Node.js **20+** et npm
+- VPS Linux (Ubuntu 22.04+ recommandé) avec Node.js **22+** et npm
 - Un sous-domaine pointant vers l'IP du VPS (enregistrement DNS `A`)
 - Projet Supabase (les clés sont dans `.env.local`)
 - Compte PayDunya avec clés API (mode test puis live)
@@ -137,7 +137,46 @@ autres projets, et renouvelle automatiquement.
 - Passage en production : `PAYDUNYA_MODE=live` + clés live, puis
   `pm2 restart qrhub`.
 
-## 11. Mises à jour
+## 11. Mise à jour Node.js 20 → 22
+
+`@supabase/*` réclame Node ≥ 22 (avertissement `EBADENGINE` à chaque `npm
+install`/`build` sinon). **Le VPS est mutualisé** (numerik360-api,
+photopilot, textopro, whatsai...) : ne pas remplacer le Node système en
+place, ça casserait potentiellement les autres projets. On installe Node 22
+**à côté** via nvm, et on épingle uniquement qrhub dessus.
+
+```bash
+# Si nvm n'est pas déjà installé sur le VPS :
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+source ~/.bashrc
+
+nvm install 22
+nvm which 22   # note le chemin exact, ex: /root/.nvm/versions/node/v22.20.0/bin/node
+```
+
+Mettre à jour `interpreter` dans `ecosystem.config.cjs` avec le chemin
+obtenu (déjà présent dans le repo avec une valeur par défaut à ajuster) :
+
+```js
+interpreter: "/root/.nvm/versions/node/v22.20.0/bin/node",
+```
+
+Puis reconstruire et relancer normalement (§ 12 ci-dessous) :
+
+```bash
+git pull
+npm install       # avec le Node 22 actif dans le shell (nvm use 22)
+npm run build
+pm2 delete qrhub  # nécessaire pour que PM2 relise le nouveau champ interpreter
+pm2 start ecosystem.config.cjs
+pm2 save
+```
+
+Vérifier ensuite `pm2 show qrhub` → `node.js version` doit afficher 22.x, et
+que le site répond toujours normalement. Les autres process PM2 du VPS ne
+sont pas affectés (ils gardent leur propre `interpreter`/Node système).
+
+## 12. Mises à jour
 
 ⚠️ `npm run build` régénère entièrement `.next/standalone/` à chaque fois —
 **il faut recopier `.env.local` après CHAQUE build**, sinon l'app perd

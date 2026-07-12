@@ -148,22 +148,32 @@
       "details": "Details"
     },
     "actions": {
-      "user.suspend": "User suspended",
-      "user.unsuspend": "User reactivated",
-      "user.promote": "Promoted to administrator",
-      "user.demote": "Administrator rights removed",
-      "user.changePlan": "Plan changed",
-      "user.delete": "User deleted",
-      "plan.update": "Plan updated",
-      "plan.create": "Plan created",
-      "qr.activate": "QR code activated",
-      "qr.deactivate": "QR code deactivated",
-      "qr.edit": "QR code edited",
-      "qr.delete": "QR code deleted",
-      "payment.refund": "Payment refunded",
-      "payment.manual": "Manual payment recorded",
-      "settings.update": "Site settings updated",
-      "settings.paydunya": "PayDunya configuration updated"
+      "user": {
+        "suspend": "User suspended",
+        "unsuspend": "User reactivated",
+        "promote": "Promoted to administrator",
+        "demote": "Administrator rights removed",
+        "changePlan": "Plan changed",
+        "delete": "User deleted"
+      },
+      "plan": {
+        "update": "Plan updated",
+        "create": "Plan created"
+      },
+      "qr": {
+        "activate": "QR code activated",
+        "deactivate": "QR code deactivated",
+        "edit": "QR code edited",
+        "delete": "QR code deleted"
+      },
+      "payment": {
+        "refund": "Payment refunded",
+        "manual": "Manual payment recorded"
+      },
+      "settings": {
+        "update": "Site settings updated",
+        "paydunya": "PayDunya configuration updated"
+      }
     }
   },
   "errors": {

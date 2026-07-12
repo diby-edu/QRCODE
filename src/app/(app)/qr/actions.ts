@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { customAlphabet } from "nanoid";
 import bcrypt from "bcryptjs";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getUserPlan, isUnlimited } from "@/lib/plans";
 import { getQrType } from "@/lib/qr-types/registry";
 import type { QrDesign } from "@/lib/types";
@@ -204,9 +205,12 @@ export async function duplicateQrCode(id: string): Promise<QrActionResult> {
   // Chaque copie doit posséder ses propres fichiers (photos, vidéo, logo…) :
   // partager l'URL Storage d'origine casserait l'une des deux QR dès que
   // l'autre supprime ou remplace ce fichier depuis son formulaire d'édition.
+  // Client service_role pour la copie : depuis la migration 007, seul
+  // service_role peut écrire dans ces buckets (voir /api/upload).
+  const storageAdmin = createAdminClient();
   const design = { ...(original.design as QrDesign) };
   if (design.logoUrl) {
-    design.logoUrl = await duplicateStorageUrl(supabase, design.logoUrl, user.id);
+    design.logoUrl = await duplicateStorageUrl(storageAdmin, design.logoUrl, user.id);
   }
 
   const { data: copy, error } = await supabase
@@ -230,7 +234,7 @@ export async function duplicateQrCode(id: string): Promise<QrActionResult> {
   const type = getQrType(original.type);
   const originalData = (original.qr_code_data?.[0]?.data ?? {}) as Record<string, unknown>;
   const data = type
-    ? await duplicateFileFields(supabase, type.fields, originalData, user.id)
+    ? await duplicateFileFields(storageAdmin, type.fields, originalData, user.id)
     : originalData;
 
   await supabase.from("qr_code_data").insert({
@@ -275,22 +279,20 @@ export type UploadCheck =
   | { ok: false; error: "storage"; limitMb: number };
 
 /**
- * Vérifie le quota de stockage et le droit vidéo du plan AVANT que le
- * navigateur n'envoie les fichiers vers Supabase Storage.
+ * Vérifie le quota de stockage et le droit vidéo du plan.
  *
- * Le droit vidéo est aussi appliqué en base par une policy RLS restrictive
- * (migration 005) : même un client qui appellerait l'API Storage
- * directement ne peut pas contourner cette règle.
- *
- * Le quota de stockage, lui, reste uniquement vérifié ici. Testé
- * empiriquement : une policy RLS équivalente basée sur la taille du
- * fichier (metadata->>'size') ne bloque rien, cette information n'étant
- * fiable qu'une fois le fichier entièrement reçu par Storage, à une étape
- * qui ne semble pas passer par la RLS standard. checkUpload() est donc la
- * seule ligne de défense pour le quota — suffisant contre un usage normal
- * via l'UI, pas contre un client qui contournerait délibérément
- * l'application (voir le commentaire de la migration 005 pour la
- * discussion complète).
+ * Appelée deux fois pour deux rôles différents :
+ * 1. Par les composants client (DynamicForm, QRCustomizer) AVANT l'envoi,
+ *    pour un rejet instantané sans transférer les octets — un raccourci UX,
+ *    plus la barrière de sécurité.
+ * 2. Par la route serveur /api/upload (src/app/api/upload/route.ts), avec
+ *    la taille RÉELLEMENT reçue (pas celle déclarée par le client) : c'est
+ *    la vérification qui compte. Depuis la migration 007, aucune policy
+ *    RLS ne permet plus à un client d'écrire directement dans ces buckets
+ *    avec sa propre clé — /api/upload (service_role) est le seul chemin
+ *    d'écriture restant, donc ce contrôle est désormais réellement
+ *    incontournable (voir 005_storage_enforcement.sql pour l'historique de
+ *    la faille, et 007_storage_upload_lockdown.sql pour sa fermeture).
  */
 export async function checkUpload(
   totalBytes: number,

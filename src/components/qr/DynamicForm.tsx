@@ -6,7 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import type { FieldDef, LString } from "@/lib/qr-types/registry";
 import { checkUpload } from "@/app/(app)/qr/actions";
-import { deleteStorageUrl } from "@/lib/storage";
+import { deleteStorageUrl, uploadFile } from "@/lib/storage";
 
 type Data = Record<string, unknown>;
 
@@ -261,28 +261,18 @@ function FileField({
       return;
     }
 
-    const supabase = createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      setUploading(false);
-      setError({ type: "auth" });
-      return;
-    }
     const uploaded: string[] = [];
     for (const file of list) {
-      const ext = file.name.split(".").pop() ?? "bin";
-      const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
-      const { error: upErr } = await supabase.storage
-        .from("uploads")
-        .upload(path, file);
-      if (upErr) {
-        setError({ type: "generic" });
+      const result = await uploadFile("uploads", file);
+      if (!result.ok) {
+        setError(
+          result.error === "storage"
+            ? { type: "storage", limitMb: result.limitMb ?? 0 }
+            : { type: result.error }
+        );
         continue;
       }
-      const { data } = supabase.storage.from("uploads").getPublicUrl(path);
-      uploaded.push(data.publicUrl);
+      uploaded.push(result.url);
     }
     if (uploaded.length > 0) {
       onChange(field.multiple ? [...urls, ...uploaded] : uploaded[0]);
