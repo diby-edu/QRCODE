@@ -121,6 +121,28 @@
     "viewQr": "View QR codes",
     "confirmDelete": "The QR codes inside this folder will not be deleted."
   },
+  "import": {
+    "backLink": "Import CSV",
+    "title": "Import QR codes",
+    "subtitle": "Create multiple “Website” QR codes at once from a CSV file.",
+    "templateLink": "Download CSV template",
+    "chooseFile": "Choose a CSV file",
+    "folderHint": "The “folder” column matches a row to an existing folder by name; leave empty otherwise.",
+    "columns": {
+      "title": "Title",
+      "url": "URL",
+      "folder": "Folder",
+      "dynamic": "Dynamic"
+    },
+    "invalidRow": "Missing title or URL",
+    "preview": "{count, plural, =0 {No valid rows} one {# row ready} other {# rows ready}}",
+    "previewInvalid": "{count, plural, one {# skipped} other {# skipped}}",
+    "submit": "Import",
+    "importing": "Importing…",
+    "resultSummary": "{count, plural, =0 {No QR code imported.} one {# QR code imported.} other {# QR codes imported.}}",
+    "resultSkipped": "{count, plural, one {# row skipped.} other {# rows skipped.}}",
+    "genericError": "Import failed. Please try again."
+  },
   "detail": {
     "backToList": "Back to my QR codes",
     "shortUrl": "QR code URL",

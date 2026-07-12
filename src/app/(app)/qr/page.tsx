@@ -72,6 +72,9 @@ export default async function QrListPage({
           </p>
         </div>
         <div className="flex gap-2">
+          <Link href="/qr/import" className="btn-secondary">
+            ⬆ {t("import.backLink")}
+          </Link>
           {qrCodes.length > 0 && (
             <a href="/api/export/qr-codes" className="btn-secondary">
               ⬇ {t("list.exportCsv")}
