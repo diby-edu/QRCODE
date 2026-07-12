@@ -6,6 +6,8 @@
   "builder": {
     "newTitle": "Nouveau QR code",
     "editTitle": "Modifier le QR code",
+    "backToTypes": "Changer de type",
+    "backToQr": "Retour au QR code",
     "contentSection": "Contenu",
     "designSection": "Personnalisation",
     "optionsSection": "Options avancées",
@@ -120,6 +122,7 @@
     "confirmDelete": "Les QR codes de ce dossier ne seront pas supprimés."
   },
   "detail": {
+    "backToList": "Retour à mes QR codes",
     "shortUrl": "URL du QR code",
     "notScannable": "Contenu encodé directement dans le QR",
     "createdBanner": "QR code créé avec succès ! Téléchargez-le ci-dessous.",

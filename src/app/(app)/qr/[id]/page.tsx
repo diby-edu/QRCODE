@@ -54,6 +54,13 @@ export default async function QrDetailPage({
 
   return (
     <div className="animate-fade-up">
+      <Link
+        href="/qr"
+        className="mb-4 inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:underline"
+      >
+        ← {t("detail.backToList")}
+      </Link>
+
       {(created || updated) && (
         <div className="mb-6 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700 ring-1 ring-emerald-600/20">
           {created ? t("detail.createdBanner") : t("detail.updatedBanner")}

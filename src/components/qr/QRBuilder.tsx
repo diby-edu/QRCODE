@@ -172,6 +172,13 @@ export function QRBuilder({
 
   return (
     <form onSubmit={submit} className="animate-fade-up">
+      <Link
+        href={mode === "create" ? "/qr/new" : `/qr/${qrId}`}
+        className="mb-4 inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:underline"
+      >
+        ← {mode === "create" ? t("builder.backToTypes") : t("builder.backToQr")}
+      </Link>
+
       <div className="mb-6 flex items-center gap-3">
         <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-50 text-xl">
           {type.icon}
