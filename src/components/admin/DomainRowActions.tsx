@@ -2,37 +2,70 @@
 
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
-import { activateCustomDomain, rejectCustomDomain } from "@/app/(admin)/admin/actions";
+import {
+  activateCustomDomain,
+  checkDomainDns,
+  rejectCustomDomain,
+  type DnsCheckResult,
+} from "@/app/(admin)/admin/actions";
 
-export function DomainRowActions({ id }: { id: string }) {
+export function DomainRowActions({ id, domain }: { id: string; domain: string }) {
   const t = useTranslations("admin.domains");
   const tc = useTranslations("common");
   const [rejecting, setRejecting] = useState(false);
   const [note, setNote] = useState("");
+  const [dnsResult, setDnsResult] = useState<DnsCheckResult | null>(null);
+  const [checkingDns, setCheckingDns] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   return (
-    <div className="flex items-center justify-end gap-1.5">
-      <button
-        type="button"
-        disabled={isPending}
-        className="btn-secondary btn-sm"
-        onClick={() =>
-          startTransition(async () => {
-            await activateCustomDomain(id);
-          })
-        }
-      >
-        {t("activate")}
-      </button>
-      <button
-        type="button"
-        disabled={isPending}
-        className="btn-ghost btn-sm text-red-600 hover:bg-red-50"
-        onClick={() => setRejecting(true)}
-      >
-        {t("reject")}
-      </button>
+    <div className="flex flex-col items-end gap-1">
+      <div className="flex items-center justify-end gap-1.5">
+        <button
+          type="button"
+          disabled={checkingDns}
+          className="btn-ghost btn-sm"
+          onClick={() => {
+            setCheckingDns(true);
+            setDnsResult(null);
+            checkDomainDns(domain)
+              .then(setDnsResult)
+              .finally(() => setCheckingDns(false));
+          }}
+        >
+          {checkingDns ? t("checkingDns") : t("checkDns")}
+        </button>
+        <button
+          type="button"
+          disabled={isPending}
+          className="btn-secondary btn-sm"
+          onClick={() =>
+            startTransition(async () => {
+              await activateCustomDomain(id);
+            })
+          }
+        >
+          {t("activate")}
+        </button>
+        <button
+          type="button"
+          disabled={isPending}
+          className="btn-ghost btn-sm text-red-600 hover:bg-red-50"
+          onClick={() => setRejecting(true)}
+        >
+          {t("reject")}
+        </button>
+      </div>
+
+      {dnsResult && (
+        <p className={`text-xs ${dnsResult.ok ? "text-emerald-600" : "text-amber-600"}`}>
+          {dnsResult.ok
+            ? t("dnsOk", { ip: dnsResult.resolvedTo })
+            : dnsResult.reason === "notFound"
+              ? t("dnsNotFound")
+              : t("dnsMismatch", { ip: dnsResult.resolvedTo ?? "" })}
+        </p>
+      )}
 
       {rejecting && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">

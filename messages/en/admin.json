@@ -200,6 +200,11 @@
     },
     "activate": "Activate",
     "reject": "Reject",
+    "checkDns": "Check DNS",
+    "checkingDns": "Checking…",
+    "dnsOk": "✓ DNS correct ({ip})",
+    "dnsNotFound": "✗ This domain doesn't resolve yet",
+    "dnsMismatch": "✗ Points elsewhere ({ip})",
     "confirmRejectTitle": "Reject this request?",
     "rejectNotePlaceholder": "Reason (optional, visible to you only)"
   },

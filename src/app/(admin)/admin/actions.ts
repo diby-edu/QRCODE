@@ -1,10 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { promises as dns } from "node:dns";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { PlanLimits } from "@/lib/types";
 import { savePaydunyaConfig, type PaydunyaConfig } from "@/lib/payments/config";
+import { appUrl } from "@/lib/url";
 
 export type AdminActionResult = { error: string } | undefined;
 
@@ -449,4 +451,33 @@ export async function rejectCustomDomain(
   if (error) return { error: "generic" };
   await logAction(ctx, "domain.reject", id, { note: note.trim() });
   revalidatePath("/admin/domains");
+}
+
+export type DnsCheckResult =
+  | { ok: true; resolvedTo: string }
+  | { ok: false; reason: "notFound" | "mismatch" | "forbidden"; resolvedTo?: string };
+
+/**
+ * Vérification DNS en lecture seule (aucune commande shell, aucun accès au
+ * VPS) : compare les IP vers lesquelles résolvent le domaine du client et
+ * notre domaine canonique. Sert uniquement à donner un statut avant de
+ * lancer scripts/add-custom-domain.sh à la main — ne modifie rien.
+ */
+export async function checkDomainDns(domain: string): Promise<DnsCheckResult> {
+  const ctx = await requireAdmin();
+  if (!ctx) return { ok: false, reason: "forbidden" };
+
+  const canonicalHost = new URL(appUrl()).hostname;
+
+  const [targetIps, canonicalIps] = await Promise.all([
+    dns.resolve4(domain).catch((): string[] => []),
+    dns.resolve4(canonicalHost).catch((): string[] => []),
+  ]);
+
+  if (targetIps.length === 0) return { ok: false, reason: "notFound" };
+
+  const matches = targetIps.some((ip) => canonicalIps.includes(ip));
+  return matches
+    ? { ok: true, resolvedTo: targetIps[0] }
+    : { ok: false, reason: "mismatch", resolvedTo: targetIps.join(", ") };
 }

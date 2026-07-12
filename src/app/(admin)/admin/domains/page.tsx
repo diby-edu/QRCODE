@@ -90,7 +90,9 @@ export default async function AdminDomainsPage() {
                       {r.notes ?? "—"}
                     </td>
                     <td className="px-4 py-3">
-                      {r.status !== "active" && <DomainRowActions id={r.id} />}
+                      {r.status !== "active" && (
+                        <DomainRowActions id={r.id} domain={r.domain} />
+                      )}
                     </td>
                   </tr>
                 ))}
