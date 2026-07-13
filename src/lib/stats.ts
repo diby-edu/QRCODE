@@ -35,6 +35,15 @@ export interface SiteVisitBreakdowns {
   referrers: BreakdownItem[];
   devices: BreakdownItem[];
   countries: BreakdownItem[];
+  cities: BreakdownItem[];
+  os: BreakdownItem[];
+  browsers: BreakdownItem[];
+}
+
+export interface SiteVisitsSummary {
+  totalVisits: number;
+  uniqueVisitors: number;
+  totalVisitsAllTime: number;
 }
 
 const EMPTY_BREAKDOWNS: ScanBreakdowns = {
@@ -52,6 +61,15 @@ const EMPTY_VISIT_BREAKDOWNS: SiteVisitBreakdowns = {
   referrers: [],
   devices: [],
   countries: [],
+  cities: [],
+  os: [],
+  browsers: [],
+};
+
+const EMPTY_VISITS_SUMMARY: SiteVisitsSummary = {
+  totalVisits: 0,
+  uniqueVisitors: 0,
+  totalVisitsAllTime: 0,
 };
 
 /** Scans par jour (jours vides à 0) via la RPC scans_per_day — RLS appliquée. */
@@ -130,5 +148,24 @@ export async function fetchSiteVisitBreakdowns(
     referrers: raw.referrers ?? [],
     devices: raw.devices ?? [],
     countries: raw.countries ?? [],
+    cities: raw.cities ?? [],
+    os: raw.os ?? [],
+    browsers: raw.browsers ?? [],
+  };
+}
+
+/** Total de visites, visiteurs uniques (hash anonyme) et total sur toute la
+ * période — via la RPC site_visits_summary. */
+export async function fetchSiteVisitsSummary(
+  supabase: SupabaseClient,
+  days = 30
+): Promise<SiteVisitsSummary> {
+  const { data } = await supabase.rpc("site_visits_summary", { p_days: days });
+  if (!data || typeof data !== "object") return EMPTY_VISITS_SUMMARY;
+  const raw = data as Partial<SiteVisitsSummary>;
+  return {
+    totalVisits: Number(raw.totalVisits ?? 0),
+    uniqueVisitors: Number(raw.uniqueVisitors ?? 0),
+    totalVisitsAllTime: Number(raw.totalVisitsAllTime ?? 0),
   };
 }

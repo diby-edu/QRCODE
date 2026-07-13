@@ -28,18 +28,26 @@ async function requireAdmin() {
     : null;
 }
 
-/** Trace une action admin dans admin_activity_log (visible sur /admin/activity). */
+/**
+ * Trace une action admin dans admin_activity_log (visible sur /admin/activity).
+ * targetLabel : libellé humain de la cible (email, titre de QR, nom de
+ * plan/domaine…) capturé au moment de l'action — reste correct même si la
+ * ligne visée est supprimée juste après (ex: user.delete, qr.delete),
+ * contrairement à un lookup a posteriori sur le seul id stocké dans "target".
+ */
 async function logAction(
   ctx: { supabase: Awaited<ReturnType<typeof createClient>>; userId: string; email: string | null },
   action: string,
   target?: string,
-  details?: Record<string, unknown>
+  details?: Record<string, unknown>,
+  targetLabel?: string | null
 ) {
   await ctx.supabase.from("admin_activity_log").insert({
     admin_id: ctx.userId,
     admin_email: ctx.email,
     action,
     target: target ?? null,
+    target_label: targetLabel ?? null,
     details: details ?? {},
   });
 }
@@ -54,12 +62,20 @@ export async function setUserSuspended(
   if (!ctx) return { error: "forbidden" };
   if (userId === ctx.userId) return { error: "generic" }; // pas d'auto-suspension
 
-  const { error } = await ctx.supabase
+  const { data, error } = await ctx.supabase
     .from("profiles")
     .update({ is_suspended: suspended })
-    .eq("id", userId);
+    .eq("id", userId)
+    .select("email, full_name")
+    .single();
   if (error) return { error: "generic" };
-  await logAction(ctx, suspended ? "user.suspend" : "user.unsuspend", userId);
+  await logAction(
+    ctx,
+    suspended ? "user.suspend" : "user.unsuspend",
+    userId,
+    undefined,
+    data.full_name || data.email
+  );
   revalidatePath("/admin/users");
 }
 
@@ -71,12 +87,20 @@ export async function setUserRole(
   if (!ctx) return { error: "forbidden" };
   if (userId === ctx.userId) return { error: "generic" }; // pas d'auto-rétrogradation
 
-  const { error } = await ctx.supabase
+  const { data, error } = await ctx.supabase
     .from("profiles")
     .update({ role })
-    .eq("id", userId);
+    .eq("id", userId)
+    .select("email, full_name")
+    .single();
   if (error) return { error: "generic" };
-  await logAction(ctx, role === "admin" ? "user.promote" : "user.demote", userId);
+  await logAction(
+    ctx,
+    role === "admin" ? "user.promote" : "user.demote",
+    userId,
+    undefined,
+    data.full_name || data.email
+  );
   revalidatePath("/admin/users");
 }
 
@@ -87,11 +111,10 @@ export async function setUserPlan(
   const ctx = await requireAdmin();
   if (!ctx) return { error: "forbidden" };
 
-  const { data: plan } = await ctx.supabase
-    .from("plans")
-    .select("id, name, price_monthly")
-    .eq("id", planId)
-    .single();
+  const [{ data: plan }, { data: targetProfile }] = await Promise.all([
+    ctx.supabase.from("plans").select("id, name, price_monthly").eq("id", planId).single(),
+    ctx.supabase.from("profiles").select("email, full_name").eq("id", userId).single(),
+  ]);
   if (!plan) return { error: "generic" };
 
   // Écritures via service_role : la RLS subscriptions n'autorise que l'admin,
@@ -117,7 +140,13 @@ export async function setUserPlan(
     gateway: "admin",
   });
   if (error) return { error: "generic" };
-  await logAction(ctx, "user.changePlan", userId, { plan: plan.name });
+  await logAction(
+    ctx,
+    "user.changePlan",
+    userId,
+    { plan: plan.name },
+    targetProfile?.full_name || targetProfile?.email
+  );
   revalidatePath("/admin/users");
 }
 
@@ -126,11 +155,18 @@ export async function deleteUser(userId: string): Promise<AdminActionResult> {
   if (!ctx) return { error: "forbidden" };
   if (userId === ctx.userId) return { error: "generic" }; // pas d'auto-suppression
 
+  // Capturé AVANT suppression : le profil n'existera plus ensuite.
+  const { data: targetProfile } = await ctx.supabase
+    .from("profiles")
+    .select("email, full_name")
+    .eq("id", userId)
+    .single();
+
   // Supprime le compte auth ; les tables applicatives suivent (on delete cascade)
   const admin = createAdminClient();
   const { error } = await admin.auth.admin.deleteUser(userId);
   if (error) return { error: "generic" };
-  await logAction(ctx, "user.delete", userId);
+  await logAction(ctx, "user.delete", userId, undefined, targetProfile?.full_name || targetProfile?.email);
   revalidatePath("/admin/users");
 }
 
@@ -188,10 +224,13 @@ export async function savePlan(
     : await ctx.supabase.from("plans").insert(row);
   if (error) return { error: "generic" };
 
-  await logAction(ctx, planId ? "plan.update" : "plan.create", planId ?? row.name, {
-    name: row.name,
-    price_monthly: row.price_monthly,
-  });
+  await logAction(
+    ctx,
+    planId ? "plan.update" : "plan.create",
+    planId ?? row.name,
+    { price_monthly: row.price_monthly },
+    row.name
+  );
   revalidatePath("/admin/plans");
   revalidatePath("/billing");
 }
@@ -206,12 +245,14 @@ export async function adminToggleQr(
   if (!ctx) return { error: "forbidden" };
 
   const admin = createAdminClient();
-  const { error } = await admin
+  const { data, error } = await admin
     .from("qr_codes")
     .update({ is_active: isActive })
-    .eq("id", id);
+    .eq("id", id)
+    .select("title")
+    .single();
   if (error) return { error: "generic" };
-  await logAction(ctx, isActive ? "qr.activate" : "qr.deactivate", id);
+  await logAction(ctx, isActive ? "qr.activate" : "qr.deactivate", id, undefined, data.title);
   revalidatePath("/admin/qrcodes");
 }
 
@@ -258,7 +299,7 @@ export async function adminUpdateQrCode(
     .upsert({ qr_code_id: id, data: payload.data }, { onConflict: "qr_code_id" });
   if (dataError) return { error: "generic" };
 
-  await logAction(ctx, "qr.edit", id, { title });
+  await logAction(ctx, "qr.edit", id, undefined, title);
   revalidatePath("/admin/qrcodes");
   revalidatePath(`/admin/qrcodes/${id}`);
 }
@@ -267,9 +308,12 @@ export async function adminDeleteQr(id: string): Promise<AdminActionResult> {
   const ctx = await requireAdmin();
   if (!ctx) return { error: "forbidden" };
 
+  // Capturé AVANT suppression : le QR n'existera plus ensuite.
+  const { data: target } = await ctx.supabase.from("qr_codes").select("title").eq("id", id).single();
+
   const { error } = await ctx.supabase.from("qr_codes").delete().eq("id", id);
   if (error) return { error: "generic" };
-  await logAction(ctx, "qr.delete", id);
+  await logAction(ctx, "qr.delete", id, undefined, target?.title);
   revalidatePath("/admin/qrcodes");
 }
 
@@ -282,7 +326,7 @@ export async function refundPayment(paymentId: string): Promise<AdminActionResul
   const admin = createAdminClient();
   const { data: payment } = await admin
     .from("payments")
-    .select("id, status")
+    .select("id, status, amount, currency, user_id")
     .eq("id", paymentId)
     .single();
   if (!payment || payment.status !== "completed") return { error: "generic" };
@@ -293,7 +337,20 @@ export async function refundPayment(paymentId: string): Promise<AdminActionResul
     .eq("id", paymentId);
   if (error) return { error: "generic" };
 
-  await logAction(ctx, "payment.refund", paymentId);
+  const { data: payer } = await admin
+    .from("profiles")
+    .select("email, full_name")
+    .eq("id", payment.user_id)
+    .maybeSingle();
+  const who = payer?.full_name || payer?.email;
+  const amountLabel = `${payment.amount} ${payment.currency}`;
+  await logAction(
+    ctx,
+    "payment.refund",
+    paymentId,
+    undefined,
+    who ? `${who} — ${amountLabel}` : amountLabel
+  );
   revalidatePath("/admin/payments");
 }
 
@@ -360,11 +417,13 @@ export async function recordManualPayment(
   });
   if (paymentError) return { error: "generic" };
 
-  await logAction(ctx, "payment.manual", profile.id, {
-    plan: plan.name,
-    amount,
-    note: payload.note.trim(),
-  });
+  await logAction(
+    ctx,
+    "payment.manual",
+    profile.id,
+    { amount, note: payload.note.trim() },
+    `${email} — ${plan.name}`
+  );
   revalidatePath("/admin/payments");
   revalidatePath("/admin/users");
 }
@@ -424,16 +483,18 @@ export async function activateCustomDomain(id: string): Promise<AdminActionResul
   const ctx = await requireAdmin();
   if (!ctx) return { error: "forbidden" };
 
-  const { error } = await ctx.supabase
+  const { data, error } = await ctx.supabase
     .from("custom_domains")
     .update({
       status: "active",
       verified_at: new Date().toISOString(),
       activated_by: ctx.userId,
     })
-    .eq("id", id);
+    .eq("id", id)
+    .select("domain")
+    .single();
   if (error) return { error: "generic" };
-  await logAction(ctx, "domain.activate", id);
+  await logAction(ctx, "domain.activate", id, undefined, data.domain);
   revalidatePath("/admin/domains");
 }
 
@@ -444,12 +505,14 @@ export async function rejectCustomDomain(
   const ctx = await requireAdmin();
   if (!ctx) return { error: "forbidden" };
 
-  const { error } = await ctx.supabase
+  const { data, error } = await ctx.supabase
     .from("custom_domains")
     .update({ status: "failed", notes: note.trim() || null })
-    .eq("id", id);
+    .eq("id", id)
+    .select("domain")
+    .single();
   if (error) return { error: "generic" };
-  await logAction(ctx, "domain.reject", id, { note: note.trim() });
+  await logAction(ctx, "domain.reject", id, { note: note.trim() }, data.domain);
   revalidatePath("/admin/domains");
 }
 

@@ -1,6 +1,10 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
-import { fetchSiteVisitBreakdowns, fetchSiteVisitsPerDay } from "@/lib/stats";
+import {
+  fetchSiteVisitBreakdowns,
+  fetchSiteVisitsPerDay,
+  fetchSiteVisitsSummary,
+} from "@/lib/stats";
 import { formatNumber } from "@/lib/utils";
 import { StatTile } from "@/components/stats/StatTile";
 import { VisitsAreaChart } from "@/components/stats/VisitsAreaChart";
@@ -12,12 +16,12 @@ export default async function AdminTrafficPage() {
   const locale = await getLocale();
   const supabase = await createClient();
 
-  const [days, breakdowns] = await Promise.all([
+  const [days, breakdowns, summary] = await Promise.all([
     fetchSiteVisitsPerDay(supabase, 30),
     fetchSiteVisitBreakdowns(supabase, 30),
+    fetchSiteVisitsSummary(supabase, 30),
   ]);
 
-  const visits30d = days.reduce((sum, d) => sum + d.visits, 0);
   const today = days.at(-1)?.visits ?? 0;
 
   const deviceLabels: Record<string, string> = {
@@ -33,37 +37,34 @@ export default async function AdminTrafficPage() {
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatTile
+          label={t("kpi.uniqueVisitors30d")}
+          value={formatNumber(summary.uniqueVisitors, locale)}
+          hint={t("kpi.uniqueVisitorsHint")}
+          icon="🧑‍🤝‍🧑"
+        />
+        <StatTile
           label={t("kpi.visits30d")}
-          value={formatNumber(visits30d, locale)}
+          value={formatNumber(summary.totalVisits, locale)}
           icon="👁️"
         />
         <StatTile label={t("kpi.today")} value={formatNumber(today, locale)} icon="☀️" />
         <StatTile
-          label={t("kpi.topPage")}
-          value={breakdowns.paths[0]?.label ?? "—"}
-          icon="📄"
-        />
-        <StatTile
-          label={t("kpi.topDevice")}
-          value={
-            breakdowns.devices[0]?.label
-              ? (deviceLabels[breakdowns.devices[0].label] ?? breakdowns.devices[0].label)
-              : "—"
-          }
-          icon="📱"
+          label={t("kpi.allTime")}
+          value={formatNumber(summary.totalVisitsAllTime, locale)}
+          icon="🗂️"
         />
       </div>
 
       <div className="card mt-6 p-6">
         <h2 className="mb-4 text-base font-semibold text-slate-900">{t("chart.title")}</h2>
-        {visits30d === 0 ? (
+        {summary.totalVisits === 0 ? (
           <p className="py-12 text-center text-sm text-slate-400">{t("breakdown.empty")}</p>
         ) : (
           <VisitsAreaChart data={days} locale={locale} />
         )}
       </div>
 
-      <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
         <BarRows
           title={t("breakdown.pages")}
           items={breakdowns.paths}
@@ -77,11 +78,29 @@ export default async function AdminTrafficPage() {
           locale={locale}
         />
         <BarRows
+          title={t("breakdown.cities")}
+          items={breakdowns.cities}
+          emptyLabel={t("breakdown.empty")}
+          locale={locale}
+        />
+        <BarRows
           title={t("breakdown.devices")}
           items={breakdowns.devices}
           emptyLabel={t("breakdown.empty")}
           locale={locale}
           labelMap={deviceLabels}
+        />
+        <BarRows
+          title={t("breakdown.os")}
+          items={breakdowns.os}
+          emptyLabel={t("breakdown.empty")}
+          locale={locale}
+        />
+        <BarRows
+          title={t("breakdown.browsers")}
+          items={breakdowns.browsers}
+          emptyLabel={t("breakdown.empty")}
+          locale={locale}
         />
         <BarRows
           title={t("breakdown.referrers")}

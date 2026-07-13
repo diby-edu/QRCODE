@@ -42,7 +42,12 @@ export async function createConfirmedUser(
 }
 
 // auth.users → profiles/qr_codes/qr_code_data sont en ON DELETE CASCADE
-// (voir supabase/migrations/001_schema.sql) : supprimer l'utilisateur suffit.
+// (voir supabase/migrations/001_schema.sql) : supprimer l'utilisateur suffit
+// pour ces tables. admin_activity_log, lui, est en ON DELETE SET NULL sur
+// admin_id (conçu pour garder un historique même après suppression d'un
+// admin) — admin_email (texte brut) survit donc à la suppression du compte
+// de test et pollue le vrai journal d'activité si on ne le purge pas
+// explicitement ici.
 export async function deleteTestUsers(admin: SupabaseClient): Promise<void> {
   const { data } = await admin
     .from("profiles")
@@ -51,4 +56,5 @@ export async function deleteTestUsers(admin: SupabaseClient): Promise<void> {
   for (const row of (data ?? []) as { id: string; email: string }[]) {
     await admin.auth.admin.deleteUser(row.id);
   }
+  await admin.from("admin_activity_log").delete().ilike("admin_email", `${E2E_EMAIL_PREFIX}%`);
 }

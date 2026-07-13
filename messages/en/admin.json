@@ -13,12 +13,13 @@
     "backToApp": "Back to app"
   },
   "traffic": {
-    "subtitle": "Site traffic detail: pages, devices, countries and referrers over the last 30 days.",
+    "subtitle": "Site traffic detail: pages, devices, countries, cities and referrers over the last 30 days.",
     "kpi": {
+      "uniqueVisitors30d": "Unique visitors (30d)",
+      "uniqueVisitorsHint": "Based on an anonymous identifier, not IP",
       "visits30d": "Visits (30 days)",
       "today": "Today",
-      "topPage": "Top page",
-      "topDevice": "Top device"
+      "allTime": "Total since launch"
     },
     "chart": {
       "title": "Visits over the last 30 days"
@@ -26,7 +27,10 @@
     "breakdown": {
       "pages": "Pages",
       "countries": "Countries",
+      "cities": "Cities",
       "devices": "Devices",
+      "os": "Operating systems",
+      "browsers": "Browsers",
       "referrers": "Referrers",
       "empty": "No data yet."
     },
@@ -168,12 +172,33 @@
   "activity": {
     "subtitle": "History of actions performed by administrators.",
     "empty": "No activity recorded yet.",
+    "noResults": "No activity matches these filters.",
     "columns": {
       "date": "Date",
       "admin": "Administrator",
       "action": "Action",
       "target": "Target",
       "details": "Details"
+    },
+    "filters": {
+      "searchPlaceholder": "Search (admin, target)…",
+      "allCategories": "All categories",
+      "categories": {
+        "user": "Users",
+        "plan": "Plans",
+        "qr": "QR codes",
+        "payment": "Payments",
+        "settings": "Settings",
+        "domain": "Domains"
+      },
+      "allAdmins": "All administrators",
+      "from": "From",
+      "to": "To"
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page {page} of {total}"
     },
     "actions": {
       "user": {
