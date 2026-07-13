@@ -9,7 +9,7 @@ module.exports = {
       // Node 22 dédié à qrhub, installé via nvm à côté du Node système
       // (voir DEPLOY.md § Mise à jour Node 20 → 22) — les autres projets
       // PM2 du VPS restent sur leur propre version, non affectés.
-      interpreter: "/root/.nvm/versions/node/v22.20.0/bin/node",
+      interpreter: "/root/.nvm/versions/node/v22.23.1/bin/node",
       env: {
         NODE_ENV: "production",
         // Port interne, servi uniquement à nginx — jamais exposé directement
