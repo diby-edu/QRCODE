@@ -52,6 +52,9 @@ export function CustomDomainExplainer() {
             <p className="mt-1 text-xs text-slate-500">
               {t("step1.result", { domain: EXAMPLE_SUBDOMAIN })}
             </p>
+            <p className="mt-2 rounded-lg bg-indigo-50/60 px-2.5 py-2 text-xs text-slate-600">
+              ℹ️ {t("step1.whyGo")}
+            </p>
           </div>
         </li>
         <li className="flex gap-3">
