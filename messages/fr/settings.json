@@ -44,6 +44,30 @@
       "invalidDomain": "Nom de domaine invalide.",
       "domainTaken": "Ce domaine est déjà utilisé.",
       "generic": "Échec de la demande. Réessayez."
+    },
+    "explainer": {
+      "title": "Comment ça marche, avec un exemple concret",
+      "prerequisite": "Vous devez déjà posséder un nom de domaine, acheté chez un fournisseur comme OVH, Gandi ou Namecheap (10-15 €/an environ). QRHub ne vend pas de noms de domaine — cette fonctionnalité sert uniquement à brancher un domaine que vous possédez déjà sur vos QR codes.",
+      "exampleLabel": "Exemple",
+      "exampleIntro": "Votre boutique s'appelle « Ma Boutique » et vous possédez déjà {domain}.",
+      "step1": {
+        "title": "Chez votre fournisseur de domaine (pas ici)",
+        "description": "Créez un enregistrement CNAME qui pointe vers nous :",
+        "result": "Cela crée le sous-domaine {domain}, qui pointe vers QRHub."
+      },
+      "step2": {
+        "title": "Revenez ici et faites votre demande",
+        "description": "Entrez {domain} dans le champ ci-dessous et cliquez sur \"Enregistrer\". Le statut passe à \"En attente\"."
+      },
+      "step3": {
+        "title": "Vérification (24-48h)",
+        "description": "Notre équipe vérifie que le CNAME est bien configuré, puis active votre domaine. Le statut passe à \"Actif\"."
+      },
+      "step4": {
+        "title": "C'est fait, automatiquement",
+        "description": "Tous vos QR codes dynamiques (déjà créés ou futurs) affichent désormais {domain} au lieu de qrcode.numerik360.com — sans rien réimprimer."
+      },
+      "pricingNote": "Combien ça coûte : cette fonctionnalité est incluse dans votre abonnement actuel, aucun paiement supplémentaire sur QRHub. Le nom de domaine ({domain}) est un achat séparé chez votre fournisseur de domaine — vous l'avez probablement déjà si vous en êtes à cette étape."
     }
   }
 }

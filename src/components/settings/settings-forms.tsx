@@ -9,6 +9,7 @@ import {
   requestCustomDomain,
   updateProfile,
 } from "@/app/(app)/settings/actions";
+import { CustomDomainExplainer } from "./CustomDomainExplainer";
 
 function SaveRow({
   saved,
@@ -155,14 +156,17 @@ export function CustomDomainForm({
 
   if (!enabled) {
     return (
-      <div className="card space-y-3 p-6">
-        <h2 className="text-base font-semibold text-slate-900">{t("title")}</h2>
-        <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">
-          {t("locked")}{" "}
-          <Link href="/billing" className="font-semibold underline">
-            {t("upgradeLink")}
-          </Link>
-        </p>
+      <div className="space-y-4">
+        <div className="card space-y-3 p-6">
+          <h2 className="text-base font-semibold text-slate-900">{t("title")}</h2>
+          <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">
+            {t("locked")}{" "}
+            <Link href="/billing" className="font-semibold underline">
+              {t("upgradeLink")}
+            </Link>
+          </p>
+        </div>
+        <CustomDomainExplainer />
       </div>
     );
   }
@@ -175,49 +179,55 @@ export function CustomDomainForm({
           ? "badge-red"
           : "badge-amber";
     return (
-      <div className="card space-y-3 p-6">
-        <h2 className="text-base font-semibold text-slate-900">{t("title")}</h2>
-        <div className="flex items-center justify-between gap-3">
-          <span className="truncate font-mono text-sm text-slate-700">{current.domain}</span>
-          <span className={badgeClass}>{t(`status.${current.status}`)}</span>
+      <div className="space-y-4">
+        <div className="card space-y-3 p-6">
+          <h2 className="text-base font-semibold text-slate-900">{t("title")}</h2>
+          <div className="flex items-center justify-between gap-3">
+            <span className="truncate font-mono text-sm text-slate-700">{current.domain}</span>
+            <span className={badgeClass}>{t(`status.${current.status}`)}</span>
+          </div>
+          {current.status === "pending" && (
+            <p className="text-xs text-slate-400">{t("pendingHint")}</p>
+          )}
+          {current.status === "failed" && (
+            <p className="text-xs text-slate-400">{current.domain && t("failedHint")}</p>
+          )}
         </div>
-        {current.status === "pending" && (
-          <p className="text-xs text-slate-400">{t("pendingHint")}</p>
-        )}
-        {current.status === "failed" && (
-          <p className="text-xs text-slate-400">{current.domain && t("failedHint")}</p>
-        )}
+        {current.status !== "active" && <CustomDomainExplainer />}
       </div>
     );
   }
 
   return (
-    <form
-      className="card space-y-4 p-6"
-      onSubmit={(e) => {
-        e.preventDefault();
-        setError(null);
-        startTransition(async () => {
-          const result = await requestCustomDomain(domain);
-          if (result?.error) setError(t(`errors.${result.error}`));
-          else setSaved(true);
-        });
-      }}
-    >
-      <h2 className="text-base font-semibold text-slate-900">{t("title")}</h2>
-      <p className="text-xs text-slate-500">{t("hint")}</p>
-      <label className="block">
-        <span className="label">{t("domainLabel")}</span>
-        <input
-          value={domain}
-          onChange={(e) => setDomain(e.target.value)}
-          placeholder="go.monsite.com"
-          className="input"
-          required
-        />
-      </label>
-      <SaveRow saved={saved} savedLabel={t("requested")} error={error} isPending={isPending} />
-    </form>
+    <div className="space-y-4">
+      <CustomDomainExplainer />
+      <form
+        className="card space-y-4 p-6"
+        onSubmit={(e) => {
+          e.preventDefault();
+          setError(null);
+          startTransition(async () => {
+            const result = await requestCustomDomain(domain);
+            if (result?.error) setError(t(`errors.${result.error}`));
+            else setSaved(true);
+          });
+        }}
+      >
+        <h2 className="text-base font-semibold text-slate-900">{t("title")}</h2>
+        <p className="text-xs text-slate-500">{t("hint")}</p>
+        <label className="block">
+          <span className="label">{t("domainLabel")}</span>
+          <input
+            value={domain}
+            onChange={(e) => setDomain(e.target.value)}
+            placeholder="go.monsite.com"
+            className="input"
+            required
+          />
+        </label>
+        <SaveRow saved={saved} savedLabel={t("requested")} error={error} isPending={isPending} />
+      </form>
+    </div>
   );
 }
 

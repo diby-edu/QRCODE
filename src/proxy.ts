@@ -89,7 +89,15 @@ export async function proxy(request: NextRequest, event: NextFetchEvent) {
   // Trafic du site (pages vues) — exclut l'usage admin et les appels API,
   // qui ne sont pas du "trafic visiteur". Les scans de QR (/q/*) sont déjà
   // exclus par le matcher ci-dessous et trackés séparément (record_scan).
-  if (!pathname.startsWith("/admin") && !pathname.startsWith("/api")) {
+  // NODE_ENV !== "production" exclut `npm run dev` ET les tests Playwright
+  // (qui tournent dessus) : dev et prod partagent la même base Supabase,
+  // sans ce garde-fou chaque itération locale polluait site_visits avec du
+  // faux trafic (déjà arrivé une fois, cf. nettoyage du 13/07/2026).
+  if (
+    process.env.NODE_ENV === "production" &&
+    !pathname.startsWith("/admin") &&
+    !pathname.startsWith("/api")
+  ) {
     event.waitUntil(
       trackVisit(
         pathname,
