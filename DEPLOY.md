@@ -206,8 +206,9 @@ l'admin** (pas de self-service) :
    enregistrement CNAME : `go.sonentreprise.com` → `qrcode.numerik360.com`.
 2. **Le client** fait sa demande dans `/settings` (visible seulement si son
    plan a `custom_domain_enabled`) — statut `pending`.
-3. **Vous (admin)**, une fois le CNAME propagé (vérifiable avec `dig
-   go.sonentreprise.com`), lancez sur le VPS :
+3. **Vous (admin)**, une fois le CNAME propagé (vérifiable avec le bouton
+   "Vérifier le DNS" dans `/admin/domains`, ou `dig go.sonentreprise.com`),
+   lancez sur le VPS :
    ```bash
    ./scripts/add-custom-domain.sh go.sonentreprise.com
    ```
@@ -228,3 +229,97 @@ d'exécuter des commandes shell sur le serveur (ce VPS héberge d'autres
 projets — une faille dans ce code mettrait en danger bien plus que QRHub).
 Garder ce geste manuel, hors du processus qui reçoit les requêtes
 Internet, élimine ce risque.
+
+## 14. Sentry (suivi d'erreurs) — à faire quand vous serez prêt
+
+Sentry capture les erreurs qui surviennent **dans le code** pendant que le
+site tourne normalement (contrairement à UptimeRobot § 15, qui ne détecte
+que les pannes totales). Gratuit jusqu'à 5 000 erreurs/mois, largement
+suffisant à cette échelle.
+
+### 14.1 Créer le compte et le projet
+
+1. Aller sur **https://sentry.io/signup/** et créer un compte (email/mot
+   de passe, ou via Google/GitHub).
+2. Créer une **organisation** — n'importe quel nom, ex. `numerik360`.
+3. Créer un premier **projet** : choisir la plateforme **Next.js**, lui
+   donner un nom, ex. `qrhub`.
+
+### 14.2 Récupérer les 4 valeurs nécessaires
+
+| Valeur | Où la trouver |
+|---|---|
+| **DSN** | Page d'installation affichée après création du projet (ligne `dsn: "https://xxx@oXXXXXX.ingest.us.sentry.io/XXXXXXX"`), ou plus tard : Settings ⚙️ → Projects → `qrhub` → **Client Keys (DSN)**. Pas secret (public par nature). |
+| **Org slug** | Visible dans l'URL du dashboard : `sentry.io/organizations/<org-slug>/...` |
+| **Project slug** | Le nom du projet tel qu'affiché dans l'URL (ex. `qrhub`) |
+| **Auth Token** | Settings ⚙️ → **Auth Tokens** → **Create New Token** → cocher au minimum `project:releases` et `project:write` → copier le token (affiché une seule fois) |
+
+### 14.3 Ajouter les variables d'environnement
+
+Dans **`.env.local`** en local ET dans **`.env.local` sur le VPS** (les deux
+copies existent séparément, voir § 3) :
+
+```bash
+NEXT_PUBLIC_SENTRY_DSN=https://xxx@oXXXXXX.ingest.us.sentry.io/XXXXXXX
+SENTRY_AUTH_TOKEN=sntrys_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+SENTRY_ORG=numerik360
+SENTRY_PROJECT=qrhub
+```
+
+### 14.4 Déployer
+
+```bash
+git pull
+npm install
+npm run build
+cp -r .next/static .next/standalone/.next/static
+cp -r public .next/standalone/public
+cp .env.local .next/standalone/    # ⚠️ inclut désormais les 4 clés Sentry
+pm2 restart qrhub
+```
+
+### 14.5 Vérifier que ça fonctionne
+
+Provoquer une erreur volontaire (ex. visiter une URL qui n'existe pas dans
+l'app, ou dans `/admin` déclencher une action qui échoue), puis vérifier
+qu'elle apparaît dans le dashboard Sentry sous **Issues**, en général en
+quelques secondes.
+
+## 15. UptimeRobot (surveillance de disponibilité) — à faire quand vous serez prêt
+
+UptimeRobot visite le site depuis l'extérieur toutes les 5 minutes et
+alerte par email si ça ne répond plus (panne totale — serveur éteint, PM2
+crashé, nginx mal configuré, Supabase injoignable). Gratuit.
+
+### 15.1 Créer le compte
+
+Aller sur **https://uptimerobot.com/signUp**, s'inscrire avec l'adresse
+email qui doit recevoir les alertes.
+
+### 15.2 Créer les deux moniteurs
+
+**Moniteur 1 — le site en entier :**
+- **+ Add New Monitor**
+- Monitor Type : `HTTP(s)`
+- Friendly Name : `QRHub - Site`
+- URL : `https://qrcode.numerik360.com`
+- Monitoring Interval : `5 minutes`
+- **Create Monitor**
+
+**Moniteur 2 — santé applicative + base de données :**
+- **+ Add New Monitor**
+- Monitor Type : `HTTP(s)`
+- Friendly Name : `QRHub - Health (DB)`
+- URL : `https://qrcode.numerik360.com/api/health`
+- Monitoring Interval : `5 minutes`
+- **Create Monitor**
+
+Deux moniteurs séparés plutôt qu'un seul : si seul le premier tombe, le
+problème vient probablement de nginx/PM2 ; si seul `/api/health` tombe
+alors que `/` répond, c'est spécifiquement Supabase qui est injoignable —
+ça oriente immédiatement où chercher.
+
+### 15.3 Vérifier les alertes
+
+**My Settings** → **Alert Contacts** : confirmer que l'email du compte est
+bien actif comme contact d'alerte (c'est le comportement par défaut).
