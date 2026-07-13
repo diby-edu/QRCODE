@@ -35,6 +35,7 @@ const PROTECTED_PREFIXES = [
   "/folders",
   "/settings",
   "/billing",
+  "/domain",
   "/admin",
 ];
 

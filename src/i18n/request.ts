@@ -13,6 +13,7 @@ const NAMESPACES = [
   "admin",
   "scan",
   "settings",
+  "domain",
 ] as const;
 
 async function loadMessages(locale: Locale) {
