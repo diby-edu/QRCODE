@@ -3,13 +3,17 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { signUp, type AuthState } from "../actions";
+import { signUp, resendConfirmation, type AuthState } from "../actions";
 import { SubmitButton } from "@/components/ui/SubmitButton";
 
 export function RegisterForm() {
   const t = useTranslations("auth");
   const locale = useLocale();
   const [state, action] = useActionState<AuthState, FormData>(signUp, null);
+  const [resendState, resendAction] = useActionState<AuthState, FormData>(
+    resendConfirmation,
+    null
+  );
 
   if (state?.success) {
     return (
@@ -22,6 +26,25 @@ export function RegisterForm() {
         <p className="mt-4 text-sm leading-relaxed text-slate-600">
           {t("register.checkEmail", { email: state.success })}
         </p>
+
+        {resendState?.success ? (
+          <p className="mt-4 text-xs font-medium text-emerald-600">
+            {t("register.resendSent")}
+          </p>
+        ) : (
+          <form action={resendAction} className="mt-4">
+            <input type="hidden" name="email" value={state.success} />
+            {resendState?.error && (
+              <p className="mb-2 text-xs text-red-600">
+                {t(`errors.${resendState.error}`)}
+              </p>
+            )}
+            <SubmitButton className="text-xs font-medium text-indigo-600 hover:text-indigo-700">
+              {t("register.resend")}
+            </SubmitButton>
+          </form>
+        )}
+
         <Link href="/auth/login" className="btn-secondary mt-6 w-full">
           {t("forgot.backToLogin")}
         </Link>

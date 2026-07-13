@@ -1,14 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { useTranslations } from "next-intl";
-import { signIn, type AuthState } from "../actions";
+import { signIn, resendConfirmation, type AuthState } from "../actions";
 import { SubmitButton } from "@/components/ui/SubmitButton";
 
 export function LoginForm({ next }: { next: string }) {
   const t = useTranslations("auth");
   const [state, action] = useActionState<AuthState, FormData>(signIn, null);
+  const [resendState, resendAction] = useActionState<AuthState, FormData>(
+    resendConfirmation,
+    null
+  );
+  const [email, setEmail] = useState("");
 
   return (
     <div className="card p-8">
@@ -29,6 +34,8 @@ export function LoginForm({ next }: { next: string }) {
             autoComplete="email"
             className="input"
             placeholder="vous@exemple.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </div>
         <div>
@@ -62,6 +69,28 @@ export function LoginForm({ next }: { next: string }) {
 
         <SubmitButton>{t("login.submit")}</SubmitButton>
       </form>
+
+      {state?.error === "emailNotConfirmed" && (
+        <div className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm">
+          {resendState?.success ? (
+            <p className="text-xs font-medium text-emerald-600">
+              {t("register.resendSent")}
+            </p>
+          ) : (
+            <form action={resendAction}>
+              <input type="hidden" name="email" value={email} />
+              {resendState?.error && (
+                <p className="mb-1 text-xs text-red-700">
+                  {t(`errors.${resendState.error}`)}
+                </p>
+              )}
+              <SubmitButton className="text-xs font-semibold text-indigo-600 hover:text-indigo-700">
+                {t("register.resend")}
+              </SubmitButton>
+            </form>
+          )}
+        </div>
+      )}
 
       <p className="mt-6 text-center text-sm text-slate-500">
         {t("login.noAccount")}{" "}

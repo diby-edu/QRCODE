@@ -21,6 +21,8 @@ function mapAuthError(code: string | undefined): string {
       return "userExists";
     case "weak_password":
       return "weakPassword";
+    case "over_email_send_rate_limit":
+      return "rateLimited";
     default:
       return "generic";
   }
@@ -89,6 +91,24 @@ export async function signUp(
   redirect("/dashboard");
 }
 
+export async function resendConfirmation(
+  _prev: AuthState,
+  formData: FormData
+): Promise<AuthState> {
+  const email = String(formData.get("email") ?? "").trim();
+  if (!email) return { error: "generic" };
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.resend({
+    type: "signup",
+    email,
+    options: { emailRedirectTo: `${appUrl()}/auth/callback` },
+  });
+  if (error) return { error: mapAuthError(error.code) };
+
+  return { success: email };
+}
+
 export async function forgotPassword(
   _prev: AuthState,
   formData: FormData
@@ -116,7 +136,7 @@ export async function resetPassword(
   const { error } = await supabase.auth.updateUser({ password });
   if (error) return { error: mapAuthError(error.code) };
 
-  redirect("/dashboard");
+  return { success: "done" };
 }
 
 export async function signOut() {

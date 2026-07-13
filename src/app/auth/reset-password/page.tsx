@@ -1,16 +1,38 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { resetPassword, type AuthState } from "../actions";
 import { SubmitButton } from "@/components/ui/SubmitButton";
 
 export default function ResetPasswordPage() {
   const t = useTranslations("auth");
+  const router = useRouter();
   const [state, action] = useActionState<AuthState, FormData>(
     resetPassword,
     null
   );
+
+  useEffect(() => {
+    if (state?.success) {
+      const timer = setTimeout(() => router.push("/dashboard"), 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [state?.success, router]);
+
+  if (state?.success) {
+    return (
+      <div className="card p-8 text-center">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50">
+          <svg className="h-7 w-7 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+          </svg>
+        </div>
+        <p className="mt-4 text-sm leading-relaxed text-slate-600">{t("reset.success")}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="card p-8">
