@@ -89,7 +89,7 @@
     "allTypes": "All types",
     "allStatuses": "All statuses",
     "allFolders": "All folders",
-    "exportCsv": "Export CSV",
+    "exportCsv": "Export",
     "selectAll": "Select all",
     "selectedCount": "{count, plural, one {# selected} other {# selected}}",
     "moveToFolder": "Move to…",
@@ -122,7 +122,7 @@
     "confirmDelete": "The QR codes inside this folder will not be deleted."
   },
   "import": {
-    "backLink": "Import CSV",
+    "backLink": "Import",
     "title": "Import QR codes",
     "subtitle": "Create multiple “Website” QR codes at once from a CSV file.",
     "templateLink": "Download CSV template",

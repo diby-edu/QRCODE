@@ -89,7 +89,7 @@
     "allTypes": "Tous les types",
     "allStatuses": "Tous les statuts",
     "allFolders": "Tous les dossiers",
-    "exportCsv": "Exporter CSV",
+    "exportCsv": "Exporter",
     "selectAll": "Tout sélectionner",
     "selectedCount": "{count, plural, one {# sélectionné} other {# sélectionnés}}",
     "moveToFolder": "Déplacer vers…",
@@ -122,7 +122,7 @@
     "confirmDelete": "Les QR codes de ce dossier ne seront pas supprimés."
   },
   "import": {
-    "backLink": "Importer CSV",
+    "backLink": "Importer",
     "title": "Importer des QR codes",
     "subtitle": "Créez plusieurs QR codes « Site web » à la fois depuis un fichier CSV.",
     "templateLink": "Télécharger le modèle CSV",
