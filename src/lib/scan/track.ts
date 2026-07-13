@@ -1,17 +1,6 @@
 import { UAParser } from "ua-parser-js";
 import { createAdminClient } from "@/lib/supabase/admin";
-
-function isPrivateIp(ip: string) {
-  return (
-    ip === "127.0.0.1" ||
-    ip === "::1" ||
-    ip.startsWith("10.") ||
-    ip.startsWith("192.168.") ||
-    /^172\.(1[6-9]|2\d|3[01])\./.test(ip) ||
-    ip.startsWith("fc") ||
-    ip.startsWith("fe80")
-  );
-}
+import { isPrivateIp } from "@/lib/net";
 
 /**
  * Enregistre un scan (appareil, navigateur, OS, pays/ville via IP).
@@ -68,7 +57,4 @@ export async function trackScan(
   }
 }
 
-export function extractIp(forwardedFor: string | null): string | null {
-  if (!forwardedFor) return null;
-  return forwardedFor.split(",")[0]?.trim() || null;
-}
+export { extractIp } from "@/lib/net";

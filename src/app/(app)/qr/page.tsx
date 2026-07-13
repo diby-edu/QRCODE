@@ -73,7 +73,7 @@ export default async function QrListPage({
             {t("list.subtitle", { count: qrCodes.length })}
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Link href="/qr/import" className="btn-secondary">
             ⬆ {t("import.backLink")}
           </Link>

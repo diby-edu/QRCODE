@@ -29,6 +29,7 @@ async function featureList(plan: Plan, locale: string): Promise<string[]> {
   if (limits.logo_enabled) features.push(t("logo"));
   if (limits.folders_enabled) features.push(t("folders"));
   if (limits.password_enabled) features.push(t("password"));
+  if (limits.custom_domain_enabled) features.push(t("customDomain"));
   return features;
 }
 

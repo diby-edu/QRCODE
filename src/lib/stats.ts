@@ -29,6 +29,14 @@ export interface ScanBreakdowns {
   os: BreakdownItem[];
 }
 
+export interface SiteVisitBreakdowns {
+  total: number;
+  paths: BreakdownItem[];
+  referrers: BreakdownItem[];
+  devices: BreakdownItem[];
+  countries: BreakdownItem[];
+}
+
 const EMPTY_BREAKDOWNS: ScanBreakdowns = {
   total: 0,
   countries: [],
@@ -36,6 +44,14 @@ const EMPTY_BREAKDOWNS: ScanBreakdowns = {
   devices: [],
   browsers: [],
   os: [],
+};
+
+const EMPTY_VISIT_BREAKDOWNS: SiteVisitBreakdowns = {
+  total: 0,
+  paths: [],
+  referrers: [],
+  devices: [],
+  countries: [],
 };
 
 /** Scans par jour (jours vides à 0) via la RPC scans_per_day — RLS appliquée. */
@@ -97,5 +113,22 @@ export async function fetchScanBreakdowns(
     devices: raw.devices ?? [],
     browsers: raw.browsers ?? [],
     os: raw.os ?? [],
+  };
+}
+
+/** Répartitions pages/référents/appareils/pays via la RPC site_visits_breakdowns. */
+export async function fetchSiteVisitBreakdowns(
+  supabase: SupabaseClient,
+  days = 30
+): Promise<SiteVisitBreakdowns> {
+  const { data } = await supabase.rpc("site_visits_breakdowns", { p_days: days });
+  if (!data || typeof data !== "object") return EMPTY_VISIT_BREAKDOWNS;
+  const raw = data as Partial<SiteVisitBreakdowns>;
+  return {
+    total: Number(raw.total ?? 0),
+    paths: raw.paths ?? [],
+    referrers: raw.referrers ?? [],
+    devices: raw.devices ?? [],
+    countries: raw.countries ?? [],
   };
 }

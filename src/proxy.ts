@@ -3,6 +3,7 @@ import { NextResponse, type NextFetchEvent, type NextRequest } from "next/server
 import { trackVisit } from "@/lib/analytics/track-visit";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { appUrl } from "@/lib/url";
+import { extractIp } from "@/lib/net";
 
 // Cache mémoire (process Node unique, pas serverless) : évite une requête
 // DB à chaque hit sur un domaine personnalisé. TTL court, acceptable pour
@@ -90,7 +91,12 @@ export async function proxy(request: NextRequest, event: NextFetchEvent) {
   // exclus par le matcher ci-dessous et trackés séparément (record_scan).
   if (!pathname.startsWith("/admin") && !pathname.startsWith("/api")) {
     event.waitUntil(
-      trackVisit(pathname, request.headers.get("user-agent"), request.headers.get("referer"))
+      trackVisit(
+        pathname,
+        request.headers.get("user-agent"),
+        request.headers.get("referer"),
+        extractIp(request.headers.get("x-forwarded-for"))
+      )
     );
   }
 

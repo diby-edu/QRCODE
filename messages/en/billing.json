@@ -42,7 +42,8 @@
       "statsFull": "Detailed analytics",
       "statsBasic": "Basic analytics",
       "folders": "Folders",
-      "password": "Password protection"
+      "password": "Password protection",
+      "customDomain": "Custom domain"
     },
     "payWith": "Orange Money, MTN MoMo, Moov, Wave, bank card"
   },

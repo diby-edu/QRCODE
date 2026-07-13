@@ -6,10 +6,35 @@
     "plans": "Plans",
     "payments": "Payments",
     "qrcodes": "QR codes",
+    "traffic": "Traffic",
     "domains": "Domains",
     "activity": "Activity",
     "settings": "Settings",
     "backToApp": "Back to app"
+  },
+  "traffic": {
+    "subtitle": "Site traffic detail: pages, devices, countries and referrers over the last 30 days.",
+    "kpi": {
+      "visits30d": "Visits (30 days)",
+      "today": "Today",
+      "topPage": "Top page",
+      "topDevice": "Top device"
+    },
+    "chart": {
+      "title": "Visits over the last 30 days"
+    },
+    "breakdown": {
+      "pages": "Pages",
+      "countries": "Countries",
+      "devices": "Devices",
+      "referrers": "Referrers",
+      "empty": "No data yet."
+    },
+    "devices": {
+      "desktop": "Desktop",
+      "mobile": "Mobile",
+      "tablet": "Tablet"
+    }
   },
   "overview": {
     "users": "Users",
