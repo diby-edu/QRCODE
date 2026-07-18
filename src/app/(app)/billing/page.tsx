@@ -1,7 +1,6 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getUserPlan } from "@/lib/plans";
-import { fetchScansPerDay } from "@/lib/stats";
 import { verifyAndActivate } from "@/lib/payments/activate";
 import { formatDate, formatDateTime, formatMoney } from "@/lib/utils";
 import type { Payment, Plan } from "@/lib/types";
@@ -37,7 +36,7 @@ export default async function BillingPage({
     data: { user },
   } = await supabase.auth.getUser();
 
-  const [userPlan, { count: totalQr }, { count: dynamicQr }, { data: storageBytes }, days, { data: plansRaw }, { data: paymentsRaw }] =
+  const [userPlan, { count: totalQr }, { count: dynamicQr }, { data: storageBytes }, { data: plansRaw }, { data: paymentsRaw }] =
     await Promise.all([
       getUserPlan(supabase, user!.id),
       supabase.from("qr_codes").select("id", { count: "exact", head: true }),
@@ -46,7 +45,6 @@ export default async function BillingPage({
         .select("id", { count: "exact", head: true })
         .eq("is_dynamic", true),
       supabase.rpc("user_storage_bytes"),
-      fetchScansPerDay(supabase, 30),
       supabase
         .from("plans")
         .select("*")
@@ -65,7 +63,6 @@ export default async function BillingPage({
     Payment,
     "id" | "amount" | "currency" | "status" | "created_at"
   >[];
-  const scans30d = days.reduce((sum, d) => sum + d.scans, 0);
   const storageMb = Math.round((Number(storageBytes ?? 0) / 1024 / 1024) * 10) / 10;
 
   const bannerStyles: Record<Exclude<Banner, null>, string> = {
@@ -130,12 +127,6 @@ export default async function BillingPage({
             label={t("usage.dynamic")}
             used={dynamicQr ?? 0}
             limit={limits.max_dynamic}
-            locale={locale}
-          />
-          <UsageMeter
-            label={t("usage.scansMonth")}
-            used={scans30d}
-            limit={limits.max_scans_month}
             locale={locale}
           />
           <UsageMeter

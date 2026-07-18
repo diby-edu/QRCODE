@@ -57,7 +57,7 @@ export async function SiteFooter() {
           <Logo />
           <p className="mt-3 text-sm text-slate-500">{tc("footer.madeWith")}</p>
         </div>
-        <div className="flex gap-16 text-sm">
+        <div className="flex flex-wrap gap-x-16 gap-y-8 text-sm">
           <div>
             <p className="mb-3 font-semibold text-slate-900">{t("product")}</p>
             <ul className="space-y-2 text-slate-500">
@@ -84,6 +84,41 @@ export async function SiteFooter() {
               <li>
                 <Link href="/auth/register" className="hover:text-slate-900">
                   {t("register")}
+                </Link>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <p className="mb-3 font-semibold text-slate-900">{t("company")}</p>
+            <ul className="space-y-2 text-slate-500">
+              <li>
+                <Link href="/about" className="hover:text-slate-900">
+                  {t("about")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="hover:text-slate-900">
+                  {t("contact")}
+                </Link>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <p className="mb-3 font-semibold text-slate-900">{t("legal")}</p>
+            <ul className="space-y-2 text-slate-500">
+              <li>
+                <Link href="/privacy" className="hover:text-slate-900">
+                  {t("privacy")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/terms" className="hover:text-slate-900">
+                  {t("terms")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/gdpr" className="hover:text-slate-900">
+                  {t("gdpr")}
                 </Link>
               </li>
             </ul>

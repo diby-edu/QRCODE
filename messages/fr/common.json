@@ -76,7 +76,6 @@
     "labels": {
       "qrCodes": "QR codes",
       "dynamicQr": "QR dynamiques",
-      "scans": "Scans mensuels",
       "storage": "Stockage"
     },
     "limitApproaching": "Vous approchez de votre limite « {label} ».",

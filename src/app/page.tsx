@@ -97,10 +97,6 @@ export default async function HomePage() {
               <div className="absolute -inset-6 rounded-[2.5rem] bg-gradient-to-br from-indigo-200/60 to-violet-200/60 blur-2xl" />
               <div className="card relative rotate-1 p-8 transition-transform duration-300 hover:rotate-0">
                 <HeroQr />
-                <div className="mt-5 flex items-center justify-between text-sm">
-                  <span className="font-semibold text-slate-800">qrhub.app/q/promo</span>
-                  <span className="badge-green">● 1 284 scans</span>
-                </div>
               </div>
             </div>
           </div>

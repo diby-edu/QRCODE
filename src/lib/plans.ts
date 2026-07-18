@@ -4,7 +4,6 @@ import type { Plan, PlanLimits, Subscription } from "./types";
 export const DEFAULT_LIMITS: PlanLimits = {
   max_qr_codes: 5,
   max_dynamic: 3,
-  max_scans_month: 300,
   max_storage_mb: 20,
   logo_enabled: false,
   video_enabled: false,
@@ -20,7 +19,6 @@ export function normalizeLimits(raw: unknown): PlanLimits {
   return {
     max_qr_codes: typeof r.max_qr_codes === "number" ? r.max_qr_codes : DEFAULT_LIMITS.max_qr_codes,
     max_dynamic: typeof r.max_dynamic === "number" ? r.max_dynamic : DEFAULT_LIMITS.max_dynamic,
-    max_scans_month: typeof r.max_scans_month === "number" ? r.max_scans_month : DEFAULT_LIMITS.max_scans_month,
     max_storage_mb: typeof r.max_storage_mb === "number" ? r.max_storage_mb : DEFAULT_LIMITS.max_storage_mb,
     logo_enabled: r.logo_enabled === true,
     video_enabled: r.video_enabled === true,

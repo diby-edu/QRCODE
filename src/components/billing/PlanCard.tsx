@@ -16,9 +16,6 @@ async function featureList(plan: Plan, locale: string): Promise<string[]> {
     isUnlimited(limits.max_dynamic)
       ? t("dynamicUnlimited")
       : t("dynamic", { count: n(limits.max_dynamic) }),
-    isUnlimited(limits.max_scans_month)
-      ? t("scansUnlimited")
-      : t("scans", { count: n(limits.max_scans_month) }),
     isUnlimited(limits.max_storage_mb)
       ? t("storageUnlimited")
       : t("storage", { count: n(limits.max_storage_mb) }),

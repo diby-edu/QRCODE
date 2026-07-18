@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export type AuthState = { error?: string; success?: string } | null;
 
@@ -63,9 +64,11 @@ export async function signUp(
   const fullName = String(formData.get("fullName") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
+  const confirmPassword = String(formData.get("confirmPassword") ?? "");
   const language = String(formData.get("language") ?? "fr");
 
   if (password.length < 8) return { error: "weakPassword" };
+  if (password !== confirmPassword) return { error: "mismatch" };
 
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
@@ -97,6 +100,25 @@ export async function resendConfirmation(
 ): Promise<AuthState> {
   const email = String(formData.get("email") ?? "").trim();
   if (!email) return { error: "generic" };
+
+  // Certains fournisseurs mail (Gmail en tête) pré-visitent les liens dans
+  // les emails entrants pour les scanner, ce qui consomme le lien de
+  // confirmation à usage unique et confirme le compte avant même que
+  // l'utilisateur ne l'ouvre. Sans ce garde-fou, resend() renvoie un succès
+  // silencieux (rien n'est réellement envoyé pour un compte déjà confirmé),
+  // ce qui affichait "Email renvoyé !" alors qu'aucun email ne partait.
+  const admin = createAdminClient();
+  const { data: profile } = await admin
+    .from("profiles")
+    .select("id")
+    .eq("email", email)
+    .maybeSingle();
+  if (profile) {
+    const { data } = await admin.auth.admin.getUserById(profile.id);
+    if (data.user?.email_confirmed_at) {
+      return { error: "alreadyConfirmed" };
+    }
+  }
 
   const supabase = await createClient();
   const { error } = await supabase.auth.resend({

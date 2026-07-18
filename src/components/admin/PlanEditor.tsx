@@ -177,9 +177,6 @@ export function PlanEditor({
         {numberInput(t("fields.maxDynamic"), form.limits.max_dynamic, (v) =>
           setLimits({ max_dynamic: v })
         )}
-        {numberInput(t("fields.maxScans"), form.limits.max_scans_month, (v) =>
-          setLimits({ max_scans_month: v })
-        )}
         {numberInput(t("fields.maxStorage"), form.limits.max_storage_mb, (v) =>
           setLimits({ max_storage_mb: v })
         )}

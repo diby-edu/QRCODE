@@ -196,7 +196,6 @@ function sanitizePlanPayload(p: PlanPayload) {
     limits: {
       max_qr_codes: int(p.limits.max_qr_codes, 5),
       max_dynamic: int(p.limits.max_dynamic, 3),
-      max_scans_month: int(p.limits.max_scans_month, 300),
       max_storage_mb: int(p.limits.max_storage_mb, 20),
       logo_enabled: p.limits.logo_enabled === true,
       video_enabled: p.limits.video_enabled === true,

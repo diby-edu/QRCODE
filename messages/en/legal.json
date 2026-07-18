@@ -1,0 +1,146 @@
+{
+  "about": {
+    "title": "About QRHub",
+    "lead": "QRHub is the dynamic QR code platform built for businesses and freelancers in West Africa and beyond.",
+    "sections": [
+      {
+        "title": "Our mission",
+        "body": "Many businesses print a QR code once and get stuck with a dead link the moment their offer changes. QRHub solves that: you can change a dynamic QR code's destination anytime, without ever reprinting, and see exactly who scans it — country, city, device, browser."
+      },
+      {
+        "title": "What we offer",
+        "body": "20+ QR code types (website, vCard, Wi-Fi, restaurant menu, PDF, event…), full color and logo customization, real-time statistics, and organization tools (folders, search, bulk import) to manage large numbers of QR codes without losing track."
+      },
+      {
+        "title": "Who we are",
+        "body": "QRHub is built and published by Numerik360, based in Côte d'Ivoire. We build digital tools designed for the West African market, with local payment methods."
+      },
+      {
+        "title": "Local payment",
+        "body": "Subscriptions can be paid via Orange Money, MTN Mobile Money, Moov Money, Wave, or credit card, through PayDunya."
+      }
+    ]
+  },
+  "contact": {
+    "title": "Contact us",
+    "lead": "A question, a technical issue, a suggestion? Our team is here to help.",
+    "email": {
+      "label": "Email",
+      "value": "support@qrcode.numerik360.com"
+    },
+    "whatsapp": {
+      "label": "WhatsApp / Phone",
+      "value": "+225 05 54 58 59 27"
+    },
+    "hours": "We usually reply within 24 to 48 business hours."
+  },
+  "privacy": {
+    "title": "Privacy policy",
+    "updated": "Last updated: July 2026",
+    "lead": "This page explains what data QRHub collects, why, and how it is protected.",
+    "sections": [
+      {
+        "title": "Data we collect",
+        "body": "When you create an account: name, email address, password (never stored in plain text). When you use the service: the content of your QR codes (URLs, files, text you enter), and anonymized scan statistics (country, approximate city, device type, browser — never the identity of the person scanning)."
+      },
+      {
+        "title": "How we use this data",
+        "body": "To run the service (create and redirect your QR codes), to show you statistics, to process your subscription payments, and to contact you about your account when needed."
+      },
+      {
+        "title": "Who we share this data with",
+        "body": "Only with our technical providers, to the extent necessary to run the service: Supabase (database and authentication hosting) and PayDunya (mobile and card payment processing). We do not sell or rent your data to third parties for advertising purposes."
+      },
+      {
+        "title": "Retention",
+        "body": "Your data is kept as long as your account is active. If you delete your account, your personal data and QR codes are deleted, except for information we must keep for legal or accounting obligations (e.g. billing history)."
+      },
+      {
+        "title": "Security",
+        "body": "Connections to the site are encrypted (HTTPS), passwords are hashed, and data access is protected by database-level security rules (each user can only access their own data)."
+      },
+      {
+        "title": "Cookies",
+        "body": "QRHub only uses cookies strictly necessary for the service to work (keeping you signed in). We do not use advertising cookies or third-party trackers."
+      },
+      {
+        "title": "Your rights",
+        "body": "You have rights over your personal data — see our GDPR page for details and how to exercise them."
+      }
+    ]
+  },
+  "terms": {
+    "title": "Terms of service",
+    "updated": "Last updated: July 2026",
+    "lead": "By creating a QRHub account, you agree to the terms below.",
+    "sections": [
+      {
+        "title": "1. Purpose",
+        "body": "QRHub is an online service for creating, customizing, and tracking dynamic and static QR codes, published by Numerik360."
+      },
+      {
+        "title": "2. User account",
+        "body": "You are responsible for keeping your login credentials confidential and for any activity carried out from your account. You must provide a valid email address and confirm your registration."
+      },
+      {
+        "title": "3. Subscriptions and payment",
+        "body": "QRHub offers a free plan and paid plans with different limits (number of QR codes, scans, storage). Payments are processed by PayDunya via Orange Money, MTN Mobile Money, Moov Money, Wave, or credit card. Subscriptions renew for the chosen period; you can change plans or cancel at any time from your dashboard."
+      },
+      {
+        "title": "4. Acceptable use",
+        "body": "You agree not to use QRHub to create or distribute illegal, fraudulent, misleading content, or content that infringes on the rights of others. We reserve the right to suspend any account used in violation of these terms."
+      },
+      {
+        "title": "5. Intellectual property",
+        "body": "You remain the owner of the content you place in your QR codes (logos, text, files). QRHub remains the owner of the platform, its code, and its brand."
+      },
+      {
+        "title": "6. Service availability",
+        "body": "We do our best to keep the service available and reliable, without being able to guarantee 100% uptime. Occasional interruptions for maintenance may occur."
+      },
+      {
+        "title": "7. Termination",
+        "body": "You can delete your account at any time. We may suspend or terminate an account in case of violation of these terms or non-payment."
+      },
+      {
+        "title": "8. Liability",
+        "body": "QRHub cannot be held responsible for how you use your QR codes, nor for the content they redirect to."
+      },
+      {
+        "title": "9. Changes to these terms",
+        "body": "We may update these terms; any significant change will be communicated to you by email or within the app."
+      },
+      {
+        "title": "10. Governing law",
+        "body": "These terms are governed by the law of Côte d'Ivoire. Any dispute will be submitted to the competent courts of Côte d'Ivoire."
+      }
+    ]
+  },
+  "gdpr": {
+    "title": "GDPR — Your rights over your data",
+    "updated": "Last updated: July 2026",
+    "lead": "Whether you're based in Côte d'Ivoire, in Europe, or elsewhere, QRHub applies the principles of the General Data Protection Regulation (GDPR) to all its users.",
+    "sections": [
+      {
+        "title": "Data controller",
+        "body": "Numerik360, publisher of QRHub, is the data controller for your personal data. You can reach us at support@qrcode.numerik360.com for any question about your data."
+      },
+      {
+        "title": "Legal basis for processing",
+        "body": "We process your data on the basis of the performance of our contract with you (providing the QRHub service) and, for billing, on the basis of a legal obligation."
+      },
+      {
+        "title": "Your rights",
+        "body": "You have the right to access (get a copy of your data), rectify (correct inaccurate data), erase (delete your account and data), port (retrieve your data in a usable format), restrict, and object to processing."
+      },
+      {
+        "title": "How to exercise your rights",
+        "body": "Send your request to support@qrcode.numerik360.com, specifying your account's email address. We respond within a maximum of one month."
+      },
+      {
+        "title": "Complaints",
+        "body": "If you believe your rights are not being respected, you can file a complaint with the data protection authority competent in your country of residence."
+      }
+    ]
+  }
+}

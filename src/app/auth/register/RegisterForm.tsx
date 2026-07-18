@@ -106,6 +106,21 @@ export function RegisterForm() {
             {t("register.passwordHint")}
           </p>
         </div>
+        <div>
+          <label htmlFor="confirmPassword" className="label">
+            {t("register.confirmPassword")}
+          </label>
+          <input
+            id="confirmPassword"
+            name="confirmPassword"
+            type="password"
+            required
+            minLength={8}
+            autoComplete="new-password"
+            className="input"
+            placeholder="••••••••"
+          />
+        </div>
 
         {state?.error && (
           <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">

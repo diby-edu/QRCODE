@@ -91,7 +91,6 @@
       "isActive": "Plan actif (visible et souscriptible)",
       "maxQr": "QR codes max (-1 = illimité)",
       "maxDynamic": "QR dynamiques max (-1 = illimité)",
-      "maxScans": "Scans par mois (-1 = illimité)",
       "maxStorage": "Stockage en Mo (-1 = illimité)",
       "video": "Vidéos hébergées",
       "formats": "Formats d'export",

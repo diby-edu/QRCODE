@@ -64,6 +64,13 @@
     "pricing": "Tarifs",
     "account": "Compte",
     "login": "Connexion",
-    "register": "Créer un compte"
+    "register": "Créer un compte",
+    "company": "Entreprise",
+    "about": "À propos",
+    "contact": "Contact",
+    "legal": "Légal",
+    "privacy": "Confidentialité",
+    "terms": "Conditions",
+    "gdpr": "RGPD"
   }
 }

@@ -1,0 +1,146 @@
+{
+  "about": {
+    "title": "À propos de QRHub",
+    "lead": "QRHub est la plateforme de QR codes dynamiques conçue pour les entreprises et indépendants d'Afrique de l'Ouest et d'ailleurs.",
+    "sections": [
+      {
+        "title": "Notre mission",
+        "body": "Beaucoup d'entreprises impriment un QR code une fois et restent bloquées avec un lien mort dès que l'offre change. QRHub résout ce problème : vous modifiez la destination d'un QR code dynamique à tout moment, sans jamais réimprimer, et vous voyez exactement qui scanne — pays, ville, appareil, navigateur."
+      },
+      {
+        "title": "Ce que nous proposons",
+        "body": "Plus de 20 types de QR codes (site web, vCard, Wi-Fi, menu de restaurant, PDF, événement…), une personnalisation complète des couleurs et du logo, des statistiques en temps réel, et des outils d'organisation (dossiers, recherche, import en masse) pour gérer un grand nombre de QR codes sans perdre le fil."
+      },
+      {
+        "title": "Qui sommes-nous",
+        "body": "QRHub est développé et édité par Numerik360, basé en Côte d'Ivoire. Nous construisons des outils numériques pensés pour le marché ouest-africain, avec des moyens de paiement locaux."
+      },
+      {
+        "title": "Paiement local",
+        "body": "Les abonnements se règlent par Orange Money, MTN Mobile Money, Moov Money, Wave ou carte bancaire, via PayDunya."
+      }
+    ]
+  },
+  "contact": {
+    "title": "Contactez-nous",
+    "lead": "Une question, un problème technique, une suggestion ? Notre équipe vous répond.",
+    "email": {
+      "label": "Email",
+      "value": "support@qrcode.numerik360.com"
+    },
+    "whatsapp": {
+      "label": "WhatsApp / Téléphone",
+      "value": "+225 05 54 58 59 27"
+    },
+    "hours": "Nous répondons généralement sous 24 à 48h ouvrées."
+  },
+  "privacy": {
+    "title": "Politique de confidentialité",
+    "updated": "Dernière mise à jour : juillet 2026",
+    "lead": "Cette page explique quelles données QRHub collecte, pourquoi, et comment elles sont protégées.",
+    "sections": [
+      {
+        "title": "Données que nous collectons",
+        "body": "Lors de la création d'un compte : nom, adresse email, mot de passe (jamais stocké en clair). Lors de l'utilisation du service : le contenu de vos QR codes (URL, fichiers, textes que vous saisissez), et des statistiques de scan anonymisées (pays, ville approximative, type d'appareil, navigateur — jamais l'identité de la personne qui scanne)."
+      },
+      {
+        "title": "Comment nous utilisons ces données",
+        "body": "Pour faire fonctionner le service (créer et rediriger vos QR codes), pour vous montrer des statistiques, pour traiter vos paiements d'abonnement, et pour vous contacter en cas de problème sur votre compte."
+      },
+      {
+        "title": "Avec qui nous partageons ces données",
+        "body": "Avec nos prestataires techniques uniquement, dans la mesure nécessaire au fonctionnement du service : Supabase (hébergement de la base de données et de l'authentification) et PayDunya (traitement des paiements mobiles et par carte). Nous ne vendons ni ne louons vos données à des tiers à des fins publicitaires."
+      },
+      {
+        "title": "Conservation",
+        "body": "Vos données sont conservées tant que votre compte est actif. Si vous supprimez votre compte, vos données personnelles et vos QR codes sont supprimés, à l'exception des informations que nous devons conserver pour des obligations légales ou comptables (ex. historique de facturation)."
+      },
+      {
+        "title": "Sécurité",
+        "body": "Les connexions au site sont chiffrées (HTTPS), les mots de passe sont hachés, et l'accès aux données est protégé par des règles de sécurité au niveau de la base de données (chaque utilisateur ne peut accéder qu'à ses propres données)."
+      },
+      {
+        "title": "Cookies",
+        "body": "QRHub utilise uniquement des cookies strictement nécessaires au fonctionnement du service (maintenir votre session connectée). Nous n'utilisons pas de cookies publicitaires ou de traceurs tiers."
+      },
+      {
+        "title": "Vos droits",
+        "body": "Vous disposez de droits sur vos données personnelles — voir notre page RGPD pour le détail et la marche à suivre."
+      }
+    ]
+  },
+  "terms": {
+    "title": "Conditions générales d'utilisation",
+    "updated": "Dernière mise à jour : juillet 2026",
+    "lead": "En créant un compte QRHub, vous acceptez les conditions ci-dessous.",
+    "sections": [
+      {
+        "title": "1. Objet",
+        "body": "QRHub est un service en ligne de création, personnalisation et suivi de QR codes dynamiques et statiques, édité par Numerik360."
+      },
+      {
+        "title": "2. Compte utilisateur",
+        "body": "Vous êtes responsable de la confidentialité de vos identifiants de connexion et de toute activité effectuée depuis votre compte. Vous devez fournir une adresse email valide et confirmer votre inscription."
+      },
+      {
+        "title": "3. Abonnements et paiement",
+        "body": "QRHub propose un plan gratuit et des plans payants avec des limites différentes (nombre de QR codes, scans, stockage). Les paiements sont traités par PayDunya via Orange Money, MTN Mobile Money, Moov Money, Wave ou carte bancaire. Les abonnements se renouvellent selon la période choisie ; vous pouvez changer de plan ou annuler à tout moment depuis votre tableau de bord."
+      },
+      {
+        "title": "4. Utilisation autorisée",
+        "body": "Vous vous engagez à ne pas utiliser QRHub pour créer ou diffuser du contenu illégal, frauduleux, trompeur ou portant atteinte aux droits de tiers. Nous nous réservons le droit de suspendre tout compte utilisé en violation de ces conditions."
+      },
+      {
+        "title": "5. Propriété intellectuelle",
+        "body": "Vous restez propriétaire du contenu que vous mettez dans vos QR codes (logos, textes, fichiers). QRHub reste propriétaire de la plateforme, de son code et de sa marque."
+      },
+      {
+        "title": "6. Disponibilité du service",
+        "body": "Nous mettons tout en œuvre pour assurer un service disponible et fiable, sans pouvoir garantir une disponibilité de 100 %. Des interruptions ponctuelles pour maintenance peuvent survenir."
+      },
+      {
+        "title": "7. Résiliation",
+        "body": "Vous pouvez supprimer votre compte à tout moment. Nous pouvons suspendre ou résilier un compte en cas de violation de ces conditions ou de non-paiement."
+      },
+      {
+        "title": "8. Responsabilité",
+        "body": "QRHub ne peut être tenu responsable de l'usage que vous faites de vos QR codes, ni du contenu vers lequel ils redirigent."
+      },
+      {
+        "title": "9. Modification des conditions",
+        "body": "Nous pouvons mettre à jour ces conditions ; toute modification importante vous sera communiquée par email ou via l'application."
+      },
+      {
+        "title": "10. Droit applicable",
+        "body": "Ces conditions sont régies par le droit ivoirien. Tout litige sera soumis aux juridictions compétentes de Côte d'Ivoire."
+      }
+    ]
+  },
+  "gdpr": {
+    "title": "RGPD — Vos droits sur vos données",
+    "updated": "Dernière mise à jour : juillet 2026",
+    "lead": "Que vous soyez basé en Côte d'Ivoire, en Europe ou ailleurs, QRHub applique les principes du Règlement Général sur la Protection des Données (RGPD) à l'ensemble de ses utilisateurs.",
+    "sections": [
+      {
+        "title": "Responsable du traitement",
+        "body": "Numerik360, éditeur de QRHub, est responsable du traitement de vos données personnelles. Vous pouvez nous contacter à support@qrcode.numerik360.com pour toute question relative à vos données."
+      },
+      {
+        "title": "Base légale du traitement",
+        "body": "Nous traitons vos données sur la base de l'exécution du contrat qui nous lie (fourniture du service QRHub) et, pour la facturation, sur la base d'une obligation légale."
+      },
+      {
+        "title": "Vos droits",
+        "body": "Vous disposez d'un droit d'accès (obtenir une copie de vos données), de rectification (corriger des données inexactes), d'effacement (supprimer votre compte et vos données), de portabilité (récupérer vos données dans un format exploitable), de limitation et d'opposition au traitement."
+      },
+      {
+        "title": "Comment exercer vos droits",
+        "body": "Envoyez votre demande à support@qrcode.numerik360.com en précisant l'adresse email de votre compte. Nous répondons dans un délai maximal d'un mois."
+      },
+      {
+        "title": "Réclamation",
+        "body": "Si vous estimez que vos droits ne sont pas respectés, vous pouvez introduire une réclamation auprès de l'autorité de protection des données compétente dans votre pays de résidence."
+      }
+    ]
+  }
+}

@@ -14,6 +14,7 @@ const NAMESPACES = [
   "scan",
   "settings",
   "domain",
+  "legal",
 ] as const;
 
 async function loadMessages(locale: Locale) {

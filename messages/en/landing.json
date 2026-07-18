@@ -64,6 +64,13 @@
     "pricing": "Pricing",
     "account": "Account",
     "login": "Log in",
-    "register": "Sign up"
+    "register": "Sign up",
+    "company": "Company",
+    "about": "About",
+    "contact": "Contact",
+    "legal": "Legal",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "gdpr": "GDPR"
   }
 }

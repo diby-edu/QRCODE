@@ -2,7 +2,6 @@ import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getUserPlan, isUnlimited } from "@/lib/plans";
-import { fetchScansPerDay } from "@/lib/stats";
 import { AppShell, type AppNotification } from "@/components/shell/AppShell";
 import { signOut } from "@/app/auth/actions";
 
@@ -16,7 +15,7 @@ async function buildNotifications(
   const t = await getTranslations("common.notifications");
   const notifications: AppNotification[] = [];
 
-  const [userPlan, { count: totalQr }, { count: dynamicQr }, days, { data: storageBytes }] =
+  const [userPlan, { count: totalQr }, { count: dynamicQr }, { data: storageBytes }] =
     await Promise.all([
       getUserPlan(supabase, userId),
       supabase.from("qr_codes").select("id", { count: "exact", head: true }),
@@ -24,18 +23,15 @@ async function buildNotifications(
         .from("qr_codes")
         .select("id", { count: "exact", head: true })
         .eq("is_dynamic", true),
-      fetchScansPerDay(supabase, 30),
       supabase.rpc("user_storage_bytes"),
     ]);
 
   const { limits, subscription, isFree } = userPlan;
-  const scans30d = days.reduce((sum, d) => sum + d.scans, 0);
   const storageMb = Number(storageBytes ?? 0) / 1024 / 1024;
 
   const checks: { id: string; used: number; limit: number; labelKey: string }[] = [
     { id: "qr", used: totalQr ?? 0, limit: limits.max_qr_codes, labelKey: "qrCodes" },
     { id: "dynamic", used: dynamicQr ?? 0, limit: limits.max_dynamic, labelKey: "dynamicQr" },
-    { id: "scans", used: scans30d, limit: limits.max_scans_month, labelKey: "scans" },
     { id: "storage", used: storageMb, limit: limits.max_storage_mb, labelKey: "storage" },
   ];
 
