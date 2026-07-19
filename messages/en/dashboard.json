@@ -3,10 +3,12 @@
   "greeting": "Hello {name} 👋",
   "subtitle": "Here is your QR codes activity.",
   "kpi": {
-    "totalQr": "QR codes",
+    "totalQr": "Total QR codes",
+    "totalQrDesc": "Static and dynamic combined",
     "totalScans": "Total scans",
     "scans30d": "Scans (30 days)",
     "dynamicQr": "Dynamic QR codes",
+    "dynamicQrDesc": "Included in the total, editable without reprinting",
     "ofLimit": "of {limit}"
   },
   "chart": {

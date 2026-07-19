@@ -71,12 +71,14 @@ export default async function DashboardPage() {
           label={t("kpi.totalQr")}
           value={formatNumber(totalQr ?? 0, locale)}
           hint={limitHint(limits.max_qr_codes)}
+          description={t("kpi.totalQrDesc")}
           icon="🔳"
         />
         <StatTile
           label={t("kpi.dynamicQr")}
           value={formatNumber(dynamicQr ?? 0, locale)}
           hint={limitHint(limits.max_dynamic)}
+          description={t("kpi.dynamicQrDesc")}
           icon="⚡"
         />
         <StatTile

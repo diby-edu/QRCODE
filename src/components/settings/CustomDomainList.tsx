@@ -72,21 +72,28 @@ function DomainRowItem({ domain }: { domain: DomainRow }) {
   }
 
   return (
-    <div className="relative flex items-center justify-between gap-3 p-4">
-      <div className="min-w-0">
-        <span className="block truncate font-mono text-sm text-slate-700">{domain.domain}</span>
-        <div className="mt-1 flex items-center gap-2">
-          <StatusBadge status={domain.status} />
+    <div className="relative flex items-center justify-between gap-3 p-4 transition-colors hover:bg-slate-50/60">
+      <div className="flex min-w-0 items-start gap-3">
+        <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-sm">
+          🌐
+        </span>
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="truncate font-mono text-sm font-semibold text-slate-800">
+              {domain.domain}
+            </span>
+            <StatusBadge status={domain.status} />
+          </div>
+          {domain.status === "pending" && (
+            <p className="mt-1 text-xs text-slate-400">{t("pendingHint")}</p>
+          )}
+          {domain.status === "failed" && (
+            <p className="mt-1 text-xs text-slate-400">{t("failedHint")}</p>
+          )}
+          {domain.status === "active" && (
+            <p className="mt-1 text-xs text-slate-400">{t("assignHint")}</p>
+          )}
         </div>
-        {domain.status === "pending" && (
-          <p className="mt-1 text-xs text-slate-400">{t("pendingHint")}</p>
-        )}
-        {domain.status === "failed" && (
-          <p className="mt-1 text-xs text-slate-400">{t("failedHint")}</p>
-        )}
-        {domain.status === "active" && (
-          <p className="mt-1 text-xs text-slate-400">{t("assignHint")}</p>
-        )}
       </div>
       <div className="flex shrink-0 gap-1.5">
         <button type="button" className="btn-ghost btn-sm" onClick={() => setEditing(true)}>
@@ -211,12 +218,12 @@ export function CustomDomainList({
   return (
     <div className="space-y-4">
       <div className="card p-6">
-        <div className="mb-1 flex items-center justify-between gap-3">
+        <div className="mb-1 flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-base font-semibold text-slate-900">{t("yourDomains")}</h2>
           {domains.length > 0 && !adding && (
             <button
               type="button"
-              className="btn-ghost btn-sm"
+              className="btn-primary btn-sm"
               onClick={() => setAdding(true)}
             >
               + {t("addDomain")}

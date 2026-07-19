@@ -262,6 +262,7 @@ export function QRBuilder({
                 placeholder={t("builder.titlePlaceholder")}
                 onChange={(e) => setTitle(e.target.value)}
               />
+              <p className="mt-1 text-xs text-slate-400">{t("builder.titleHint")}</p>
             </div>
             <DynamicForm
               fields={type.fields}

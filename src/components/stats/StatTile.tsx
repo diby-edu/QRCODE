@@ -1,13 +1,15 @@
-/** Tuile KPI : libellé + valeur (+ précision optionnelle). */
+/** Tuile KPI : libellé + valeur (+ précision optionnelle + description discrète). */
 export function StatTile({
   label,
   value,
   hint,
+  description,
   icon,
 }: {
   label: string;
   value: string;
   hint?: string;
+  description?: string;
   icon?: string;
 }) {
   return (
@@ -18,6 +20,7 @@ export function StatTile({
       </div>
       <p className="mt-2 text-3xl font-semibold text-slate-900">{value}</p>
       {hint && <p className="mt-1 text-xs text-slate-400">{hint}</p>}
+      {description && <p className="mt-1 text-xs text-slate-300">{description}</p>}
     </div>
   );
 }

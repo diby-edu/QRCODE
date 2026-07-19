@@ -13,6 +13,7 @@
     "optionsSection": "Options avancées",
     "titleLabel": "Nom du QR code",
     "titlePlaceholder": "Ex. : Menu du restaurant",
+    "titleHint": "Juste pour vous — sert à le retrouver dans votre tableau de bord, n'est jamais visible par les personnes qui scannent le QR.",
     "modeLabel": "Type de QR code",
     "dynamicToggle": "QR code dynamique",
     "dynamicHint": "Modifiable à tout moment sans réimprimer, avec statistiques de scans.",
