@@ -228,7 +228,8 @@
       },
       "domain": {
         "activate": "Custom domain activated",
-        "reject": "Custom domain rejected"
+        "reject": "Custom domain rejected",
+        "delete": "Custom domain deleted"
       }
     }
   },

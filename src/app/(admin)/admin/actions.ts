@@ -515,6 +515,22 @@ export async function rejectCustomDomain(
   revalidatePath("/admin/domains");
 }
 
+export async function deleteCustomDomainAdmin(id: string): Promise<AdminActionResult> {
+  const ctx = await requireAdmin();
+  if (!ctx) return { error: "forbidden" };
+
+  const { data: existing } = await ctx.supabase
+    .from("custom_domains")
+    .select("domain")
+    .eq("id", id)
+    .single();
+
+  const { error } = await ctx.supabase.from("custom_domains").delete().eq("id", id);
+  if (error) return { error: "generic" };
+  await logAction(ctx, "domain.delete", id, undefined, existing?.domain ?? id);
+  revalidatePath("/admin/domains");
+}
+
 export type DnsCheckResult =
   | { ok: true; resolvedTo: string }
   | { ok: false; reason: "notFound" | "mismatch" | "forbidden"; resolvedTo?: string };

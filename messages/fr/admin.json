@@ -228,7 +228,8 @@
       },
       "domain": {
         "activate": "Domaine personnalisé activé",
-        "reject": "Domaine personnalisé rejeté"
+        "reject": "Domaine personnalisé rejeté",
+        "delete": "Domaine personnalisé supprimé"
       }
     }
   },

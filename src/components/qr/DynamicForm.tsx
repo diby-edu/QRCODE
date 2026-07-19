@@ -218,7 +218,8 @@ type UploadError =
   | { type: "generic" }
   | { type: "auth" }
   | { type: "video" }
-  | { type: "storage"; limitMb: number };
+  | { type: "storage"; limitMb: number }
+  | { type: "maxItems"; max: number };
 
 function FileField({
   field,
@@ -243,11 +244,28 @@ function FileField({
 
   async function handleFiles(files: FileList | null) {
     if (!files || files.length === 0) return;
-    setUploading(true);
     setError(null);
 
+    let list = Array.from(files);
+
+    // Nombre maximum de fichiers pour ce champ (ex. 5 photos) — au-delà
+    // du quota de stockage en Mo, certains champs ont aussi une limite de
+    // nombre. Le reste ne part pas : seuls ceux qui rentrent sont envoyés.
+    if (field.multiple && field.maxItems) {
+      const remaining = field.maxItems - urls.length;
+      if (remaining <= 0) {
+        setError({ type: "maxItems", max: field.maxItems });
+        return;
+      }
+      if (list.length > remaining) {
+        list = list.slice(0, remaining);
+        setError({ type: "maxItems", max: field.maxItems });
+      }
+    }
+
+    setUploading(true);
+
     // Quota de stockage + droit vidéo du plan, vérifiés avant l'envoi
-    const list = Array.from(files);
     const totalBytes = list.reduce((sum, f) => sum + f.size, 0);
     const hasVideo = list.some((f) => f.type.startsWith("video/"));
     const check = await checkUpload(totalBytes, hasVideo);
@@ -292,24 +310,33 @@ function FileField({
     deleteStorageUrl(createClient(), url).catch(() => {});
   }
 
+  const atMax = field.multiple && field.maxItems != null && urls.length >= field.maxItems;
+
   return (
     <div className="space-y-2">
-      <label className="flex cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-slate-200 bg-slate-50/60 px-4 py-6 text-center transition-colors hover:border-indigo-300 hover:bg-indigo-50/40">
-        <svg className="h-6 w-6 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
-        </svg>
-        <span className="text-sm font-medium text-slate-600">
-          {uploading ? t("form.uploading") : t("form.chooseFile")}
-        </span>
-        <input
-          type="file"
-          className="sr-only"
-          accept={field.accept}
-          multiple={field.multiple}
-          disabled={uploading}
-          onChange={(e) => handleFiles(e.target.files)}
-        />
-      </label>
+      {field.multiple && field.maxItems != null && (
+        <p className="text-xs text-slate-400">
+          {t("form.fileCount", { count: urls.length, max: field.maxItems })}
+        </p>
+      )}
+      {!atMax && (
+        <label className="flex cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-slate-200 bg-slate-50/60 px-4 py-6 text-center transition-colors hover:border-indigo-300 hover:bg-indigo-50/40">
+          <svg className="h-6 w-6 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+          </svg>
+          <span className="text-sm font-medium text-slate-600">
+            {uploading ? t("form.uploading") : t("form.chooseFile")}
+          </span>
+          <input
+            type="file"
+            className="sr-only"
+            accept={field.accept}
+            multiple={field.multiple}
+            disabled={uploading}
+            onChange={(e) => handleFiles(e.target.files)}
+          />
+        </label>
+      )}
       {error && (
         <p className="text-xs text-red-600">
           {error.type === "generic" && t("form.uploadError")}
@@ -317,6 +344,7 @@ function FileField({
           {error.type === "video" && t("form.videoLocked")}
           {error.type === "storage" &&
             t("form.storageQuota", { limit: error.limitMb })}
+          {error.type === "maxItems" && t("form.maxItems", { max: error.max })}
           {(error.type === "video" || error.type === "storage") && (
             <>
               {" "}

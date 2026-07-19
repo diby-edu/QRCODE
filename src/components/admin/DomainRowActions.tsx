@@ -5,14 +5,24 @@ import { useTranslations } from "next-intl";
 import {
   activateCustomDomain,
   checkDomainDns,
+  deleteCustomDomainAdmin,
   rejectCustomDomain,
   type DnsCheckResult,
 } from "@/app/(admin)/admin/actions";
 
-export function DomainRowActions({ id, domain }: { id: string; domain: string }) {
+export function DomainRowActions({
+  id,
+  domain,
+  status,
+}: {
+  id: string;
+  domain: string;
+  status: "pending" | "active" | "failed";
+}) {
   const t = useTranslations("admin.domains");
   const tc = useTranslations("common");
   const [rejecting, setRejecting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [note, setNote] = useState("");
   const [dnsResult, setDnsResult] = useState<DnsCheckResult | null>(null);
   const [checkingDns, setCheckingDns] = useState(false);
@@ -37,39 +47,51 @@ export function DomainRowActions({ id, domain }: { id: string; domain: string })
         <button type="button" className="btn-ghost btn-sm" onClick={copyCommand}>
           {copied ? tc("actions.copied") : t("copyCommand")}
         </button>
-        <button
-          type="button"
-          disabled={checkingDns}
-          className="btn-ghost btn-sm"
-          onClick={() => {
-            setCheckingDns(true);
-            setDnsResult(null);
-            checkDomainDns(domain)
-              .then(setDnsResult)
-              .finally(() => setCheckingDns(false));
-          }}
-        >
-          {checkingDns ? t("checkingDns") : t("checkDns")}
-        </button>
-        <button
-          type="button"
-          disabled={isPending}
-          className="btn-secondary btn-sm"
-          onClick={() =>
-            startTransition(async () => {
-              await activateCustomDomain(id);
-            })
-          }
-        >
-          {t("activate")}
-        </button>
+        {status !== "active" && (
+          <>
+            <button
+              type="button"
+              disabled={checkingDns}
+              className="btn-ghost btn-sm"
+              onClick={() => {
+                setCheckingDns(true);
+                setDnsResult(null);
+                checkDomainDns(domain)
+                  .then(setDnsResult)
+                  .finally(() => setCheckingDns(false));
+              }}
+            >
+              {checkingDns ? t("checkingDns") : t("checkDns")}
+            </button>
+            <button
+              type="button"
+              disabled={isPending}
+              className="btn-secondary btn-sm"
+              onClick={() =>
+                startTransition(async () => {
+                  await activateCustomDomain(id);
+                })
+              }
+            >
+              {t("activate")}
+            </button>
+            <button
+              type="button"
+              disabled={isPending}
+              className="btn-ghost btn-sm text-red-600 hover:bg-red-50"
+              onClick={() => setRejecting(true)}
+            >
+              {t("reject")}
+            </button>
+          </>
+        )}
         <button
           type="button"
           disabled={isPending}
           className="btn-ghost btn-sm text-red-600 hover:bg-red-50"
-          onClick={() => setRejecting(true)}
+          onClick={() => setDeleting(true)}
         >
-          {t("reject")}
+          {tc("actions.delete")}
         </button>
       </div>
 
@@ -114,6 +136,42 @@ export function DomainRowActions({ id, domain }: { id: string; domain: string })
                   startTransition(async () => {
                     await rejectCustomDomain(id, note);
                     setRejecting(false);
+                  })
+                }
+              >
+                {isPending ? "…" : tc("confirmDelete.confirm")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {deleting && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-900/40" onClick={() => setDeleting(false)} />
+          <div className="card relative w-full max-w-sm p-6 animate-fade-up text-left">
+            <h3 className="text-base font-semibold text-slate-900">
+              {tc("confirmDelete.title")}
+            </h3>
+            <p className="mt-2 text-sm text-slate-500">
+              {tc("confirmDelete.message", { name: domain })}
+            </p>
+            <div className="mt-5 flex justify-end gap-2">
+              <button
+                type="button"
+                className="btn-secondary btn-sm"
+                onClick={() => setDeleting(false)}
+              >
+                {tc("actions.cancel")}
+              </button>
+              <button
+                type="button"
+                disabled={isPending}
+                className="btn-danger btn-sm"
+                onClick={() =>
+                  startTransition(async () => {
+                    await deleteCustomDomainAdmin(id);
+                    setDeleting(false);
                   })
                 }
               >

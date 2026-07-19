@@ -488,6 +488,7 @@ export const QR_TYPES: QrTypeDef[] = [
         label: { fr: "Photos (optionnelles)", en: "Photos (optional)" },
         accept: "image/*",
         multiple: true,
+        maxItems: 5,
       },
       {
         name: "video",
