@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getUserPlan } from "@/lib/plans";
 import { QR_TYPES } from "@/lib/qr-types/registry";
 import { readSort } from "@/lib/sort";
+import { resolveQrDomainsBatch } from "@/lib/domains";
 import { QrFilters } from "@/components/qr/QrFilters";
 import { QrTable } from "@/components/qr/QrTable";
 import type { Folder, QrCode } from "@/lib/types";
@@ -38,7 +39,7 @@ export default async function QrListPage({
 
   let query = supabase
     .from("qr_codes")
-    .select("id, type, title, slug, is_dynamic, is_active, expires_at, scan_count, folder_id, created_at")
+    .select("id, type, title, slug, is_dynamic, is_active, expires_at, scan_count, folder_id, created_at, custom_domain_id")
     .order(sortField, { ascending: sortDir === "asc" });
 
   if (q) query = query.ilike("title", `%${q}%`);
@@ -48,19 +49,21 @@ export default async function QrListPage({
   if (status === "inactive") query = query.eq("is_active", false);
   if (status === "expired") query = query.lt("expires_at", new Date().toISOString());
 
-  const [{ data: qrRaw }, { data: foldersRaw }, { limits }, { data: customDomain }] =
-    await Promise.all([
-      query,
-      supabase.from("folders").select("id, name").order("name"),
-      getUserPlan(supabase, user!.id),
-      supabase.rpc("active_custom_domain_for_user", { p_user_id: user!.id }),
-    ]);
+  const [{ data: qrRaw }, { data: foldersRaw }, { limits }] = await Promise.all([
+    query,
+    supabase.from("folders").select("id, name").order("name"),
+    getUserPlan(supabase, user!.id),
+  ]);
 
   const qrCodes = (qrRaw ?? []) as Pick<
     QrCode,
     | "id" | "type" | "title" | "slug" | "is_dynamic" | "is_active"
-    | "expires_at" | "scan_count" | "folder_id" | "created_at"
+    | "expires_at" | "scan_count" | "folder_id" | "created_at" | "custom_domain_id"
   >[];
+  const domainById = await resolveQrDomainsBatch(
+    supabase,
+    qrCodes.map((qr) => qr.custom_domain_id)
+  );
   const folders = (foldersRaw ?? []) as Pick<Folder, "id" | "name">[];
   const hasFilters = Boolean(q || type || status || folder);
 
@@ -114,7 +117,7 @@ export default async function QrListPage({
           folders={folders}
           foldersEnabled={limits.folders_enabled}
           locale={locale}
-          customDomain={customDomain}
+          domainById={Object.fromEntries(domainById)}
         />
       )}
     </div>

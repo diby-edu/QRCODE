@@ -16,11 +16,27 @@ export function DomainRowActions({ id, domain }: { id: string; domain: string })
   const [note, setNote] = useState("");
   const [dnsResult, setDnsResult] = useState<DnsCheckResult | null>(null);
   const [checkingDns, setCheckingDns] = useState(false);
+  const [copied, setCopied] = useState(false);
   const [isPending, startTransition] = useTransition();
+
+  async function copyCommand() {
+    try {
+      await navigator.clipboard.writeText(
+        `cd /var/www/qrhub && ./scripts/add-custom-domain.sh ${domain}`
+      );
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Presse-papiers indisponible : rien à faire
+    }
+  }
 
   return (
     <div className="flex flex-col items-end gap-1">
       <div className="flex items-center justify-end gap-1.5">
+        <button type="button" className="btn-ghost btn-sm" onClick={copyCommand}>
+          {copied ? tc("actions.copied") : t("copyCommand")}
+        </button>
         <button
           type="button"
           disabled={checkingDns}

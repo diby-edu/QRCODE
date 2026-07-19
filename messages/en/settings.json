@@ -27,13 +27,24 @@
   },
   "customDomain": {
     "title": "Custom domain",
-    "hint": "Use a domain you already own for your dynamic QR codes instead of qrcode.numerik360.com. Point it to us first (CNAME), then request it here.",
+    "hint": "Use one or more domains you already own for your dynamic QR codes instead of qrcode.numerik360.com. Point them to us first (CNAME), then request it here.",
     "domainLabel": "Domain (e.g. go.mysite.com)",
     "requested": "Request sent.",
     "locked": "Available on a higher plan.",
     "upgradeLink": "Upgrade",
     "pendingHint": "Request received — the team activates it manually once the CNAME is verified.",
     "failedHint": "Activation failed. Contact support for details.",
+    "yourDomains": "Your domains",
+    "addDomain": "Add a domain",
+    "noDomains": "No domain yet.",
+    "edit": "Edit",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "save": "Save",
+    "editHint": "Editing an active domain moves it back to pending — the CNAME needs to be re-checked.",
+    "confirmDeleteTitle": "Delete this domain?",
+    "confirmDeleteMessage": "QR codes using it will automatically fall back to the default domain (qrcode.numerik360.com).",
+    "assignHint": "Once active, pick this domain per QR code from its creation or edit form.",
     "status": {
       "pending": "Pending",
       "active": "Active",
@@ -65,8 +76,8 @@
         "description": "Our team checks that the CNAME is correctly configured, then activates your domain. The status changes to \"Active\"."
       },
       "step4": {
-        "title": "Done, automatically",
-        "description": "All your dynamic QR codes (existing and future) now show {domain} instead of qrcode.numerik360.com — nothing to reprint."
+        "title": "Pick it on your QR codes",
+        "description": "Once active, select {domain} in the form of any dynamic QR code (existing or new) to show this domain instead of qrcode.numerik360.com — nothing to reprint."
       },
       "pricingNote": "How much it costs: this feature is included in your current subscription, no extra payment on QRHub. The domain name itself ({domain}) is a separate purchase from your domain registrar — you likely already have it if you've reached this step."
     }

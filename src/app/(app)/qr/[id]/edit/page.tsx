@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getUserPlan } from "@/lib/plans";
 import { getQrType } from "@/lib/qr-types/registry";
+import { fetchActiveDomains } from "@/lib/domains";
 import type { QrCode, QrCodeData, QrDesign } from "@/lib/types";
 import { QRBuilder } from "@/components/qr/QRBuilder";
 
@@ -16,12 +17,12 @@ export default async function EditQrPage({
     data: { user },
   } = await supabase.auth.getUser();
 
-  const [{ data: qrRaw }, { limits }, { data: folders }, { data: customDomain }] =
+  const [{ data: qrRaw }, { limits }, { data: folders }, domains] =
     await Promise.all([
       supabase.from("qr_codes").select("*, qr_code_data(data)").eq("id", id).single(),
       getUserPlan(supabase, user!.id),
       supabase.from("folders").select("id, name").order("name"),
-      supabase.rpc("active_custom_domain_for_user", { p_user_id: user!.id }),
+      fetchActiveDomains(supabase, user!.id),
     ]);
   if (!qrRaw) notFound();
 
@@ -36,7 +37,7 @@ export default async function EditQrPage({
       slug={qr.slug}
       folders={folders ?? []}
       limits={limits}
-      customDomain={customDomain}
+      domains={domains}
       initial={{
         title: qr.title,
         data: (qr.qr_code_data?.[0]?.data ?? {}) as Record<string, unknown>,
@@ -46,6 +47,7 @@ export default async function EditQrPage({
         folderId: qr.folder_id,
         expiresAt: qr.expires_at ? qr.expires_at.slice(0, 16) : null,
         hasPassword: qr.password != null,
+        customDomainId: qr.custom_domain_id,
       }}
     />
   );

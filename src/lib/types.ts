@@ -101,6 +101,7 @@ export interface QrCode {
   password: string | null;
   scan_count: number;
   design: QrDesign;
+  custom_domain_id: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -126,6 +127,18 @@ export interface QrScan {
 export interface SiteSetting {
   key: string;
   value: Record<string, unknown>;
+}
+
+export type CustomDomainStatus = "pending" | "active" | "failed";
+
+export interface CustomDomain {
+  id: string;
+  user_id: string;
+  domain: string;
+  status: CustomDomainStatus;
+  verified_at: string | null;
+  notes: string | null;
+  created_at: string;
 }
 
 export type QrCodeWithData = QrCode & { qr_code_data: QrCodeData[] };

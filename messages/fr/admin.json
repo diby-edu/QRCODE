@@ -249,6 +249,7 @@
     },
     "activate": "Activer",
     "reject": "Rejeter",
+    "copyCommand": "Copier la commande",
     "checkDns": "Vérifier le DNS",
     "checkingDns": "Vérification…",
     "dnsOk": "✓ DNS correct ({ip})",

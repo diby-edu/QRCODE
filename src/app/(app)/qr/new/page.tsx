@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { getUserPlan } from "@/lib/plans";
 import { getQrType } from "@/lib/qr-types/registry";
+import { fetchActiveDomains } from "@/lib/domains";
 import { TypePicker } from "@/components/qr/TypePicker";
 import { QRBuilder } from "@/components/qr/QRBuilder";
 
@@ -21,10 +22,10 @@ export default async function NewQrPage({
     data: { user },
   } = await supabase.auth.getUser();
 
-  const [{ limits }, { data: folders }, { data: customDomain }] = await Promise.all([
+  const [{ limits }, { data: folders }, domains] = await Promise.all([
     getUserPlan(supabase, user!.id),
     supabase.from("folders").select("id, name").order("name"),
-    supabase.rpc("active_custom_domain_for_user", { p_user_id: user!.id }),
+    fetchActiveDomains(supabase, user!.id),
   ]);
 
   return (
@@ -33,7 +34,7 @@ export default async function NewQrPage({
       mode="create"
       folders={folders ?? []}
       limits={limits}
-      customDomain={customDomain}
+      domains={domains}
     />
   );
 }

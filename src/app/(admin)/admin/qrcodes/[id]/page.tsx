@@ -4,6 +4,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getQrType } from "@/lib/qr-types/registry";
 import { qrShortUrl } from "@/lib/url";
+import { resolveQrDomain } from "@/lib/domains";
 import { formatDate } from "@/lib/utils";
 import type { QrCode, QrCodeData } from "@/lib/types";
 import { AdminQrEditForm } from "@/components/admin/AdminQrEditForm";
@@ -29,9 +30,9 @@ export default async function AdminQrDetailPage({
   const type = getQrType(qr.type);
   const data = (qr.qr_code_data?.[0]?.data ?? {}) as Record<string, unknown>;
 
-  const [{ data: owner }, { data: customDomain }] = await Promise.all([
+  const [{ data: owner }, customDomain] = await Promise.all([
     supabase.from("profiles").select("email, full_name").eq("id", qr.user_id).single(),
-    supabase.rpc("active_custom_domain_for_user", { p_user_id: qr.user_id }),
+    resolveQrDomain(supabase, qr.custom_domain_id),
   ]);
 
   return (

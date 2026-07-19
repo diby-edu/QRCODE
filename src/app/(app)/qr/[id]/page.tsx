@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getUserPlan } from "@/lib/plans";
 import { getQrType } from "@/lib/qr-types/registry";
 import { qrShortUrl } from "@/lib/url";
+import { resolveQrDomain } from "@/lib/domains";
 import { formatDateTime, formatNumber } from "@/lib/utils";
 import type { QrCode, QrCodeData, QrDesign } from "@/lib/types";
 import { QRPreview } from "@/components/qr/QRPreview";
@@ -34,14 +35,14 @@ export default async function QrDetailPage({
     data: { user },
   } = await supabase.auth.getUser();
 
-  const [{ data: qrRaw }, { limits }, { data: customDomain }] = await Promise.all([
+  const [{ data: qrRaw }, { limits }] = await Promise.all([
     supabase.from("qr_codes").select("*, qr_code_data(data)").eq("id", id).single(),
     getUserPlan(supabase, user!.id),
-    supabase.rpc("active_custom_domain_for_user", { p_user_id: user!.id }),
   ]);
   if (!qrRaw) notFound();
 
   const qr = qrRaw as QrCode & { qr_code_data: QrCodeData[] };
+  const customDomain = await resolveQrDomain(supabase, qr.custom_domain_id);
   const type = getQrType(qr.type);
   const data = (qr.qr_code_data?.[0]?.data ?? {}) as Record<string, unknown>;
   const design = qr.design as QrDesign;

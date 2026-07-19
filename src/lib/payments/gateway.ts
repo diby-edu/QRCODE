@@ -8,6 +8,9 @@ export interface CheckoutRequest {
   planName: string;
   amount: number;
   currency: string;
+  /** Pré-remplit le nom et l'email sur la page de paiement hébergée */
+  customerName?: string;
+  customerEmail?: string;
   /** URL de retour utilisateur (succès/annulation) et webhook */
   returnUrl: string;
   cancelUrl: string;

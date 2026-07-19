@@ -18,7 +18,7 @@ import { bulkDeleteQr, bulkMoveToFolder } from "@/app/(app)/qr/actions";
 type Row = Pick<
   QrCode,
   | "id" | "type" | "title" | "slug" | "is_dynamic" | "is_active"
-  | "expires_at" | "scan_count" | "folder_id" | "created_at"
+  | "expires_at" | "scan_count" | "folder_id" | "created_at" | "custom_domain_id"
 >;
 
 export function QrTable({
@@ -26,13 +26,13 @@ export function QrTable({
   folders,
   foldersEnabled,
   locale,
-  customDomain,
+  domainById,
 }: {
   qrCodes: Row[];
   folders: { id: string; name: string }[];
   foldersEnabled: boolean;
   locale: "fr" | "en";
-  customDomain?: string | null;
+  domainById: Record<string, string>;
 }) {
   const t = useTranslations("qr");
   const tc = useTranslations("common");
@@ -121,7 +121,10 @@ export function QrTable({
                         </span>
                         {qr.is_dynamic && (
                           <span className="block max-w-56 truncate text-xs text-slate-400">
-                            {qrShortUrl(qr.slug, customDomain)}
+                            {qrShortUrl(
+                              qr.slug,
+                              qr.custom_domain_id ? domainById[qr.custom_domain_id] : null
+                            )}
                           </span>
                         )}
                       </span>

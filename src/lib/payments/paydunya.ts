@@ -58,6 +58,17 @@ export const paydunya: PaymentGateway = {
         invoice: {
           total_amount: req.amount,
           description: `${req.planName} — abonnement mensuel`,
+          // Pré-remplit Nom/Email sur la page PayDunya hébergée — le
+          // téléphone reste vide volontairement (c'est l'identifiant du
+          // moyen de paiement mobile money, le payeur doit le ressaisir).
+          ...(req.customerName || req.customerEmail
+            ? {
+                customer: {
+                  ...(req.customerName ? { name: req.customerName } : {}),
+                  ...(req.customerEmail ? { email: req.customerEmail } : {}),
+                },
+              }
+            : {}),
         },
         store: { name: "QRHub" },
         actions: {

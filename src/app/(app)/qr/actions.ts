@@ -25,6 +25,24 @@ export interface QrPayload {
   expiresAt: string | null;
   password: string | null;
   removePassword?: boolean;
+  customDomainId?: string | null;
+}
+
+/** Vérifie que le domaine choisi appartient bien à l'utilisateur — sans ça,
+ * rien n'empêcherait de passer l'id du domaine de quelqu'un d'autre. */
+async function resolveCustomDomainId(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  userId: string,
+  customDomainId: string | null | undefined
+): Promise<string | null> {
+  if (!customDomainId) return null;
+  const { data } = await supabase
+    .from("custom_domains")
+    .select("id")
+    .eq("id", customDomainId)
+    .eq("user_id", userId)
+    .maybeSingle();
+  return data ? customDomainId : null;
 }
 
 export type QrActionResult = { error: string } | undefined;
@@ -77,6 +95,9 @@ export async function createQrCode(payload: QrPayload): Promise<QrActionResult> 
     limits.password_enabled && payload.password?.trim()
       ? await bcrypt.hash(payload.password.trim(), 10)
       : null;
+  const customDomainId = limits.custom_domain_enabled
+    ? await resolveCustomDomainId(supabase, user.id, payload.customDomainId)
+    : null;
 
   const { data: inserted, error } = await supabase
     .from("qr_codes")
@@ -91,6 +112,7 @@ export async function createQrCode(payload: QrPayload): Promise<QrActionResult> 
       expires_at: payload.expiresAt || null,
       password,
       design: sanitizeDesign(payload.design, limits.logo_enabled),
+      custom_domain_id: customDomainId,
     })
     .select("id")
     .single();
@@ -138,6 +160,9 @@ export async function updateQrCode(
   } else if (limits.password_enabled && payload.password?.trim()) {
     password = await bcrypt.hash(payload.password.trim(), 10);
   }
+  const customDomainId = limits.custom_domain_enabled
+    ? await resolveCustomDomainId(supabase, user.id, payload.customDomainId)
+    : null;
 
   const { error } = await supabase
     .from("qr_codes")
@@ -148,6 +173,7 @@ export async function updateQrCode(
       expires_at: payload.expiresAt || null,
       password,
       design: sanitizeDesign(payload.design, limits.logo_enabled),
+      custom_domain_id: customDomainId,
     })
     .eq("id", id);
   if (error) return { error: "generic" };

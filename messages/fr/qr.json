@@ -22,6 +22,8 @@
     "staticWarning": "QR statique : si vous modifiez le contenu, le QR code change et devra être réimprimé.",
     "folderLabel": "Dossier",
     "noFolder": "Aucun dossier",
+    "domainLabel": "Domaine",
+    "defaultDomain": "Domaine par défaut (qrcode.numerik360.com)",
     "activeToggle": "QR code actif",
     "expiresLabel": "Date d'expiration (optionnelle)",
     "expiresHint": "Après cette date, le QR affichera une page « expiré ».",

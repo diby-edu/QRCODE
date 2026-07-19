@@ -69,10 +69,10 @@ export interface QrTypeDef {
 }
 
 export const CATEGORIES: { id: QrCategory; name: LString; icon: string }[] = [
+  { id: "business", name: { fr: "Business", en: "Business" }, icon: "💼" },
   { id: "links", name: { fr: "Liens", en: "Links" }, icon: "🔗" },
   { id: "contact", name: { fr: "Contact", en: "Contact" }, icon: "👤" },
   { id: "social", name: { fr: "Réseaux sociaux", en: "Social media" }, icon: "💬" },
-  { id: "business", name: { fr: "Business", en: "Business" }, icon: "💼" },
   { id: "content", name: { fr: "Contenu", en: "Content" }, icon: "📁" },
   { id: "utility", name: { fr: "Utilitaires", en: "Utilities" }, icon: "🛠️" },
 ];

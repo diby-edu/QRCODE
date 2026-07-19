@@ -67,8 +67,47 @@ export async function requestCustomDomain(domain: string): Promise<SettingsResul
     return { error: error.code === "23505" ? "domainTaken" : "generic" };
   }
 
-  revalidatePath("/settings");
+  revalidatePath("/domain");
   return { success: true };
+}
+
+/** Modifie un domaine existant (repasse en "pending" — un nom différent
+ * demande un nouveau bloc nginx/certificat, donc une revalidation admin). */
+export async function updateCustomDomain(
+  id: string,
+  domain: string
+): Promise<SettingsResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "generic" };
+
+  const clean = domain.trim().toLowerCase();
+  if (!HOSTNAME_RE.test(clean)) return { error: "invalidDomain" };
+
+  const { error } = await supabase
+    .from("custom_domains")
+    .update({ domain: clean, status: "pending", verified_at: null, notes: null })
+    .eq("id", id)
+    .eq("user_id", user.id);
+  if (error) {
+    return { error: error.code === "23505" ? "domainTaken" : "generic" };
+  }
+
+  revalidatePath("/domain");
+  return { success: true };
+}
+
+export async function deleteCustomDomain(id: string): Promise<void> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return;
+
+  await supabase.from("custom_domains").delete().eq("id", id).eq("user_id", user.id);
+  revalidatePath("/domain");
 }
 
 export async function changeLanguage(locale: string): Promise<SettingsResult> {

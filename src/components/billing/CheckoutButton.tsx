@@ -25,7 +25,8 @@ export function CheckoutButton({
           setError(null);
           startTransition(async () => {
             const result = await startCheckout(planId);
-            if (result?.error) setError(t("errors.checkoutFailed"));
+            if ("error" in result) setError(t("errors.checkoutFailed"));
+            else window.open(result.url, "_blank", "noopener,noreferrer");
           });
         }}
       >

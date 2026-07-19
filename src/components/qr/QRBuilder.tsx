@@ -25,6 +25,7 @@ export interface QrInitial {
   folderId: string | null;
   expiresAt: string | null;
   hasPassword: boolean;
+  customDomainId: string | null;
 }
 
 function Toggle({
@@ -88,7 +89,7 @@ export function QRBuilder({
   initial,
   folders,
   limits,
-  customDomain,
+  domains,
 }: {
   typeId: string;
   mode: "create" | "edit";
@@ -97,7 +98,7 @@ export function QRBuilder({
   initial?: QrInitial;
   folders: { id: string; name: string }[];
   limits: PlanLimits;
-  customDomain?: string | null;
+  domains: { id: string; domain: string }[];
 }) {
   const t = useTranslations("qr");
   const tc = useTranslations("common");
@@ -119,8 +120,13 @@ export function QRBuilder({
   const [expiresAt, setExpiresAt] = useState(initial?.expiresAt ?? "");
   const [password, setPassword] = useState("");
   const [removePassword, setRemovePassword] = useState(false);
+  const [customDomainId, setCustomDomainId] = useState<string | null>(
+    initial?.customDomainId ?? null
+  );
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+
+  const selectedDomain = domains.find((d) => d.id === customDomainId)?.domain ?? null;
 
   const previewValue = useMemo(() => {
     if (!type) return "";
@@ -131,8 +137,8 @@ export function QRBuilder({
         return " ";
       }
     }
-    return qrShortUrl(slug ?? "apercu", customDomain);
-  }, [type, isDynamic, data, slug, customDomain]);
+    return qrShortUrl(slug ?? "apercu", selectedDomain);
+  }, [type, isDynamic, data, slug, selectedDomain]);
 
   if (!type) return null;
 
@@ -150,6 +156,7 @@ export function QRBuilder({
       expiresAt: expiresAt || null,
       password: password || null,
       removePassword,
+      customDomainId: isDynamic ? customDomainId : null,
     };
     startTransition(async () => {
       const result =
@@ -305,6 +312,24 @@ export function QRBuilder({
                 </div>
               )}
 
+              {isDynamic && limits.custom_domain_enabled && domains.length > 0 && (
+                <div>
+                  <label className="label">{t("builder.domainLabel")}</label>
+                  <select
+                    className="input"
+                    value={customDomainId ?? ""}
+                    onChange={(e) => setCustomDomainId(e.target.value || null)}
+                  >
+                    <option value="">{t("builder.defaultDomain")}</option>
+                    {domains.map((d) => (
+                      <option key={d.id} value={d.id}>
+                        {d.domain}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               {isDynamic && (
                 <div>
                   <label className="label">{t("builder.expiresLabel")}</label>
@@ -378,7 +403,7 @@ export function QRBuilder({
               <p className="mt-3 break-all text-center text-xs text-slate-400">
                 {t("builder.previewUrlHint")}{" "}
                 <span className="font-mono text-slate-600">
-                  {qrShortUrl(slug ?? "…", customDomain)}
+                  {qrShortUrl(slug ?? "…", selectedDomain)}
                 </span>
               </p>
             )}

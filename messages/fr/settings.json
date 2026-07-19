@@ -27,13 +27,24 @@
   },
   "customDomain": {
     "title": "Domaine personnalisé",
-    "hint": "Utilisez un domaine que vous possédez déjà pour vos QR codes dynamiques, à la place de qrcode.numerik360.com. Pointez-le d'abord vers nous (CNAME), puis faites votre demande ici.",
+    "hint": "Utilisez un ou plusieurs domaines que vous possédez déjà pour vos QR codes dynamiques, à la place de qrcode.numerik360.com. Pointez-les d'abord vers nous (CNAME), puis faites votre demande ici.",
     "domainLabel": "Domaine (ex. go.monsite.com)",
     "requested": "Demande envoyée.",
     "locked": "Fonctionnalité réservée à un plan supérieur.",
     "upgradeLink": "Mettre à niveau",
     "pendingHint": "Demande reçue — l'équipe l'active manuellement une fois le CNAME vérifié.",
     "failedHint": "L'activation a échoué. Contactez le support pour plus de détails.",
+    "yourDomains": "Vos domaines",
+    "addDomain": "Ajouter un domaine",
+    "noDomains": "Aucun domaine pour l'instant.",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "editHint": "Modifier un domaine actif le repasse en attente — le temps de revérifier le CNAME.",
+    "confirmDeleteTitle": "Supprimer ce domaine ?",
+    "confirmDeleteMessage": "Les QR codes qui l'utilisaient reviendront automatiquement au domaine par défaut (qrcode.numerik360.com).",
+    "assignHint": "Une fois actif, choisissez ce domaine QR par QR depuis son formulaire de création ou modification.",
     "status": {
       "pending": "En attente",
       "active": "Actif",
@@ -65,8 +76,8 @@
         "description": "Notre équipe vérifie que le CNAME est bien configuré, puis active votre domaine. Le statut passe à \"Actif\"."
       },
       "step4": {
-        "title": "C'est fait, automatiquement",
-        "description": "Tous vos QR codes dynamiques (déjà créés ou futurs) affichent désormais {domain} au lieu de qrcode.numerik360.com — sans rien réimprimer."
+        "title": "Choisissez-le sur vos QR codes",
+        "description": "Une fois actif, sélectionnez {domain} dans le formulaire de n'importe quel QR dynamique (existant ou nouveau) pour qu'il affiche ce domaine au lieu de qrcode.numerik360.com — sans rien réimprimer."
       },
       "pricingNote": "Combien ça coûte : cette fonctionnalité est incluse dans votre abonnement actuel, aucun paiement supplémentaire sur QRHub. Le nom de domaine ({domain}) est un achat séparé chez votre fournisseur de domaine — vous l'avez probablement déjà si vous en êtes à cette étape."
     }
