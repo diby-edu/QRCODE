@@ -81,9 +81,16 @@ export async function proxy(request: NextRequest, event: NextFetchEvent) {
 
   // Refresh the session if needed; do not add logic between client creation
   // and getUser() — it can cause session desync.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Un refresh token invalide/expiré (cookie ancien, session révoquée…)
+  // fait rejeter getUser() au lieu de renvoyer simplement user: null — un
+  // visiteur dans cet état doit être traité comme anonyme, pas planter la
+  // requête (vu en prod : "Invalid Refresh Token: Refresh Token Not Found").
+  let user: Awaited<ReturnType<typeof supabase.auth.getUser>>["data"]["user"] = null;
+  try {
+    user = (await supabase.auth.getUser()).data.user;
+  } catch {
+    user = null;
+  }
 
   const { pathname } = request.nextUrl;
 
