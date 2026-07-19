@@ -65,7 +65,8 @@
         "title": "Chez votre fournisseur de domaine (pas ici)",
         "description": "Créez un enregistrement CNAME qui pointe vers nous :",
         "result": "Cela crée le sous-domaine {domain}, qui pointe vers QRHub.",
-        "whyGo": "Pourquoi \"go\" ? C'est juste une suggestion, pas une obligation — un nom court et courant pour ce type de lien. Vous pouvez choisir n'importe quoi à la place : qr, liens, l… ou même votre domaine principal directement."
+        "whyGo": "Pourquoi \"go\" ? C'est juste une suggestion, pas une obligation — un nom court et courant pour ce type de lien. Vous pouvez choisir n'importe quoi à la place : qr, liens, l…",
+        "warningRootDomain": "N'utilisez jamais votre domaine racine seul (ex. maboutique.com) s'il fait déjà fonctionner votre site actuel — cela le remplacerait complètement. Utilisez toujours un sous-domaine dédié (go.maboutique.com, qr.maboutique.com…)."
       },
       "step2": {
         "title": "Revenez ici et faites votre demande",

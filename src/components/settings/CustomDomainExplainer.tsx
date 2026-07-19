@@ -55,6 +55,9 @@ export function CustomDomainExplainer() {
             <p className="mt-2 rounded-lg bg-indigo-50/60 px-2.5 py-2 text-xs text-slate-600">
               ℹ️ {t("step1.whyGo")}
             </p>
+            <p className="mt-2 rounded-lg bg-red-50 px-2.5 py-2 text-xs font-medium text-red-700">
+              ⚠️ {t("step1.warningRootDomain")}
+            </p>
           </div>
         </li>
         <li className="flex gap-3">

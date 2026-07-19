@@ -65,7 +65,8 @@
         "title": "At your domain provider (not here)",
         "description": "Create a CNAME record pointing to us:",
         "result": "This creates the subdomain {domain}, pointing to QRHub.",
-        "whyGo": "Why \"go\"? It's just a suggestion, not a requirement — a short, common name for this kind of link. You can use anything instead: qr, links, l… or even your main domain directly."
+        "whyGo": "Why \"go\"? It's just a suggestion, not a requirement — a short, common name for this kind of link. You can use anything instead: qr, links, l…",
+        "warningRootDomain": "Never use your bare root domain alone (e.g. myshop.com) if it already runs your current website — this would replace it entirely. Always use a dedicated subdomain (go.myshop.com, qr.myshop.com…)."
       },
       "step2": {
         "title": "Come back here and submit your request",
