@@ -1,0 +1,5 @@
+<resources>
+    <style name="Theme.QRHub" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:statusBarColor">@color/ic_launcher_background</item>
+    </style>
+</resources>
