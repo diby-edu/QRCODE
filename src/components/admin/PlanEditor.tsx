@@ -6,6 +6,57 @@ import type { Plan, PlanLimits } from "@/lib/types";
 import { DEFAULT_LIMITS } from "@/lib/plans";
 import { savePlan, type PlanPayload } from "@/app/(admin)/admin/actions";
 
+/** Champ numérique qui peut rester vide pendant la saisie — un <input
+ * type="number"> contrôlé directement par un state number se re-remplit de
+ * "0" dès qu'on l'efface (Number("") === 0), rendant impossible de vider le
+ * champ pour retaper une nouvelle valeur. */
+function NumberField({
+  label,
+  value,
+  min,
+  onChange,
+}: {
+  label: string;
+  value: number;
+  min?: number;
+  onChange: (v: number) => void;
+}) {
+  const [text, setText] = useState(String(value));
+  const [prevValue, setPrevValue] = useState(value);
+
+  // Resynchronise l'affichage si la valeur change depuis l'extérieur (ex.
+  // changement de plan sélectionné) — ajustement pendant le rendu plutôt
+  // que dans un effect, pour ne pas déclencher un rendu en cascade.
+  if (value !== prevValue) {
+    setPrevValue(value);
+    setText(String(value));
+  }
+
+  return (
+    <label className="block">
+      <span className="label">{label}</span>
+      <input
+        type="number"
+        min={min}
+        value={text}
+        onChange={(e) => {
+          setText(e.target.value);
+          const n = Number(e.target.value);
+          if (e.target.value.trim() !== "" && !Number.isNaN(n)) {
+            onChange(n);
+          }
+        }}
+        onBlur={() => {
+          if (text.trim() === "" || Number.isNaN(Number(text))) {
+            setText(String(value));
+          }
+        }}
+        className="input"
+      />
+    </label>
+  );
+}
+
 function Toggle({
   label,
   checked,
@@ -80,23 +131,6 @@ export function PlanEditor({
     });
   };
 
-  const numberInput = (
-    label: string,
-    value: number,
-    onChange: (v: number) => void
-  ) => (
-    <label className="block">
-      <span className="label">{label}</span>
-      <input
-        type="number"
-        value={value}
-        min={-1}
-        onChange={(e) => onChange(Number(e.target.value))}
-        className="input"
-      />
-    </label>
-  );
-
   return (
     <form
       className="card space-y-4 p-6"
@@ -139,16 +173,12 @@ export function PlanEditor({
             className="input"
           />
         </label>
-        <label className="block">
-          <span className="label">{t("fields.price")}</span>
-          <input
-            type="number"
-            min={0}
-            value={form.price_monthly}
-            onChange={(e) => set({ price_monthly: Number(e.target.value) })}
-            className="input"
-          />
-        </label>
+        <NumberField
+          label={t("fields.price")}
+          min={0}
+          value={form.price_monthly}
+          onChange={(v) => set({ price_monthly: v })}
+        />
         <div className="grid grid-cols-2 gap-3">
           <label className="block">
             <span className="label">{t("fields.currency")}</span>
@@ -158,28 +188,33 @@ export function PlanEditor({
               className="input"
             />
           </label>
-          <label className="block">
-            <span className="label">{t("fields.sortOrder")}</span>
-            <input
-              type="number"
-              value={form.sort_order}
-              onChange={(e) => set({ sort_order: Number(e.target.value) })}
-              className="input"
-            />
-          </label>
+          <NumberField
+            label={t("fields.sortOrder")}
+            value={form.sort_order}
+            onChange={(v) => set({ sort_order: v })}
+          />
         </div>
       </div>
 
       <div className="grid grid-cols-1 gap-3 border-t border-slate-100 pt-4 sm:grid-cols-3">
-        {numberInput(t("fields.maxQr"), form.limits.max_qr_codes, (v) =>
-          setLimits({ max_qr_codes: v })
-        )}
-        {numberInput(t("fields.maxDynamic"), form.limits.max_dynamic, (v) =>
-          setLimits({ max_dynamic: v })
-        )}
-        {numberInput(t("fields.maxStorage"), form.limits.max_storage_mb, (v) =>
-          setLimits({ max_storage_mb: v })
-        )}
+        <NumberField
+          label={t("fields.maxQr")}
+          min={-1}
+          value={form.limits.max_qr_codes}
+          onChange={(v) => setLimits({ max_qr_codes: v })}
+        />
+        <NumberField
+          label={t("fields.maxDynamic")}
+          min={-1}
+          value={form.limits.max_dynamic}
+          onChange={(v) => setLimits({ max_dynamic: v })}
+        />
+        <NumberField
+          label={t("fields.maxStorage")}
+          min={-1}
+          value={form.limits.max_storage_mb}
+          onChange={(v) => setLimits({ max_storage_mb: v })}
+        />
       </div>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
