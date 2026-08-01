@@ -2,8 +2,16 @@ import { createHmac } from "node:crypto";
 import { UAParser } from "ua-parser-js";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isPrivateIp } from "@/lib/net";
+import { appUrl } from "@/lib/url";
 
 const BOT_UA = /bot|crawl|spider|slurp|facebookexternalhit|whatsapp|telegrambot|preview/i;
+
+// Beaucoup de scanners/robots se font passer pour un vrai navigateur dans
+// leur User-Agent (BOT_UA ne les attrape pas) mais tournent depuis des IP
+// d'hébergeurs cloud — jamais utilisées par de vrais visiteurs résidentiels
+// ou mobiles. Filet complémentaire au filtre par User-Agent.
+const DATACENTER_ISP_RE =
+  /amazon|aws|google cloud|googleusercontent|microsoft|azure|ovh|hetzner|digitalocean|digital ocean|linode|akamai|vultr|alibaba|aliyun|oracle cloud|contabo|scaleway|online s\.?a\.?s|leaseweb|choopa|m247|datacamp|hostinger|cloudflare/i;
 
 // Cache IP -> géo (process Node unique, pas serverless — voir le cache de
 // domaine dans src/proxy.ts pour le même principe). ip-api.com est limité à
@@ -13,32 +21,46 @@ const BOT_UA = /bot|crawl|spider|slurp|facebookexternalhit|whatsapp|telegrambot|
 // plusieurs pages, un bureau, un foyer) : ce cache ramène le taux d'appels
 // réel à peu près au nombre d'IP uniques par heure, pas au nombre de pages
 // vues — largement dans le quota gratuit à cette échelle.
-const geoCache = new Map<string, { country: string | null; city: string | null; expires: number }>();
+const geoCache = new Map<
+  string,
+  { country: string | null; city: string | null; isDatacenter: boolean; expires: number }
+>();
 const GEO_CACHE_TTL_MS = 60 * 60 * 1000;
 
-async function lookupGeo(ip: string): Promise<{ country: string | null; city: string | null }> {
+async function lookupGeo(
+  ip: string
+): Promise<{ country: string | null; city: string | null; isDatacenter: boolean }> {
   const cached = geoCache.get(ip);
   if (cached && cached.expires > Date.now()) return cached;
 
   let country: string | null = null;
   let city: string | null = null;
+  let isDatacenter = false;
   try {
     const res = await fetch(
-      `http://ip-api.com/json/${encodeURIComponent(ip)}?fields=status,country,city`,
+      `http://ip-api.com/json/${encodeURIComponent(ip)}?fields=status,country,city,isp,org`,
       { signal: AbortSignal.timeout(2000), cache: "no-store" }
     );
     if (res.ok) {
-      const geo = (await res.json()) as { status: string; country?: string; city?: string };
+      const geo = (await res.json()) as {
+        status: string;
+        country?: string;
+        city?: string;
+        isp?: string;
+        org?: string;
+      };
       if (geo.status === "success") {
         country = geo.country ?? null;
         city = geo.city ?? null;
+        const provider = `${geo.isp ?? ""} ${geo.org ?? ""}`;
+        isDatacenter = DATACENTER_ISP_RE.test(provider);
       }
     }
   } catch {
     // Géolocalisation indisponible : on enregistre quand même la visite
   }
 
-  const entry = { country, city, expires: Date.now() + GEO_CACHE_TTL_MS };
+  const entry = { country, city, isDatacenter, expires: Date.now() + GEO_CACHE_TTL_MS };
   geoCache.set(ip, entry);
   return entry;
 }
@@ -76,17 +98,27 @@ export async function trackVisit(
     const os = parsed?.os.name ?? null;
     const browser = parsed?.browser.name ?? null;
 
+    // Un referrer sur le même domaine (clic d'une page à l'autre chez nous)
+    // n'est pas une source de trafic externe — l'exclure pour que "Référents"
+    // ne reflète que du vrai trafic entrant (Google, réseaux sociaux, etc.).
     let referrerHost: string | null = null;
     if (referrer) {
       try {
-        referrerHost = new URL(referrer).host || null;
+        const host = new URL(referrer).host || null;
+        referrerHost = host && host !== new URL(appUrl()).host ? host : null;
       } catch {
         referrerHost = null;
       }
     }
 
     const usableIp = ip && !isPrivateIp(ip) ? ip : null;
-    const { country, city } = usableIp ? await lookupGeo(usableIp) : { country: null, city: null };
+    const { country, city, isDatacenter } = usableIp
+      ? await lookupGeo(usableIp)
+      : { country: null, city: null, isDatacenter: false };
+    // Adresse d'un hébergeur cloud (AWS, OVH, Hetzner…) : jamais un vrai
+    // visiteur résidentiel/mobile, quasi toujours un scanner ou un robot
+    // qui usurpe un User-Agent de navigateur pour passer le filtre BOT_UA.
+    if (isDatacenter) return;
     const visitorHash = usableIp ? hashVisitor(usableIp) : null;
 
     await createAdminClient()
