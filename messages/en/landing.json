@@ -1,14 +1,68 @@
 {
   "hero": {
-    "badge": "Dynamic QR codes · Analytics · Mobile money",
-    "title": "Create QR codes that work for you",
-    "subtitle": "Generate custom QR codes, change their content anytime without reprinting, and track every scan: country, city, device, browser.",
+    "badge": "The QR code that never becomes useless",
+    "title": "Print once. Change it forever.",
+    "subtitle": "With a regular QR code, if your link changes, the printed code is dead. QRHub lets you change its destination whenever you want, without ever reprinting — and shows you who scans, where and when.",
     "ctaPrimary": "Start for free",
     "ctaSecondary": "See pricing",
-    "noCard": "No credit card required"
+    "noCard": "No credit card required",
+    "showcase": {
+      "label": "one printed QR",
+      "destinations": [
+        "your website",
+        "today's menu",
+        "your current promo",
+        "your WhatsApp page"
+      ],
+      "caption": "You change the destination. The printed QR stays the same."
+    }
+  },
+  "problem": {
+    "title": "The real problem with regular QR codes",
+    "subtitle": "A free generator creates a frozen QR, forever. The day something changes, everything has to be redone.",
+    "items": {
+      "dead": {
+        "title": "Frozen forever",
+        "description": "You print a QR pointing to your site or menu. You change address, card, offer? The QR now points to nothing."
+      },
+      "blind": {
+        "title": "You're flying blind",
+        "description": "How many people scanned? From which city? Which device? With a free generator, you'll never know."
+      },
+      "costly": {
+        "title": "Endless reprints",
+        "description": "Every change forces you to reprint flyers, menus, posters and stickers. Each time, it costs time and money."
+      }
+    }
+  },
+  "solution": {
+    "title": "What QRHub changes for you",
+    "subtitle": "The same QR code — alive, measurable and under your control.",
+    "items": {
+      "editable": {
+        "title": "Editable for life",
+        "description": "Change your QR's destination in one click, as many times as you want. The printed code never moves."
+      },
+      "measure": {
+        "title": "Every scan counted",
+        "description": "Track your scans in real time: day by day, by country, city, device and browser."
+      },
+      "printonce": {
+        "title": "Print only once",
+        "description": "A QR that adapts to all your changes. No more reprinting for every new offer."
+      }
+    }
+  },
+  "stats": {
+    "title": "Built to last",
+    "types": "content types",
+    "editableValue": "∞",
+    "editable": "edits, without ever reprinting",
+    "trackingValue": "100%",
+    "tracking": "of your scans tracked in real time"
   },
   "features": {
-    "title": "Everything you need for your QR codes",
+    "title": "Everything you need, in one place",
     "subtitle": "From creation to tracking, one platform.",
     "items": {
       "dynamic": {
@@ -54,8 +108,8 @@
     "payWith": "Pay with Orange Money, MTN MoMo, Moov, Wave or bank card."
   },
   "finalCta": {
-    "title": "Create your first QR code in 2 minutes",
-    "subtitle": "Free, no credit card.",
+    "title": "Your next QR code will never die",
+    "subtitle": "Free, no credit card. Create it in 2 minutes.",
     "button": "Start now"
   },
   "footer": {

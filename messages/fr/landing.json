@@ -1,14 +1,68 @@
 {
   "hero": {
-    "badge": "QR codes dynamiques · Statistiques · Paiement mobile",
-    "title": "Créez des QR codes qui travaillent pour vous",
-    "subtitle": "Générez des QR codes personnalisés, modifiez leur contenu à tout moment sans réimprimer, et suivez chaque scan : pays, ville, appareil, navigateur.",
+    "badge": "Le QR code qui ne devient jamais inutile",
+    "title": "Imprimez une fois. Modifiez à l'infini.",
+    "subtitle": "Avec un QR code classique, si votre lien change, le code imprimé ne sert plus à rien. QRHub vous laisse changer sa destination quand vous voulez, sans jamais réimprimer — et vous montre qui scanne, où et quand.",
     "ctaPrimary": "Commencer gratuitement",
     "ctaSecondary": "Voir les tarifs",
-    "noCard": "Aucune carte bancaire requise"
+    "noCard": "Aucune carte bancaire requise",
+    "showcase": {
+      "label": "un seul QR imprimé",
+      "destinations": [
+        "votre site web",
+        "votre menu du jour",
+        "votre promo en cours",
+        "votre page WhatsApp"
+      ],
+      "caption": "Vous changez la destination. Le QR imprimé reste le même."
+    }
+  },
+  "problem": {
+    "title": "Le vrai problème des QR codes classiques",
+    "subtitle": "Un générateur gratuit crée un QR figé, pour toujours. Le jour où quelque chose change, tout est à refaire.",
+    "items": {
+      "dead": {
+        "title": "Un QR figé, pour toujours",
+        "description": "Vous imprimez un QR vers votre site ou votre menu. Vous changez d'adresse, de carte, d'offre ? Le QR pointe désormais dans le vide."
+      },
+      "blind": {
+        "title": "Vous avancez à l'aveugle",
+        "description": "Combien de personnes ont scanné ? Depuis quelle ville ? Quel appareil ? Avec un générateur gratuit, vous ne le saurez jamais."
+      },
+      "costly": {
+        "title": "Des réimpressions sans fin",
+        "description": "Chaque changement oblige à réimprimer flyers, menus, affiches et autocollants. À chaque fois, ça coûte du temps et de l'argent."
+      }
+    }
+  },
+  "solution": {
+    "title": "Ce que QRHub change pour vous",
+    "subtitle": "Le même QR code — vivant, mesurable et sous votre contrôle.",
+    "items": {
+      "editable": {
+        "title": "Modifiable à vie",
+        "description": "Changez la destination de votre QR en un clic, autant de fois que vous voulez. Le code imprimé, lui, ne bouge jamais."
+      },
+      "measure": {
+        "title": "Chaque scan compté",
+        "description": "Suivez vos scans en temps réel : jour par jour, par pays, ville, appareil et navigateur."
+      },
+      "printonce": {
+        "title": "Imprimez une seule fois",
+        "description": "Un QR qui s'adapte à tous vos changements. Fini les réimpressions à chaque nouvelle offre."
+      }
+    }
+  },
+  "stats": {
+    "title": "Pensé pour durer",
+    "types": "types de contenus",
+    "editableValue": "∞",
+    "editable": "modifications, sans jamais réimprimer",
+    "trackingValue": "100%",
+    "tracking": "de vos scans suivis en temps réel"
   },
   "features": {
-    "title": "Tout ce qu'il faut pour vos QR codes",
+    "title": "Tout ce qu'il faut, au même endroit",
     "subtitle": "De la création au suivi, une seule plateforme.",
     "items": {
       "dynamic": {
@@ -54,8 +108,8 @@
     "payWith": "Payez par Orange Money, MTN MoMo, Moov, Wave ou carte bancaire."
   },
   "finalCta": {
-    "title": "Créez votre premier QR code en 2 minutes",
-    "subtitle": "Gratuit, sans carte bancaire.",
+    "title": "Votre prochain QR code ne mourra jamais",
+    "subtitle": "Gratuit, sans carte bancaire. Créez-le en 2 minutes.",
     "button": "Commencer maintenant"
   },
   "footer": {
