@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
 import { WhatsAppBubble } from "@/components/WhatsAppBubble";
+import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -41,6 +42,7 @@ export default async function RootLayout({
           {children}
           <WhatsAppBubble />
         </NextIntlClientProvider>
+        <GoogleAnalytics />
       </body>
     </html>
   );
