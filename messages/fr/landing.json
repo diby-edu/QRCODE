@@ -125,6 +125,9 @@
     "legal": "Légal",
     "privacy": "Confidentialité",
     "terms": "Conditions",
-    "gdpr": "RGPD"
+    "gdpr": "RGPD",
+    "contactTitle": "Nous contacter",
+    "phoneLabel": "Téléphone / WhatsApp",
+    "emailLabel": "Email"
   }
 }

@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
 import { CATEGORIES, QR_TYPES } from "@/lib/qr-types/registry";
+import { createClient } from "@/lib/supabase/server";
+import type { Plan } from "@/lib/types";
+import { PlanCard } from "@/components/billing/PlanCard";
 import { SiteFooter, SiteHeader } from "@/components/marketing/SiteChrome";
 import {
   CountUp,
@@ -34,6 +37,14 @@ export default async function HomePage() {
   const locale = (await getLocale()) as "fr" | "en";
   const destinations = t.raw("hero.showcase.destinations") as string[];
 
+  const supabase = await createClient();
+  const [{ data: plansRaw }, { data: auth }] = await Promise.all([
+    supabase.from("plans").select("*").eq("is_active", true).order("sort_order"),
+    supabase.auth.getUser(),
+  ]);
+  const plans = (plansRaw ?? []) as Plan[];
+  const pricingCtaHref = auth.user ? "/billing" : "/auth/register";
+
   return (
     <div className="flex min-h-dvh flex-col bg-white">
       <SiteHeader />
@@ -64,7 +75,7 @@ export default async function HomePage() {
                 >
                   {t("hero.ctaPrimary")}
                 </Link>
-                <Link href="/pricing" className="btn-secondary px-7 py-3.5 text-base">
+                <Link href="/#pricing" className="btn-secondary px-7 py-3.5 text-base">
                   {t("hero.ctaSecondary")}
                 </Link>
               </div>
@@ -233,8 +244,8 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* ========================== 3 étapes ========================== */}
-        <section className="mx-auto max-w-6xl px-4 py-24 lg:px-8">
+        {/* ==================== Comment ça marche ==================== */}
+        <section id="how" className="mx-auto max-w-6xl px-4 py-24 lg:px-8">
           <Reveal className="mx-auto max-w-2xl text-center">
             <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
               {t("steps.title")}
@@ -262,8 +273,43 @@ export default async function HomePage() {
           </div>
         </section>
 
+        {/* =========================== Tarifs =========================== */}
+        <section id="pricing" className="bg-slate-50 py-24">
+          <div className="mx-auto max-w-6xl px-4 lg:px-8">
+            <Reveal className="mx-auto max-w-2xl text-center">
+              <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+                {t("pricing.title")}
+              </h2>
+              <p className="mt-3 text-lg text-slate-500">{t("pricing.subtitle")}</p>
+            </Reveal>
+            <div className="mx-auto mt-14 grid max-w-4xl grid-cols-1 gap-6 md:grid-cols-2">
+              {plans.map((plan, i) => (
+                <Reveal key={plan.id} delay={(i % 2) * 120}>
+                  <PlanCard
+                    plan={plan}
+                    locale={locale}
+                    action={
+                      <Link
+                        href={pricingCtaHref}
+                        className={`${
+                          Number(plan.price_monthly) > 0 ? "btn-primary" : "btn-secondary"
+                        } w-full`}
+                      >
+                        {t("pricing.cta")}
+                      </Link>
+                    }
+                  />
+                </Reveal>
+              ))}
+            </div>
+            <p className="mt-8 text-center text-sm text-slate-400">
+              💳 {t("pricing.payWith")}
+            </p>
+          </div>
+        </section>
+
         {/* ========================= CTA final ========================= */}
-        <section className="mx-auto max-w-6xl px-4 pb-24 lg:px-8">
+        <section className="mx-auto max-w-6xl px-4 py-24 lg:px-8">
           <Reveal>
             <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-600 p-10 text-center text-white shadow-xl shadow-indigo-600/20 animate-gradient sm:p-16">
               <div

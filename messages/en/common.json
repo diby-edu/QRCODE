@@ -15,7 +15,9 @@
     "login": "Log in",
     "register": "Sign up",
     "pricing": "Pricing",
-    "features": "Features"
+    "features": "Features",
+    "howItWorks": "How it works",
+    "contact": "Contact"
   },
   "actions": {
     "save": "Save",

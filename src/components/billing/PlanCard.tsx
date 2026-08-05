@@ -31,7 +31,7 @@ async function featureList(plan: Plan, locale: string): Promise<string[]> {
 }
 
 /**
- * Carte de plan, réutilisée sur /billing et /pricing.
+ * Carte de plan, réutilisée sur /billing et la section tarifs de la landing.
  * `action` : bouton de paiement (billing), lien (pricing) ou rien.
  */
 export async function PlanCard({

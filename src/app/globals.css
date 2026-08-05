@@ -5,6 +5,13 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* Défilement fluide vers les ancres (#features, #pricing…) avec un décalage
+ * pour ne pas passer sous l'en-tête collant. */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;
+}
+
 body {
   @apply bg-slate-50 text-slate-900 font-sans;
 }
@@ -167,6 +174,9 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
   .animate-float,
   .animate-blob,
   .animate-gradient,

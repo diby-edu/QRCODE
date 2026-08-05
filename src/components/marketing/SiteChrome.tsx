@@ -3,8 +3,13 @@ import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { Logo } from "@/components/brand/Logo";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { MobileNav } from "@/components/marketing/MobileNav";
 
-/** En-tête public (landing, tarifs) : nav marketing + connexion/dashboard. */
+const SUPPORT_PHONE_DISPLAY = "+225 05 54 58 59 27";
+const SUPPORT_PHONE_TEL = "+2250554585927";
+const SUPPORT_EMAIL = "support@qrcode.numerik360.com";
+
+/** En-tête public (landing) : nav ancres + connexion/dashboard + menu mobile. */
 export async function SiteHeader() {
   const tc = await getTranslations("common");
   const supabase = await createClient();
@@ -12,34 +17,52 @@ export async function SiteHeader() {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Liens d'ancre vers les sections de la landing (défilement, pas navigation).
+  const navLinks = [
+    { href: "/#features", label: tc("nav.features") },
+    { href: "/#how", label: tc("nav.howItWorks") },
+    { href: "/#pricing", label: tc("nav.pricing") },
+    { href: "/#contact", label: tc("nav.contact") },
+  ];
+
   return (
     <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/80 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3.5 lg:px-8">
         <Logo />
         <nav className="hidden items-center gap-6 text-sm font-medium text-slate-600 sm:flex">
-          <Link href="/#features" className="hover:text-slate-900">
-            {tc("nav.features")}
-          </Link>
-          <Link href="/pricing" className="hover:text-slate-900">
-            {tc("nav.pricing")}
-          </Link>
+          {navLinks.map((link) => (
+            <Link key={link.href} href={link.href} className="hover:text-slate-900">
+              {link.label}
+            </Link>
+          ))}
         </nav>
         <div className="flex items-center gap-2">
           <LanguageSwitcher />
-          {user ? (
-            <Link href="/dashboard" className="btn-primary btn-sm">
-              {tc("nav.dashboard")}
-            </Link>
-          ) : (
-            <>
-              <Link href="/auth/login" className="btn-ghost btn-sm">
-                {tc("nav.login")}
+          <div className="hidden items-center gap-2 sm:flex">
+            {user ? (
+              <Link href="/dashboard" className="btn-primary btn-sm">
+                {tc("nav.dashboard")}
               </Link>
-              <Link href="/auth/register" className="btn-primary btn-sm">
-                {tc("nav.register")}
-              </Link>
-            </>
-          )}
+            ) : (
+              <>
+                <Link href="/auth/login" className="btn-ghost btn-sm">
+                  {tc("nav.login")}
+                </Link>
+                <Link href="/auth/register" className="btn-primary btn-sm">
+                  {tc("nav.register")}
+                </Link>
+              </>
+            )}
+          </div>
+          <MobileNav
+            links={navLinks}
+            isLoggedIn={Boolean(user)}
+            labels={{
+              dashboard: tc("nav.dashboard"),
+              login: tc("nav.login"),
+              register: tc("nav.register"),
+            }}
+          />
         </div>
       </div>
     </header>
@@ -51,11 +74,26 @@ export async function SiteFooter() {
   const tc = await getTranslations("common");
 
   return (
-    <footer className="border-t border-slate-200 bg-white">
+    <footer id="contact" className="border-t border-slate-200 bg-white">
       <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-10 sm:flex-row sm:justify-between lg:px-8">
         <div className="max-w-xs">
           <Logo />
           <p className="mt-3 text-sm text-slate-500">{tc("footer.madeWith")}</p>
+          <div className="mt-5">
+            <p className="text-sm font-semibold text-slate-900">{t("contactTitle")}</p>
+            <a
+              href={`tel:${SUPPORT_PHONE_TEL}`}
+              className="mt-2 flex items-center gap-2 text-sm text-slate-500 hover:text-slate-900"
+            >
+              <span aria-hidden>📞</span> {SUPPORT_PHONE_DISPLAY}
+            </a>
+            <a
+              href={`mailto:${SUPPORT_EMAIL}`}
+              className="mt-1.5 flex items-center gap-2 text-sm text-slate-500 hover:text-slate-900"
+            >
+              <span aria-hidden>✉️</span> {SUPPORT_EMAIL}
+            </a>
+          </div>
         </div>
         <div className="flex flex-wrap gap-x-16 gap-y-8 text-sm">
           <div>
@@ -67,7 +105,7 @@ export async function SiteFooter() {
                 </Link>
               </li>
               <li>
-                <Link href="/pricing" className="hover:text-slate-900">
+                <Link href="/#pricing" className="hover:text-slate-900">
                   {t("pricing")}
                 </Link>
               </li>

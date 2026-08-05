@@ -15,7 +15,9 @@
     "login": "Connexion",
     "register": "Créer un compte",
     "pricing": "Tarifs",
-    "features": "Fonctionnalités"
+    "features": "Fonctionnalités",
+    "howItWorks": "Comment ça marche",
+    "contact": "Contact"
   },
   "actions": {
     "save": "Enregistrer",
