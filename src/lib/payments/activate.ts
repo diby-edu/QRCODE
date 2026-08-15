@@ -33,17 +33,23 @@ export async function verifyAndActivate(token: string): Promise<ActivationResult
   if (!plan || payment.amount < Number(plan.price_monthly)) return "invalid";
 
   // Remplace l'abonnement actif éventuel
-  await admin
+  const { error: cancelError } = await admin
     .from("subscriptions")
     .update({ status: "cancelled" })
     .eq("user_id", payment.userId)
     .eq("status", "active");
+  if (cancelError) {
+    // L'ancien abonnement n'a pas pu être clos : l'index unique
+    // subscriptions_one_active_idx ferait de toute façon échouer l'insertion
+    // qui suit. On s'arrête avant d'avoir touché quoi que ce soit.
+    throw new Error(`activation failed (cancel): ${cancelError.message}`);
+  }
 
   const periodStart = new Date();
   const periodEnd = new Date(periodStart);
   periodEnd.setDate(periodEnd.getDate() + 30);
 
-  const { data: sub } = await admin
+  const { data: sub, error: subError } = await admin
     .from("subscriptions")
     .insert({
       user_id: payment.userId,
@@ -56,9 +62,26 @@ export async function verifyAndActivate(token: string): Promise<ActivationResult
     .select("id")
     .single();
 
-  await admin.from("payments").insert({
+  // Le cas à ne surtout pas laisser passer silencieusement : sans cette
+  // vérification, l'ancien abonnement venait d'être annulé, le nouveau
+  // n'existait pas, et le paiement était quand même enregistré « completed »
+  // — client débité, aucun service actif, et la fonction renvoyait
+  // « activated ». On remet l'abonnement précédent en place et on remonte
+  // l'erreur : l'IPN sera rejoué par PayDunya, et /billing affichera l'état
+  // d'échec au lieu d'un faux succès.
+  if (subError || !sub) {
+    await admin
+      .from("subscriptions")
+      .update({ status: "active" })
+      .eq("user_id", payment.userId)
+      .eq("status", "cancelled")
+      .gte("current_period_end", new Date().toISOString());
+    throw new Error(`activation failed (insert): ${subError?.message ?? "no row"}`);
+  }
+
+  const { error: paymentError } = await admin.from("payments").insert({
     user_id: payment.userId,
-    subscription_id: sub?.id ?? null,
+    subscription_id: sub.id,
     gateway: paydunya.id,
     gateway_ref: token,
     amount: payment.amount,
@@ -66,6 +89,16 @@ export async function verifyAndActivate(token: string): Promise<ActivationResult
     status: "completed",
     raw_response: payment.raw,
   });
+  // L'abonnement est actif : le client a bien ce qu'il a payé. Mais sans
+  // ligne de paiement, l'idempotence (gateway, gateway_ref) ne joue plus et
+  // un rejeu d'IPN relancerait une activation. On journalise pour Sentry
+  // sans faire échouer l'activation elle-même.
+  if (paymentError) {
+    console.error(
+      `Abonnement ${sub.id} activé mais paiement ${token} non enregistré:`,
+      paymentError.message
+    );
+  }
 
   return "activated";
 }

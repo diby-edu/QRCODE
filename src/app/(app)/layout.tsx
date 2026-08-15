@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import { announcementId, getAnnouncement } from "@/lib/announcement";
 import { getUserPlan, isUnlimited } from "@/lib/plans";
 import { AppShell, type AppNotification } from "@/components/shell/AppShell";
 import { signOut } from "@/app/auth/actions";
@@ -14,6 +15,17 @@ async function buildNotifications(
 ): Promise<AppNotification[]> {
   const t = await getTranslations("common.notifications");
   const notifications: AppNotification[] = [];
+
+  // Annonce de l'exploitant en premier : elle prime sur les alertes de quota
+  // calculées plus bas.
+  const announcement = await getAnnouncement();
+  if (announcement) {
+    notifications.push({
+      id: announcementId(announcement),
+      level: "info",
+      message: announcement,
+    });
+  }
 
   const [userPlan, { count: totalQr }, { count: dynamicQr }, { data: storageBytes }] =
     await Promise.all([

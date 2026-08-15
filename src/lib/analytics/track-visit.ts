@@ -1,7 +1,7 @@
 import { createHmac } from "node:crypto";
 import { UAParser } from "ua-parser-js";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { isPrivateIp } from "@/lib/net";
+import { anonymizeIp, isPrivateIp } from "@/lib/net";
 import { appUrl } from "@/lib/url";
 
 const BOT_UA = /bot|crawl|spider|slurp|facebookexternalhit|whatsapp|telegrambot|preview/i;
@@ -112,8 +112,14 @@ export async function trackVisit(
     }
 
     const usableIp = ip && !isPrivateIp(ip) ? ip : null;
-    const { country, city, isDatacenter } = usableIp
-      ? await lookupGeo(usableIp)
+    // Seule une IP tronquée sort vers ip-api.com, qui n'est joignable qu'en
+    // HTTP simple sur l'offre gratuite (voir anonymizeIp). Le hash visiteur
+    // ci-dessous continue, lui, de porter sur l'IP complète : il ne quitte
+    // jamais le serveur, n'est pas réversible, et le tronquer ferait compter
+    // un réseau entier comme un seul visiteur unique.
+    const anonIp = anonymizeIp(usableIp);
+    const { country, city, isDatacenter } = anonIp
+      ? await lookupGeo(anonIp)
       : { country: null, city: null, isDatacenter: false };
     // Adresse d'un hébergeur cloud (AWS, OVH, Hetzner…) : jamais un vrai
     // visiteur résidentiel/mobile, quasi toujours un scanner ou un robot

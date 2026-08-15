@@ -51,7 +51,9 @@
     "authError": "Votre session a expiré. Reconnectez-vous pour envoyer un fichier.",
     "noFile": "Aucun fichier.",
     "fileCount": "{count} / {max} photos",
-    "maxItems": "Maximum {max} photos — le reste n'a pas été envoyé."
+    "maxItems": "Maximum {max} photos — le reste n'a pas été envoyé.",
+    "fileType": "Format de fichier non pris en charge. Formats acceptés : images (PNG, JPG, WebP, GIF), PDF, audio (MP3, M4A, WAV) et vidéo (MP4, WebM, MOV).",
+    "fileTooLarge": "Fichier trop volumineux ({limit} Mo maximum pour ce type de fichier)."
   },
   "customize": {
     "fgColor": "Couleur du QR code",

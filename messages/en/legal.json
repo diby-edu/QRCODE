@@ -36,12 +36,12 @@
   },
   "privacy": {
     "title": "Privacy policy",
-    "updated": "Last updated: July 2026",
+    "updated": "Last updated: August 2026",
     "lead": "This page explains what data QRHub collects, why, and how it is protected.",
     "sections": [
       {
         "title": "Data we collect",
-        "body": "When you create an account: name, email address, password (never stored in plain text). When you use the service: the content of your QR codes (URLs, files, text you enter), and anonymized scan statistics (country, approximate city, device type, browser — never the identity of the person scanning)."
+        "body": "When you create an account: name, email address, password (never stored in plain text). When you use the service: the content of your QR codes (URLs, files, text you enter), and scan statistics (country, approximate city, device type, browser, operating system). These statistics never identify the person scanning: their IP address is truncated before being stored, so it identifies a network rather than a subscriber."
       },
       {
         "title": "How we use this data",
@@ -49,11 +49,11 @@
       },
       {
         "title": "Who we share this data with",
-        "body": "Only with our technical providers, to the extent necessary to run the service: Supabase (database and authentication hosting) and PayDunya (mobile and card payment processing). We do not sell or rent your data to third parties for advertising purposes."
+        "body": "Only with our technical providers, to the extent necessary to run the service: Supabase (database and authentication hosting), PayDunya (mobile and card payment processing), ip-api.com (approximate geolocation, which only ever receives a truncated IP address) and Sentry (technical error monitoring). We do not sell or rent your data to third parties, and we use no advertising analytics tools."
       },
       {
         "title": "Retention",
-        "body": "Your data is kept as long as your account is active. If you delete your account, your personal data and QR codes are deleted, except for information we must keep for legal or accounting obligations (e.g. billing history)."
+        "body": "Your account data and QR codes are kept as long as your account is active. Scan and traffic statistics are kept for 18 months, then deleted automatically. If you delete your account, your personal data and QR codes are deleted, except for information we must keep for legal or accounting obligations (e.g. billing history)."
       },
       {
         "title": "Security",

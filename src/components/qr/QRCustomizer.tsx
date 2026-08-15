@@ -93,7 +93,11 @@ export function QRCustomizer({
       setUploadError(
         result.error === "storage"
           ? t("form.storageQuota", { limit: result.limitMb ?? 0 })
-          : t("form.authError")
+          : result.error === "fileTooLarge"
+            ? t("form.fileTooLarge", { limit: result.limitMb ?? 0 })
+            : result.error === "fileType"
+              ? t("form.fileType")
+              : t("form.authError")
       );
       setUploadingLogo(false);
       return;

@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Logo } from "@/components/brand/Logo";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { MobileNav } from "@/components/marketing/MobileNav";
+import { SiteAnnouncement } from "@/components/marketing/SiteAnnouncement";
 
 const SUPPORT_PHONE_DISPLAY = "+225 05 54 58 59 27";
 const SUPPORT_PHONE_TEL = "+2250554585927";
@@ -26,46 +27,55 @@ export async function SiteHeader() {
   ];
 
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/80 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3.5 lg:px-8">
-        <Logo />
-        <nav className="hidden items-center gap-6 text-sm font-medium text-slate-600 sm:flex">
-          {navLinks.map((link) => (
-            <Link key={link.href} href={link.href} className="hover:text-slate-900">
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-        <div className="flex items-center gap-2">
-          <LanguageSwitcher />
-          <div className="hidden items-center gap-2 sm:flex">
-            {user ? (
-              <Link href="/dashboard" className="btn-primary btn-sm">
-                {tc("nav.dashboard")}
+    <>
+      <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/80 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3.5 lg:px-8">
+          <Logo />
+          <nav className="hidden items-center gap-6 text-sm font-medium text-slate-600 sm:flex">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="hover:text-slate-900"
+              >
+                {link.label}
               </Link>
-            ) : (
-              <>
-                <Link href="/auth/login" className="btn-ghost btn-sm">
-                  {tc("nav.login")}
+            ))}
+          </nav>
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher />
+            <div className="hidden items-center gap-2 sm:flex">
+              {user ? (
+                <Link href="/dashboard" className="btn-primary btn-sm">
+                  {tc("nav.dashboard")}
                 </Link>
-                <Link href="/auth/register" className="btn-primary btn-sm">
-                  {tc("nav.register")}
-                </Link>
-              </>
-            )}
+              ) : (
+                <>
+                  <Link href="/auth/login" className="btn-ghost btn-sm">
+                    {tc("nav.login")}
+                  </Link>
+                  <Link href="/auth/register" className="btn-primary btn-sm">
+                    {tc("nav.register")}
+                  </Link>
+                </>
+              )}
+            </div>
+            <MobileNav
+              links={navLinks}
+              isLoggedIn={Boolean(user)}
+              labels={{
+                dashboard: tc("nav.dashboard"),
+                login: tc("nav.login"),
+                register: tc("nav.register"),
+              }}
+            />
           </div>
-          <MobileNav
-            links={navLinks}
-            isLoggedIn={Boolean(user)}
-            labels={{
-              dashboard: tc("nav.dashboard"),
-              login: tc("nav.login"),
-              register: tc("nav.register"),
-            }}
-          />
         </div>
-      </div>
-    </header>
+      </header>
+      {/* Sous l'en-tête, hors du bloc sticky : une annonce longue ne doit pas
+          coller en haut de l'écran pendant tout le défilement. */}
+      <SiteAnnouncement />
+    </>
   );
 }
 
@@ -80,7 +90,9 @@ export async function SiteFooter() {
           <Logo />
           <p className="mt-3 text-sm text-slate-500">{tc("footer.madeWith")}</p>
           <div className="mt-5">
-            <p className="text-sm font-semibold text-slate-900">{t("contactTitle")}</p>
+            <p className="text-sm font-semibold text-slate-900">
+              {t("contactTitle")}
+            </p>
             <a
               href={`tel:${SUPPORT_PHONE_TEL}`}
               className="mt-2 flex items-center gap-2 text-sm text-slate-500 hover:text-slate-900"

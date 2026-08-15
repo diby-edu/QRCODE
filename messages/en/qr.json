@@ -51,7 +51,9 @@
     "authError": "Your session has expired. Please sign in again to upload a file.",
     "noFile": "No file.",
     "fileCount": "{count} / {max} photos",
-    "maxItems": "Maximum {max} photos — the rest were not uploaded."
+    "maxItems": "Maximum {max} photos — the rest were not uploaded.",
+    "fileType": "Unsupported file format. Accepted formats: images (PNG, JPG, WebP, GIF), PDF, audio (MP3, M4A, WAV) and video (MP4, WebM, MOV).",
+    "fileTooLarge": "File too large ({limit} MB maximum for this file type)."
   },
   "customize": {
     "fgColor": "QR code color",

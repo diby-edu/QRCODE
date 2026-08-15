@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { appUrl } from "@/lib/url";
+import { appUrl, safeNextPath } from "@/lib/url";
 
 // Origine fixée via NEXT_PUBLIC_APP_URL plutôt que déduite de request.url :
 // derrière le proxy nginx (standalone Next.js sur 127.0.0.1:3100), l'origine
@@ -10,8 +10,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const origin = appUrl();
   const code = searchParams.get("code");
-  const rawNext = searchParams.get("next") ?? "/dashboard";
-  const next = rawNext.startsWith("/") ? rawNext : "/dashboard";
+  const next = safeNextPath(searchParams.get("next"));
 
   if (code) {
     const supabase = await createClient();

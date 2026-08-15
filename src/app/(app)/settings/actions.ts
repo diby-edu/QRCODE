@@ -125,6 +125,7 @@ export async function changeLanguage(locale: string): Promise<SettingsResult> {
   store.set(LOCALE_COOKIE, locale, {
     path: "/",
     maxAge: 60 * 60 * 24 * 365,
+    secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
   });
 

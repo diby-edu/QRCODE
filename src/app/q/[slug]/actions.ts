@@ -33,6 +33,10 @@ export async function verifyQrPassword(
   store.set(passwordCookieName(qr.id), passwordCookieValue(qr.password), {
     path: `/q/${slug}`,
     httpOnly: true,
+    // Sans `secure`, le cookie part en clair si un visiteur atteint le site
+    // en HTTP. Conditionnel : en dev (http://localhost) un cookie `secure`
+    // ne serait tout simplement pas posé.
+    secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     maxAge: 60 * 60, // 1 h
   });

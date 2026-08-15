@@ -219,6 +219,8 @@ type UploadError =
   | { type: "auth" }
   | { type: "video" }
   | { type: "storage"; limitMb: number }
+  | { type: "fileType" }
+  | { type: "fileTooLarge"; limitMb: number }
   | { type: "maxItems"; max: number };
 
 function FileField({
@@ -286,7 +288,9 @@ function FileField({
         setError(
           result.error === "storage"
             ? { type: "storage", limitMb: result.limitMb ?? 0 }
-            : { type: result.error }
+            : result.error === "fileTooLarge"
+              ? { type: "fileTooLarge", limitMb: result.limitMb ?? 0 }
+              : { type: result.error }
         );
         continue;
       }
@@ -344,6 +348,9 @@ function FileField({
           {error.type === "video" && t("form.videoLocked")}
           {error.type === "storage" &&
             t("form.storageQuota", { limit: error.limitMb })}
+          {error.type === "fileType" && t("form.fileType")}
+          {error.type === "fileTooLarge" &&
+            t("form.fileTooLarge", { limit: error.limitMb })}
           {error.type === "maxItems" && t("form.maxItems", { max: error.max })}
           {(error.type === "video" || error.type === "storage") && (
             <>

@@ -1,6 +1,6 @@
 import { UAParser } from "ua-parser-js";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { isPrivateIp } from "@/lib/net";
+import { anonymizeIp, isPrivateIp } from "@/lib/net";
 
 /**
  * Enregistre un scan (appareil, navigateur, OS, pays/ville via IP).
@@ -18,12 +18,19 @@ export async function trackScan(
     const browser = parsed.browser.name ?? null;
     const os = parsed.os.name ?? null;
 
+    // IP tronquée AVANT la géolocalisation et avant l'écriture en base :
+    // ip-api.com est interrogé en HTTP simple (l'offre gratuite n'expose pas
+    // HTTPS), donc aucune IP complète ne doit sortir du serveur en clair.
+    // La précision pays/ville est préservée : les bases de géolocalisation
+    // raisonnent par plage réseau, pas par abonné.
+    const anonIp = ip && !isPrivateIp(ip) ? anonymizeIp(ip) : null;
+
     let country: string | null = null;
     let city: string | null = null;
-    if (ip && !isPrivateIp(ip)) {
+    if (anonIp) {
       try {
         const res = await fetch(
-          `http://ip-api.com/json/${encodeURIComponent(ip)}?fields=status,country,city`,
+          `http://ip-api.com/json/${encodeURIComponent(anonIp)}?fields=status,country,city`,
           { signal: AbortSignal.timeout(2000), cache: "no-store" }
         );
         if (res.ok) {
@@ -50,7 +57,7 @@ export async function trackScan(
       p_device: device,
       p_browser: browser,
       p_os: os,
-      p_ip: ip,
+      p_ip: anonIp,
     });
   } catch (err) {
     console.error("trackScan failed:", err);

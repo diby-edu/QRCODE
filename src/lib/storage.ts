@@ -10,7 +10,11 @@ export type UserBucket = (typeof USER_BUCKETS)[number];
 
 export type UploadFileResult =
   | { ok: true; url: string }
-  | { ok: false; error: "auth" | "video" | "storage" | "generic"; limitMb?: number };
+  | {
+      ok: false;
+      error: "auth" | "video" | "storage" | "fileType" | "fileTooLarge" | "generic";
+      limitMb?: number;
+    };
 
 /**
  * Envoie un fichier via /api/upload (quota + droit vidéo vérifiés côté
@@ -31,7 +35,13 @@ export async function uploadFile(
       | { error?: string; limitMb?: number }
       | null;
     const error = payload?.error;
-    if (error === "auth" || error === "video" || error === "storage") {
+    if (
+      error === "auth" ||
+      error === "video" ||
+      error === "storage" ||
+      error === "fileType" ||
+      error === "fileTooLarge"
+    ) {
       return { ok: false, error, limitMb: payload?.limitMb };
     }
     return { ok: false, error: "generic" };

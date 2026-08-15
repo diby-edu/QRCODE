@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { safeNextPath } from "@/lib/url";
 
 export type AuthState = { error?: string; success?: string } | null;
 
@@ -54,7 +55,7 @@ export async function signIn(
     return { error: "suspended" };
   }
 
-  redirect(next.startsWith("/") ? next : "/dashboard");
+  redirect(safeNextPath(next));
 }
 
 export async function signUp(
