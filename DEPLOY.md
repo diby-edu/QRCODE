@@ -93,19 +93,6 @@ mise à jour.
 Un bloc de plus à côté de ceux de vos autres projets —
 `/etc/nginx/sites-available/qrhub` :
 
-Les zones de limitation de débit se déclarent au niveau `http`, donc dans
-`/etc/nginx/nginx.conf` (bloc `http { … }`) et non dans le fichier du site —
-à ajouter une seule fois, elles sont partagées par tous vos projets :
-
-```nginx
-# Mémoire partagée indexée par IP. 10 Mo ≈ 160 000 adresses suivies.
-limit_req_zone $binary_remote_addr zone=qrhub_auth:10m rate=10r/m;   # connexion/inscription
-limit_req_zone $binary_remote_addr zone=qrhub_api:10m  rate=60r/m;   # /api/ (uploads, exports)
-limit_req_zone $binary_remote_addr zone=qrhub_scan:10m rate=120r/m;  # /q/ (scans de QR)
-```
-
-Puis `/etc/nginx/sites-available/qrhub` :
-
 ```nginx
 server {
     listen 80;
@@ -122,44 +109,15 @@ server {
         proxy_set_header Connection "upgrade";
         client_max_body_size 25m;   # uploads PDF/images/MP3
     }
-
-    # Formulaires d'authentification : freine le bourrage d'identifiants.
-    # `burst` absorbe les à-coups légitimes (rechargement, double clic),
-    # `nodelay` sert les requêtes du burst immédiatement plutôt qu'en file.
-    location /auth/ {
-        limit_req zone=qrhub_auth burst=20 nodelay;
-        limit_req_status 429;
-        proxy_pass http://127.0.0.1:3100;
-        include /etc/nginx/proxy_params;
-    }
-
-    # Routes API : uploads et exports CSV, coûteux côté serveur.
-    location /api/ {
-        limit_req zone=qrhub_api burst=30 nodelay;
-        limit_req_status 429;
-        proxy_pass http://127.0.0.1:3100;
-        client_max_body_size 25m;
-        include /etc/nginx/proxy_params;
-    }
-
-    # Scans de QR : plafond large (un QR sur une affiche peut être scanné
-    # par plusieurs personnes derrière la même IP publique), mais suffisant
-    # pour empêcher qu'un flood épuise le quota de géolocalisation
-    # ip-api.com (45 req/min), ce qui priverait tout le monde des
-    # statistiques pays/ville.
-    location /q/ {
-        limit_req zone=qrhub_scan burst=60 nodelay;
-        limit_req_status 429;
-        proxy_pass http://127.0.0.1:3100;
-        include /etc/nginx/proxy_params;
-    }
 }
 ```
 
-`/etc/nginx/proxy_params` existe par défaut sur Debian/Ubuntu et contient
-déjà `Host`, `X-Real-IP`, `X-Forwarded-For` et `X-Forwarded-Proto`. Vérifiez
-qu'il est bien présent (`cat /etc/nginx/proxy_params`) ; sinon, recopiez les
-quatre `proxy_set_header` du bloc `location /` dans chaque bloc.
+> **Limitation de débit (rate limiting)** — pas encore appliquée. Le plan
+> complet, les seuils et leur justification, la procédure de validation et le
+> retour arrière sont dans [RATE-LIMITING.md](RATE-LIMITING.md). Ne pas
+> improviser depuis ce fichier-ci : `nginx.conf` est partagé avec 7 autres
+> sites, et chaque domaine personnalisé client possède son propre bloc nginx
+> généré par `scripts/add-custom-domain.sh`.
 
 ```bash
 ln -s /etc/nginx/sites-available/qrhub /etc/nginx/sites-enabled/
