@@ -29,11 +29,14 @@ export default async function AuthLayout({
           <Logo name={t("appName")} />
         </Link>
 
-        <div className="relative py-6">
-          <h2 className="max-w-md text-4xl font-bold leading-tight text-white">
+        {/* Bloc central : le panneau fait 720x900 sur un écran courant, la
+            démonstration doit être à cette échelle. En max-w-sm elle occupait
+            20% de la hauteur et se lisait comme une vignette perdue. */}
+        <div className="relative flex w-full max-w-lg flex-col justify-center py-6">
+          <h2 className="text-4xl font-bold leading-tight text-white xl:text-5xl">
             {t("tagline")}
           </h2>
-          <div className="mt-8">
+          <div className="mt-10">
             <AuthShowcase
               label={tl("label")}
               destinations={tl.raw("destinations") as string[]}

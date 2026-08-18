@@ -60,15 +60,19 @@ export function AuthShowcase({
   }, [destinations.length]);
 
   return (
-    <div className="w-full max-w-sm">
-      <div className="rounded-2xl bg-white/10 p-5 ring-1 ring-white/20 backdrop-blur-sm">
-        <p className="text-xs font-medium uppercase tracking-wide text-indigo-200">
+    <div className="w-full max-w-lg">
+      <div className="rounded-3xl bg-white/10 p-8 ring-1 ring-white/20 backdrop-blur-sm">
+        <p className="text-sm font-medium uppercase tracking-wide text-indigo-200">
           {label}
         </p>
 
-        <div className="mt-3 flex items-center gap-5">
-          <div className="shrink-0 rounded-xl bg-white p-2.5">
-            <svg viewBox="0 0 19 19" className="h-24 w-24" aria-hidden>
+        {/* Empilé tant que le panneau est étroit : à la largeur du point de
+            rupture lg, il ne fait que la moitié de 1024 px, et un QR de 144 px
+            côte à côte avec le texte le faisait déborder — la destination
+            s'affichait « votre pag… » et la légende était coupée. */}
+        <div className="mt-6 flex flex-col gap-6 xl:flex-row xl:items-center xl:gap-8">
+          <div className="shrink-0 self-start rounded-2xl bg-white p-4">
+            <svg viewBox="0 0 19 19" className="h-28 w-28 xl:h-36 xl:w-36" aria-hidden>
               {CELLS.flatMap((row, y) =>
                 row.split("").map((cell, x) =>
                   cell === "1" ? (
@@ -88,21 +92,21 @@ export function AuthShowcase({
           </div>
 
           <div className="min-w-0 flex-1">
-            <span className="block text-xl text-indigo-200">↓</span>
+            <span className="block text-3xl leading-none text-indigo-200">↓</span>
             {/* La clé change à chaque destination : elle force React à
                 remonter l'élément, ce qui relance l'animation d'entrée. */}
             <span
               key={index}
-              className="animate-dest mt-1 block truncate text-lg font-bold text-white"
+              className="animate-dest mt-2 block text-2xl font-bold leading-snug text-white"
             >
               {destinations[index]}
             </span>
-            <div className="mt-3 flex gap-1.5">
+            <div className="mt-5 flex gap-2">
               {destinations.map((d, i) => (
                 <span
                   key={d}
-                  className={`h-1 rounded-full transition-all duration-500 ${
-                    i === index ? "w-6 bg-white" : "w-1.5 bg-white/30"
+                  className={`h-1.5 rounded-full transition-all duration-500 ${
+                    i === index ? "w-8 bg-white" : "w-2 bg-white/30"
                   }`}
                 />
               ))}
@@ -111,7 +115,7 @@ export function AuthShowcase({
         </div>
       </div>
 
-      <p className="mt-4 max-w-sm text-sm text-indigo-100">{caption}</p>
+      <p className="mt-6 text-base leading-relaxed text-indigo-100">{caption}</p>
     </div>
   );
 }
