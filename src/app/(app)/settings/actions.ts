@@ -99,15 +99,24 @@ export async function updateCustomDomain(
   return { success: true };
 }
 
-export async function deleteCustomDomain(id: string): Promise<void> {
+export async function deleteCustomDomain(id: string): Promise<SettingsResult> {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return;
+  if (!user) return { error: "generic" };
 
-  await supabase.from("custom_domains").delete().eq("id", id).eq("user_id", user.id);
+  const { error } = await supabase
+    .from("custom_domains")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", user.id);
+  if (error) {
+    console.error(`deleteCustomDomain(${id}) a échoué:`, error.message);
+    return { error: "generic" };
+  }
   revalidatePath("/domain");
+  return { success: true };
 }
 
 export async function changeLanguage(locale: string): Promise<SettingsResult> {
@@ -118,7 +127,17 @@ export async function changeLanguage(locale: string): Promise<SettingsResult> {
     data: { user },
   } = await supabase.auth.getUser();
   if (user) {
-    await supabase.from("profiles").update({ language: locale }).eq("id", user.id);
+    // Échec non bloquant : le cookie ci-dessous suffit à changer la langue de
+    // la session. Seule la préférence persistante entre appareils est perdue,
+    // ce qui ne justifie pas de refuser le changement — mais doit se voir
+    // dans les journaux plutôt que disparaître.
+    const { error } = await supabase
+      .from("profiles")
+      .update({ language: locale })
+      .eq("id", user.id);
+    if (error) {
+      console.error(`changeLanguage(${user.id}) — préférence non enregistrée:`, error.message);
+    }
   }
 
   const store = await cookies();

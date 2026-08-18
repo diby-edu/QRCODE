@@ -191,16 +191,37 @@ export async function updateQrCode(
   redirect(`/qr/${id}?updated=1`);
 }
 
-export async function toggleQrActive(id: string, isActive: boolean) {
+/**
+ * Ces actions renvoient désormais l'erreur au lieu de l'ignorer. Sans ça,
+ * un échec (RLS, réseau, contrainte) se soldait par un revalidatePath() qui
+ * réaffichait l'état inchangé : l'utilisateur voyait son action « réussir »
+ * sans effet, recommençait, et concluait que le produit était cassé — pendant
+ * que rien n'était journalisé côté serveur.
+ */
+export async function toggleQrActive(
+  id: string,
+  isActive: boolean
+): Promise<QrActionResult> {
   const supabase = await createClient();
-  await supabase.from("qr_codes").update({ is_active: isActive }).eq("id", id);
+  const { error } = await supabase
+    .from("qr_codes")
+    .update({ is_active: isActive })
+    .eq("id", id);
+  if (error) {
+    console.error(`toggleQrActive(${id}) a échoué:`, error.message);
+    return { error: "generic" };
+  }
   revalidatePath("/qr");
   revalidatePath(`/qr/${id}`);
 }
 
-export async function deleteQrCode(id: string) {
+export async function deleteQrCode(id: string): Promise<QrActionResult> {
   const supabase = await createClient();
-  await supabase.from("qr_codes").delete().eq("id", id);
+  const { error } = await supabase.from("qr_codes").delete().eq("id", id);
+  if (error) {
+    console.error(`deleteQrCode(${id}) a échoué:`, error.message);
+    return { error: "generic" };
+  }
   revalidatePath("/qr");
   revalidatePath("/dashboard");
 }
@@ -263,27 +284,48 @@ export async function duplicateQrCode(id: string): Promise<QrActionResult> {
     ? await duplicateFileFields(storageAdmin, type.fields, originalData, user.id)
     : originalData;
 
-  await supabase.from("qr_code_data").insert({
+  // Sans cette vérification, la copie existait en base mais vide de contenu :
+  // un QR au titre correct qui, une fois scanné, ne menait nulle part.
+  const { error: copyDataError } = await supabase.from("qr_code_data").insert({
     qr_code_id: copy.id,
     data,
   });
+  if (copyDataError) {
+    console.error(`duplicateQrCode(${id}) — contenu non copié:`, copyDataError.message);
+    await supabase.from("qr_codes").delete().eq("id", copy.id);
+    return { error: "generic" };
+  }
 
   revalidatePath("/qr");
   revalidatePath("/dashboard");
 }
 
-export async function moveQrToFolder(id: string, folderId: string | null) {
+export async function moveQrToFolder(
+  id: string,
+  folderId: string | null
+): Promise<QrActionResult> {
   const supabase = await createClient();
-  await supabase.from("qr_codes").update({ folder_id: folderId }).eq("id", id);
+  const { error } = await supabase
+    .from("qr_codes")
+    .update({ folder_id: folderId })
+    .eq("id", id);
+  if (error) {
+    console.error(`moveQrToFolder(${id}) a échoué:`, error.message);
+    return { error: "generic" };
+  }
   revalidatePath("/qr");
 }
 
 /** Actions groupées depuis la liste (sélection multiple) — RLS scope déjà
  * le "in" aux QR du user courant, pas besoin de re-vérifier user_id ici. */
-export async function bulkDeleteQr(ids: string[]): Promise<void> {
+export async function bulkDeleteQr(ids: string[]): Promise<QrActionResult> {
   if (ids.length === 0) return;
   const supabase = await createClient();
-  await supabase.from("qr_codes").delete().in("id", ids);
+  const { error } = await supabase.from("qr_codes").delete().in("id", ids);
+  if (error) {
+    console.error(`bulkDeleteQr(${ids.length} QR) a échoué:`, error.message);
+    return { error: "generic" };
+  }
   revalidatePath("/qr");
   revalidatePath("/dashboard");
 }
@@ -291,10 +333,17 @@ export async function bulkDeleteQr(ids: string[]): Promise<void> {
 export async function bulkMoveToFolder(
   ids: string[],
   folderId: string | null
-): Promise<void> {
+): Promise<QrActionResult> {
   if (ids.length === 0) return;
   const supabase = await createClient();
-  await supabase.from("qr_codes").update({ folder_id: folderId }).in("id", ids);
+  const { error } = await supabase
+    .from("qr_codes")
+    .update({ folder_id: folderId })
+    .in("id", ids);
+  if (error) {
+    console.error(`bulkMoveToFolder(${ids.length} QR) a échoué:`, error.message);
+    return { error: "generic" };
+  }
   revalidatePath("/qr");
 }
 

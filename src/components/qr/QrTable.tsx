@@ -38,6 +38,7 @@ export function QrTable({
   const tc = useTranslations("common");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [confirming, setConfirming] = useState(false);
+  const [bulkError, setBulkError] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   const allSelected = qrCodes.length > 0 && selected.size === qrCodes.length;
@@ -222,7 +223,11 @@ export function QrTable({
         <div className="fixed inset-x-0 bottom-4 z-30 flex justify-center px-4">
           <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-lg">
             <span className="text-sm font-medium text-slate-700">
-              {t("list.selectedCount", { count: selected.size })}
+              {bulkError ? (
+                <span className="text-red-600">{tc("errors.generic")}</span>
+              ) : (
+                t("list.selectedCount", { count: selected.size })
+              )}
             </span>
             {foldersEnabled && folders.length > 0 && (
               <select
@@ -233,7 +238,14 @@ export function QrTable({
                   const folderId = e.target.value || null;
                   const ids = Array.from(selected);
                   startTransition(async () => {
-                    await bulkMoveToFolder(ids, folderId);
+                    const result = await bulkMoveToFolder(ids, folderId);
+                    if (result?.error) {
+                      // La sélection est conservée : l'utilisateur peut
+                      // réessayer sans tout re-cocher.
+                      setBulkError(true);
+                      return;
+                    }
+                    setBulkError(false);
                     clearSelection();
                   });
                 }}
@@ -293,7 +305,13 @@ export function QrTable({
                 onClick={() => {
                   const ids = Array.from(selected);
                   startTransition(async () => {
-                    await bulkDeleteQr(ids);
+                    const result = await bulkDeleteQr(ids);
+                    if (result?.error) {
+                      setBulkError(true);
+                      setConfirming(false);
+                      return;
+                    }
+                    setBulkError(false);
                     clearSelection();
                     setConfirming(false);
                   });

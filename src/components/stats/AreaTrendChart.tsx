@@ -1,110 +1,32 @@
 "use client";
 
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
-
-const ACCENT = "#4f46e5"; // indigo-600 — série unique, pas de légende
-
-function formatDay(iso: string, locale: string, long = false) {
-  return new Intl.DateTimeFormat(locale, {
-    day: "numeric",
-    month: long ? "long" : "short",
-  }).format(new Date(`${iso}T00:00:00`));
-}
-
-interface TooltipPayload {
-  value?: number | string;
-  payload?: { day: string };
-}
-
-function ChartTooltip({
-  active,
-  payload,
-  locale,
-  formatValue,
-  color,
-}: {
-  active?: boolean;
-  payload?: TooltipPayload[];
-  locale: string;
-  formatValue: (v: number, locale: string) => string;
-  color: string;
-}) {
-  const point = payload?.[0];
-  if (!active || !point?.payload) return null;
-  return (
-    <div className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs shadow-md">
-      <p className="text-slate-500">{formatDay(point.payload.day, locale, true)}</p>
-      <p className="mt-0.5 flex items-center gap-1.5 font-semibold text-slate-900">
-        <span className="inline-block h-2 w-2 rounded-full" style={{ backgroundColor: color }} />
-        {formatValue(Number(point.value ?? 0), locale)}
-      </p>
-    </div>
-  );
-}
+import dynamic from "next/dynamic";
+import type { AreaTrendChartImpl } from "./AreaTrendChartImpl";
 
 /**
- * Aire mono-série générique (jour → valeur) : ligne 2px, remplissage 10%,
- * grille discrète. Base commune à ScansAreaChart et RevenueAreaChart —
- * seuls la clé de donnée et le format d'affichage changent.
+ * Chargement différé de recharts (~300 Ko).
+ *
+ * Contrairement à `qr-code-styling` et `jspdf`, déjà différés, recharts
+ * partait dans le bundle initial du tableau de bord et des pages admin :
+ * chaque visiteur le téléchargeait avant même de voir un graphique, alors
+ * qu'il n'est utile qu'une fois la page rendue.
+ *
+ * `ssr: false` : les graphiques mesurent leur conteneur pour se dimensionner,
+ * ils n'ont donc rien à produire côté serveur. Le squelette ci-dessous occupe
+ * exactement la même hauteur (h-64) que le graphique final, pour éviter que
+ * la page ne saute au moment où il apparaît.
  */
-export function AreaTrendChart<T extends { day: string }>({
-  data,
-  locale,
-  dataKey,
-  formatValue,
-  color = ACCENT,
-  allowDecimals = false,
-}: {
-  data: T[];
-  locale: string;
-  dataKey: Extract<keyof T, string>;
-  formatValue: (v: number, locale: string) => string;
-  color?: string;
-  allowDecimals?: boolean;
-}) {
-  return (
-    <div className="h-64 w-full">
-      <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
-          <CartesianGrid stroke="#e2e8f0" strokeWidth={1} vertical={false} />
-          <XAxis
-            dataKey="day"
-            tickFormatter={(d: string) => formatDay(d, locale)}
-            tick={{ fill: "#64748b", fontSize: 11 }}
-            axisLine={{ stroke: "#e2e8f0" }}
-            tickLine={false}
-            minTickGap={32}
-          />
-          <YAxis
-            allowDecimals={allowDecimals}
-            width={44}
-            tick={{ fill: "#64748b", fontSize: 11 }}
-            axisLine={false}
-            tickLine={false}
-          />
-          <Tooltip
-            content={<ChartTooltip locale={locale} formatValue={formatValue} color={color} />}
-            cursor={{ stroke: "#c7d2fe", strokeWidth: 1 }}
-          />
-          <Area
-            type="monotone"
-            dataKey={dataKey}
-            stroke={color}
-            strokeWidth={2}
-            fill={color}
-            fillOpacity={0.1}
-            activeDot={{ r: 4, fill: color, stroke: "#ffffff", strokeWidth: 2 }}
-          />
-        </AreaChart>
-      </ResponsiveContainer>
-    </div>
-  );
-}
+const Lazy = dynamic(
+  () => import("./AreaTrendChartImpl").then((m) => m.AreaTrendChartImpl),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-64 w-full animate-pulse rounded-xl bg-slate-100" />
+    ),
+  }
+  // `dynamic()` renvoie un composant aux props inférées et perd la généricité
+  // de l'original ; ce cast la restaure pour les appelants (dataKey doit
+  // rester contraint aux clés de T).
+) as typeof AreaTrendChartImpl;
+
+export const AreaTrendChart = Lazy;

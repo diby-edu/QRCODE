@@ -94,6 +94,7 @@ export function ActiveToggle({
 }) {
   const t = useTranslations("common");
   const [isPending, startTransition] = useTransition();
+  const [failed, setFailed] = useState(false);
 
   return (
     <button
@@ -101,13 +102,20 @@ export function ActiveToggle({
       disabled={isPending}
       onClick={() =>
         startTransition(async () => {
-          await toggleQrActive(id, !isActive);
+          const result = await toggleQrActive(id, !isActive);
+          setFailed(Boolean(result?.error));
         })
       }
       className={`relative h-6 w-11 shrink-0 rounded-full transition-colors cursor-pointer disabled:opacity-50 ${
-        isActive ? "bg-emerald-500" : "bg-slate-300"
+        failed ? "bg-red-400" : isActive ? "bg-emerald-500" : "bg-slate-300"
       }`}
-      title={isActive ? t("actions.deactivate") : t("actions.activate")}
+      title={
+        failed
+          ? t("errors.generic")
+          : isActive
+            ? t("actions.deactivate")
+            : t("actions.activate")
+      }
     >
       <span
         className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
@@ -159,6 +167,7 @@ export function DeleteQrButton({
   const tq = useTranslations("qr");
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [error, setError] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   return (
@@ -179,6 +188,11 @@ export function DeleteQrButton({
             <p className="mt-2 text-sm text-slate-500">
               {t("confirmDelete.message", { name })}
             </p>
+            {error && (
+              <p className="mt-3 text-sm font-medium text-red-600">
+                {t("errors.generic")}
+              </p>
+            )}
             <div className="mt-5 flex justify-end gap-2">
               <button
                 type="button"
@@ -193,7 +207,14 @@ export function DeleteQrButton({
                 className="btn-danger btn-sm"
                 onClick={() =>
                   startTransition(async () => {
-                    await deleteQrCode(id);
+                    const result = await deleteQrCode(id);
+                    if (result?.error) {
+                      // La boîte reste ouverte : l'utilisateur doit voir que
+                      // la suppression n'a PAS eu lieu, au lieu de la croire
+                      // faite en voyant la fenêtre se fermer.
+                      setError(true);
+                      return;
+                    }
                     setOpen(false);
                     if (redirectTo) router.push(redirectTo);
                   })

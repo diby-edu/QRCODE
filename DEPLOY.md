@@ -158,14 +158,14 @@ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
 source ~/.bashrc
 
 nvm install 22
-nvm which 22   # note le chemin exact, ex: /root/.nvm/versions/node/v22.20.0/bin/node
+nvm which 22   # note le chemin exact, ex: /root/.nvm/versions/node/v22.23.1/bin/node
 ```
 
 Mettre à jour `interpreter` dans `ecosystem.config.cjs` avec le chemin
 obtenu (déjà présent dans le repo avec une valeur par défaut à ajuster) :
 
 ```js
-interpreter: "/root/.nvm/versions/node/v22.20.0/bin/node",
+interpreter: "/root/.nvm/versions/node/v22.23.1/bin/node",
 ```
 
 Puis reconstruire et relancer normalement (§ 12 ci-dessous) :
@@ -185,22 +185,50 @@ sont pas affectés (ils gardent leur propre `interpreter`/Node système).
 
 ## 12. Mises à jour
 
-⚠️ `npm run build` régénère entièrement `.next/standalone/` à chaque fois —
-**il faut recopier `.env.local` après CHAQUE build**, sinon l'app perd
-silencieusement toutes ses variables serveur (clés PayDunya, clé
-service_role Supabase…) au redémarrage suivant, sans erreur au démarrage :
-les échecs n'apparaissent qu'à l'usage (paiement, uploads, etc.).
+```bash
+cd /var/www/qrhub && ./scripts/deploy.sh
+```
+
+Le script enchaîne les sept étapes et **échoue bruyamment** au premier
+problème, plutôt que de laisser passer un déploiement à moitié fait. Il règle
+au passage trois pièges rencontrés en conditions réelles :
+
+- `git pull` échoue à chaque fois sur `package-lock.json` modifié localement
+  (npm ne résout pas les mêmes dépendances optionnelles sous Linux et sous
+  Windows) — c'est un fichier généré, le script le réaligne ;
+- le `node` par défaut du VPS est en **v20** alors que `package.json` exige
+  `>= 22` : le script impose le bon interpréteur et refuse de construire
+  sinon ;
+- ce chemin d'interpréteur est **lu dans `ecosystem.config.cjs`**, déjà source
+  de vérité pour PM2, au lieu d'être recopié ici où il finissait par se
+  périmer.
+
+Il termine par un appel à `/api/health` : un déploiement qui ne répond pas
+200 est signalé comme un échec au lieu de passer pour un succès.
+
+⚠️ Le point le plus coûteux, désormais automatisé et vérifié par le script :
+`npm run build` régénère entièrement `.next/standalone/`, **il faut donc y
+recopier `.env.local` après CHAQUE build**. Sans ce fichier, l'application
+démarre sans la moindre erreur puis échoue silencieusement à l'usage
+(paiements, uploads).
+
+<details>
+<summary>Équivalent manuel, si le script est indisponible</summary>
 
 ```bash
+export PATH=/root/.nvm/versions/node/v22.23.1/bin:$PATH
+git checkout -- package-lock.json
 git pull
 npm install
-npm run db:migrate  # nouvelles migrations éventuelles
+npm run db:migrate
 npm run build
 cp -r .next/static .next/standalone/.next/static
 cp -r public .next/standalone/public
 cp .env.local .next/standalone/
 pm2 restart qrhub
 ```
+
+</details>
 
 ## 13. Domaine personnalisé (client Pro)
 
