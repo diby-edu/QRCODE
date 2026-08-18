@@ -1,3 +1,5 @@
+import type { BillingPeriod } from "@/lib/types";
+
 // Abstraction des passerelles de paiement. PayDunya est la première
 // implémentation ; en ajouter une autre = un fichier de plus qui
 // implémente PaymentGateway (Stripe, CinetPay…).
@@ -8,6 +10,9 @@ export interface CheckoutRequest {
   planName: string;
   amount: number;
   currency: string;
+  /** Durée achetée — voyage dans custom_data et revient à la vérification,
+   *  seul moyen de savoir quelle échéance activer au retour du paiement. */
+  billingPeriod: BillingPeriod;
   /** Pré-remplit le nom et l'email sur la page de paiement hébergée */
   customerName?: string;
   customerEmail?: string;
@@ -29,6 +34,7 @@ export interface VerifiedPayment {
   amount: number;
   userId: string | null;
   planId: string | null;
+  billingPeriod: BillingPeriod | null;
   raw: Record<string, unknown>;
 }
 

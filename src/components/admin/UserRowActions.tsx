@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { BILLING_PERIODS } from "@/lib/billing-period";
+import type { BillingPeriod } from "@/lib/types";
 import { useTranslations } from "next-intl";
 import {
   deleteUser,
@@ -28,6 +30,12 @@ export function UserRowActions({
   const tc = useTranslations("common");
   const [confirming, setConfirming] = useState(false);
   const [confirmingRole, setConfirmingRole] = useState(false);
+  // Le changement de plan était la SEULE action de cette ligne sans
+  // confirmation, alors que c'est celle qui a des conséquences de
+  // facturation : un clic de travers annulait l'abonnement en cours et en
+  // créait un autre, immédiatement et sans retour possible.
+  const [pendingPlan, setPendingPlan] = useState<{ id: string; name: string } | null>(null);
+  const [pendingPeriod, setPendingPeriod] = useState<BillingPeriod>("monthly");
   const [isPending, startTransition] = useTransition();
   const isAdmin = role === "admin";
 
@@ -43,9 +51,12 @@ export function UserRowActions({
         onChange={(e) => {
           const next = e.target.value;
           if (!next || next === planId) return;
-          startTransition(async () => {
-            await setUserPlan(userId, next);
-          });
+          const plan = plans.find((p) => p.id === next);
+          if (plan) setPendingPlan({ id: plan.id, name: plan.name });
+          setPendingPeriod("monthly");
+          // La liste revient à sa valeur d'origine : elle ne reflétera le
+          // nouveau plan qu'une fois le changement réellement confirmé.
+          e.target.value = planId ?? "";
         }}
       >
         <option value="" disabled>
@@ -88,6 +99,60 @@ export function UserRowActions({
       >
         {t("delete")}
       </button>
+
+      {pendingPlan && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-slate-900/40"
+            onClick={() => setPendingPlan(null)}
+          />
+          <div className="card relative w-full max-w-sm p-6 animate-fade-up">
+            <h3 className="text-base font-semibold text-slate-900">
+              {t("confirmPlanTitle")}
+            </h3>
+            <p className="mt-2 text-sm text-slate-500">
+              {t("confirmPlanMessage", { plan: pendingPlan.name })}
+            </p>
+            <label className="mt-4 block">
+              <span className="label">{t("planPeriod")}</span>
+              <select
+                value={pendingPeriod}
+                onChange={(e) => setPendingPeriod(e.target.value as BillingPeriod)}
+                className="input"
+              >
+                {BILLING_PERIODS.map((p) => (
+                  <option key={p} value={p}>
+                    {t(`planPeriods.${p}`)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <div className="mt-5 flex justify-end gap-2">
+              <button
+                type="button"
+                className="btn-secondary btn-sm"
+                onClick={() => setPendingPlan(null)}
+              >
+                {tc("actions.cancel")}
+              </button>
+              <button
+                type="button"
+                disabled={isPending}
+                className="btn-primary btn-sm"
+                onClick={() => {
+                  const target = pendingPlan;
+                  startTransition(async () => {
+                    await setUserPlan(userId, target.id, pendingPeriod);
+                    setPendingPlan(null);
+                  });
+                }}
+              >
+                {isPending ? "…" : tc("actions.confirm")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {confirmingRole && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">

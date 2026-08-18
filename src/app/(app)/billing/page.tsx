@@ -3,7 +3,9 @@ import { createClient } from "@/lib/supabase/server";
 import { getUserPlan } from "@/lib/plans";
 import { verifyAndActivate } from "@/lib/payments/activate";
 import { formatDate, formatDateTime, formatMoney } from "@/lib/utils";
-import type { Payment, Plan } from "@/lib/types";
+import Link from "next/link";
+import { availablePeriods, isBillingPeriod } from "@/lib/billing-period";
+import type { BillingPeriod, Payment, Plan } from "@/lib/types";
 import { PlanCard } from "@/components/billing/PlanCard";
 import { CheckoutButton } from "@/components/billing/CheckoutButton";
 import { UsageMeter } from "@/components/billing/UsageMeter";
@@ -13,9 +15,12 @@ type Banner = "success" | "pending" | "cancelled" | "error" | null;
 export default async function BillingPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; token?: string }>;
+  searchParams: Promise<{ status?: string; token?: string; period?: string }>;
 }) {
-  const { status, token } = await searchParams;
+  const { status, token, period: periodParam } = await searchParams;
+  // Durée passée par l'URL plutôt que par un état client : PlanCard est un
+  // composant serveur, et les onglets restent de simples liens partageables.
+  const period: BillingPeriod = isBillingPeriod(periodParam) ? periodParam : "monthly";
   const t = await getTranslations("billing");
   const locale = await getLocale();
 
@@ -59,7 +64,7 @@ export default async function BillingPage({
         .order("sort_order"),
       supabase
         .from("payments")
-        .select("id, amount, currency, status, created_at")
+        .select("id, amount, currency, status, created_at, gateway")
         .order("created_at", { ascending: false })
         .limit(10),
     ]);
@@ -68,7 +73,7 @@ export default async function BillingPage({
   const plans = (plansRaw ?? []) as Plan[];
   const payments = (paymentsRaw ?? []) as Pick<
     Payment,
-    "id" | "amount" | "currency" | "status" | "created_at"
+    "id" | "amount" | "currency" | "status" | "created_at" | "gateway"
   >[];
   const storageMb = Math.round((Number(storageBytes ?? 0) / 1024 / 1024) * 10) / 10;
 
@@ -146,19 +151,38 @@ export default async function BillingPage({
       </div>
 
       {/* Plans disponibles */}
-      <h2 className="mb-4 mt-8 text-base font-semibold text-slate-900">
-        {t("plans.title")}
-      </h2>
+      <div className="mb-4 mt-8 flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-base font-semibold text-slate-900">{t("plans.title")}</h2>
+        <div className="inline-flex rounded-xl bg-slate-100 p-1">
+          {(["monthly", "quarterly", "yearly"] as BillingPeriod[]).map((p) => (
+            <Link
+              key={p}
+              href={`/billing?period=${p}`}
+              scroll={false}
+              className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
+                period === p
+                  ? "bg-white text-slate-900 shadow-sm"
+                  : "text-slate-500 hover:text-slate-800"
+              }`}
+            >
+              {t(`plans.periods.${p}`)}
+            </Link>
+          ))}
+        </div>
+      </div>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
         {plans.map((p) => (
           <PlanCard
             key={p.id}
             plan={p}
             locale={locale}
+            period={period}
             isCurrent={p.id === plan?.id}
             action={
-              Number(p.price_monthly) > 0 ? (
-                <CheckoutButton planId={p.id} highlighted />
+              // Bouton masqué si le plan ne vend pas la durée choisie : mieux
+              // vaut ne rien proposer que de facturer une autre échéance.
+              Number(p.price_monthly) > 0 && availablePeriods(p).includes(period) ? (
+                <CheckoutButton planId={p.id} period={period} highlighted />
               ) : null
             }
           />
@@ -184,6 +208,7 @@ export default async function BillingPage({
                 <tr className="border-y border-slate-100 bg-slate-50/60 text-left text-xs uppercase tracking-wide text-slate-400">
                   <th className="px-6 py-2.5 font-medium">{t("history.date")}</th>
                   <th className="px-6 py-2.5 font-medium">{t("history.amount")}</th>
+                  <th className="px-6 py-2.5 font-medium">{t("history.origin")}</th>
                   <th className="px-6 py-2.5 font-medium">{t("history.status")}</th>
                 </tr>
               </thead>
@@ -195,6 +220,13 @@ export default async function BillingPage({
                     </td>
                     <td className="px-6 py-3 font-medium">
                       {formatMoney(Number(payment.amount), payment.currency, locale)}
+                    </td>
+                    <td className="px-6 py-3 text-slate-500">
+                      {/* Un client qui a réglé par virement doit voir son
+                          paiement reconnu, pas se demander d'où il sort. */}
+                      {t(
+                        `history.origins.${payment.gateway === "paydunya" ? "auto" : "manual"}`
+                      )}
                     </td>
                     <td className="px-6 py-3">
                       <span

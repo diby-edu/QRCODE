@@ -75,7 +75,15 @@
       "confirmPromoteTitle": "Donner les droits administrateur ?",
       "confirmPromoteMessage": "Cet utilisateur pourra gérer tous les comptes, plans, paiements et QR codes de la plateforme.",
       "confirmDemoteTitle": "Retirer les droits administrateur ?",
-      "confirmDemoteMessage": "Cet utilisateur redeviendra un compte standard et perdra l'accès à l'administration."
+      "confirmDemoteMessage": "Cet utilisateur redeviendra un compte standard et perdra l'accès à l'administration.",
+      "confirmPlanTitle": "Changer le plan ?",
+      "confirmPlanMessage": "Ce compte passera au plan « {plan} ». L abonnement en cours sera clos et remplacé immédiatement.",
+      "planPeriod": "Durée",
+      "planPeriods": {
+        "monthly": "Mensuel (30 jours)",
+        "quarterly": "Trimestriel (90 jours)",
+        "yearly": "Annuel (365 jours)"
+      }
     },
     "adminBadge": "Admin"
   },
@@ -100,7 +108,10 @@
       "logo": "Logo sur les QR",
       "folders": "Dossiers",
       "password": "Protection par mot de passe",
-      "customDomain": "Domaine personnalisé"
+      "customDomain": "Domaine personnalisé",
+      "priceQuarterly": "Prix trimestriel",
+      "priceYearly": "Prix annuel",
+      "periodHint": "Laisser à 0 pour ne pas proposer cette durée sur ce plan."
     },
     "saved": "Plan enregistré.",
     "subscribers": "{count, plural, =0 {Aucun abonné} one {# abonné} other {# abonnés}}"
@@ -128,7 +139,20 @@
       "note": "Note (optionnelle)",
       "notePlaceholder": "Ex. : virement reçu le 10/07",
       "saved": "Paiement enregistré, abonnement activé.",
-      "userNotFound": "Aucun compte avec cet email."
+      "userNotFound": "Aucun compte avec cet email.",
+      "emailPlaceholder": "Rechercher un client…",
+      "period": "Durée",
+      "periods": {
+        "monthly": "Mensuel (30 jours)",
+        "quarterly": "Trimestriel (90 jours)",
+        "yearly": "Annuel (365 jours)"
+      },
+      "amountHint": "Tarif du plan : {price} — modifiable si le montant reçu diffère.",
+      "periodUnavailable": "Ce plan ne propose pas cette durée."
+    },
+    "origin": {
+      "auto": "Automatique",
+      "manual": "Manuel"
     }
   },
   "qrcodes": {

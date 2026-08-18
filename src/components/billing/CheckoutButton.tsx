@@ -3,13 +3,16 @@
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { startCheckout } from "@/app/(app)/billing/actions";
+import type { BillingPeriod } from "@/lib/types";
 
 export function CheckoutButton({
   planId,
   highlighted = false,
+  period = "monthly",
 }: {
   planId: string;
   highlighted?: boolean;
+  period?: BillingPeriod;
 }) {
   const t = useTranslations("billing");
   const [error, setError] = useState<string | null>(null);
@@ -24,7 +27,7 @@ export function CheckoutButton({
         onClick={() => {
           setError(null);
           startTransition(async () => {
-            const result = await startCheckout(planId);
+            const result = await startCheckout(planId, period);
             if ("error" in result) setError(t("errors.checkoutFailed"));
             else window.open(result.url, "_blank", "noopener,noreferrer");
           });

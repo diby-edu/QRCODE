@@ -3,6 +3,7 @@
 
 export type Role = "user" | "admin";
 export type SubscriptionStatus = "active" | "expired" | "cancelled";
+export type BillingPeriod = "monthly" | "quarterly" | "yearly";
 export type PaymentStatus = "pending" | "completed" | "failed" | "cancelled" | "refunded";
 
 export interface Profile {
@@ -34,6 +35,9 @@ export interface Plan {
   name: string;
   description: string | null;
   price_monthly: number;
+  /** null = durée non proposée pour ce plan (voir migration 020). */
+  price_quarterly: number | null;
+  price_yearly: number | null;
   currency: string;
   limits: PlanLimits;
   is_active: boolean;
@@ -48,6 +52,7 @@ export interface Subscription {
   status: SubscriptionStatus;
   current_period_start: string;
   current_period_end: string | null;
+  billing_period: BillingPeriod;
   gateway: string | null;
   created_at: string;
 }

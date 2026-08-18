@@ -6,6 +6,8 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { PlanLimits } from "@/lib/types";
 import { savePaydunyaConfig, type PaydunyaConfig } from "@/lib/payments/config";
+import { isBillingPeriod, periodEnd, planPrice } from "@/lib/billing-period";
+import type { BillingPeriod } from "@/lib/types";
 import { appUrl } from "@/lib/url";
 
 export type AdminActionResult = { error: string } | undefined;
@@ -106,13 +108,19 @@ export async function setUserRole(
 
 export async function setUserPlan(
   userId: string,
-  planId: string
+  planId: string,
+  billingPeriod: BillingPeriod = "monthly"
 ): Promise<AdminActionResult> {
   const ctx = await requireAdmin();
   if (!ctx) return { error: "forbidden" };
+  if (!isBillingPeriod(billingPeriod)) return { error: "generic" };
 
   const [{ data: plan }, { data: targetProfile }] = await Promise.all([
-    ctx.supabase.from("plans").select("id, name, price_monthly").eq("id", planId).single(),
+    ctx.supabase
+      .from("plans")
+      .select("id, name, price_monthly, price_quarterly, price_yearly")
+      .eq("id", planId)
+      .single(),
     ctx.supabase.from("profiles").select("email, full_name").eq("id", userId).single(),
   ]);
   if (!plan) return { error: "generic" };
@@ -126,17 +134,17 @@ export async function setUserPlan(
     .eq("user_id", userId)
     .eq("status", "active");
 
+  // Un plan gratuit n'expire pas ; un plan payant court sur la durée choisie.
   const isPaid = Number(plan.price_monthly) > 0;
-  const periodEnd = isPaid
-    ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
-    : null;
+  const end = isPaid ? periodEnd(billingPeriod).toISOString() : null;
 
   const { error } = await admin.from("subscriptions").insert({
     user_id: userId,
     plan_id: planId,
     status: "active",
     current_period_start: new Date().toISOString(),
-    current_period_end: periodEnd,
+    current_period_end: end,
+    billing_period: billingPeriod,
     gateway: "admin",
   });
   if (error) return { error: "generic" };
@@ -144,7 +152,7 @@ export async function setUserPlan(
     ctx,
     "user.changePlan",
     userId,
-    { plan: plan.name },
+    { plan: plan.name, billing_period: billingPeriod },
     targetProfile?.full_name || targetProfile?.email
   );
   revalidatePath("/admin/users");
@@ -176,6 +184,9 @@ export interface PlanPayload {
   name: string;
   description: string;
   price_monthly: number;
+  /** 0 ou vide = durée non proposée pour ce plan (stocké NULL). */
+  price_quarterly: number;
+  price_yearly: number;
   currency: string;
   sort_order: number;
   is_active: boolean;
@@ -190,6 +201,11 @@ function sanitizePlanPayload(p: PlanPayload) {
     name: p.name.trim(),
     description: p.description.trim() || null,
     price_monthly: Math.max(Number(p.price_monthly) || 0, 0),
+    // 0 devient NULL : « pas de prix » et « gratuit » ne veulent pas dire la
+    // même chose ici — NULL signifie que la durée n'est pas vendue, et
+    // planPrice() refusera l'achat au lieu de retomber sur le tarif mensuel.
+    price_quarterly: Math.max(Number(p.price_quarterly) || 0, 0) || null,
+    price_yearly: Math.max(Number(p.price_yearly) || 0, 0) || null,
     currency: p.currency.trim().toUpperCase() || "XOF",
     sort_order: int(p.sort_order, 0),
     is_active: p.is_active === true,
@@ -358,6 +374,7 @@ export interface ManualPaymentPayload {
   planId: string;
   amount: number;
   note: string;
+  billingPeriod: BillingPeriod;
 }
 
 /**
@@ -373,15 +390,24 @@ export async function recordManualPayment(
 
   const email = payload.email.trim().toLowerCase();
   const amount = Math.max(Number(payload.amount) || 0, 0);
+  const period = payload.billingPeriod;
   if (!email || !payload.planId || amount <= 0) return { error: "generic" };
+  if (!isBillingPeriod(period)) return { error: "generic" };
 
   const admin = createAdminClient();
   const [{ data: profile }, { data: plan }] = await Promise.all([
     admin.from("profiles").select("id").eq("email", email).maybeSingle(),
-    admin.from("plans").select("id, name, price_monthly").eq("id", payload.planId).single(),
+    admin
+      .from("plans")
+      .select("id, name, price_monthly, price_quarterly, price_yearly")
+      .eq("id", payload.planId)
+      .single(),
   ]);
   if (!profile) return { error: "userNotFound" };
   if (!plan) return { error: "generic" };
+  // Le plan doit proposer cette durée : sans ce contrôle, on activerait un an
+  // sur un plan qui ne vend que du mensuel.
+  if (planPrice(plan, period) === null) return { error: "periodUnavailable" };
 
   await admin
     .from("subscriptions")
@@ -389,7 +415,6 @@ export async function recordManualPayment(
     .eq("user_id", profile.id)
     .eq("status", "active");
 
-  const periodEnd = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
   const { data: sub, error: subError } = await admin
     .from("subscriptions")
     .insert({
@@ -397,7 +422,8 @@ export async function recordManualPayment(
       plan_id: plan.id,
       status: "active",
       current_period_start: new Date().toISOString(),
-      current_period_end: periodEnd,
+      current_period_end: periodEnd(period).toISOString(),
+      billing_period: period,
       gateway: "manual",
     })
     .select("id")
@@ -420,7 +446,7 @@ export async function recordManualPayment(
     ctx,
     "payment.manual",
     profile.id,
-    { amount, note: payload.note.trim() },
+    { amount, note: payload.note.trim(), billing_period: period },
     `${email} — ${plan.name}`
   );
   revalidatePath("/admin/payments");

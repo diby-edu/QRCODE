@@ -4,6 +4,7 @@
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { paydunya } from "./paydunya";
+import { periodEnd, planPrice } from "@/lib/billing-period";
 
 export type ActivationResult = "activated" | "already" | "invalid";
 
@@ -24,13 +25,21 @@ export async function verifyAndActivate(token: string): Promise<ActivationResult
     return "invalid";
   }
 
-  // Le plan doit exister et le montant payé correspondre à son prix
+  // Le plan doit exister et le montant payé correspondre au prix DE LA DURÉE
+  // achetée. Comparer au seul tarif mensuel laisserait passer un abonnement
+  // annuel réglé au prix d'un mois.
   const { data: plan } = await admin
     .from("plans")
-    .select("id, price_monthly")
+    .select("id, price_monthly, price_quarterly, price_yearly")
     .eq("id", payment.planId)
     .single();
-  if (!plan || payment.amount < Number(plan.price_monthly)) return "invalid";
+  if (!plan) return "invalid";
+
+  // Paiements antérieurs à la migration 020 : pas de durée dans custom_data,
+  // c'était forcément du mensuel.
+  const period = payment.billingPeriod ?? "monthly";
+  const expected = planPrice(plan, period);
+  if (expected === null || payment.amount < expected) return "invalid";
 
   // Remplace l'abonnement actif éventuel
   const { error: cancelError } = await admin
@@ -46,8 +55,6 @@ export async function verifyAndActivate(token: string): Promise<ActivationResult
   }
 
   const periodStart = new Date();
-  const periodEnd = new Date(periodStart);
-  periodEnd.setDate(periodEnd.getDate() + 30);
 
   const { data: sub, error: subError } = await admin
     .from("subscriptions")
@@ -56,7 +63,8 @@ export async function verifyAndActivate(token: string): Promise<ActivationResult
       plan_id: payment.planId,
       status: "active",
       current_period_start: periodStart.toISOString(),
-      current_period_end: periodEnd.toISOString(),
+      current_period_end: periodEnd(period, periodStart).toISOString(),
+      billing_period: period,
       gateway: paydunya.id,
     })
     .select("id")

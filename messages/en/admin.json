@@ -75,7 +75,15 @@
       "confirmPromoteTitle": "Grant administrator rights?",
       "confirmPromoteMessage": "This user will be able to manage all accounts, plans, payments and QR codes on the platform.",
       "confirmDemoteTitle": "Remove administrator rights?",
-      "confirmDemoteMessage": "This user will become a standard account and lose access to administration."
+      "confirmDemoteMessage": "This user will become a standard account and lose access to administration.",
+      "confirmPlanTitle": "Change plan?",
+      "confirmPlanMessage": "This account will move to the « {plan} » plan. The current subscription is closed and replaced immediately.",
+      "planPeriod": "Duration",
+      "planPeriods": {
+        "monthly": "Monthly (30 days)",
+        "quarterly": "Quarterly (90 days)",
+        "yearly": "Yearly (365 days)"
+      }
     },
     "adminBadge": "Admin"
   },
@@ -100,7 +108,10 @@
       "logo": "Logo on QR codes",
       "folders": "Folders",
       "password": "Password protection",
-      "customDomain": "Custom domain"
+      "customDomain": "Custom domain",
+      "priceQuarterly": "Quarterly price",
+      "priceYearly": "Yearly price",
+      "periodHint": "Leave at 0 to not offer that duration on this plan."
     },
     "saved": "Plan saved.",
     "subscribers": "{count, plural, =0 {No subscribers} one {# subscriber} other {# subscribers}}"
@@ -128,7 +139,20 @@
       "note": "Note (optional)",
       "notePlaceholder": "E.g.: transfer received on 07/10",
       "saved": "Payment recorded, subscription activated.",
-      "userNotFound": "No account with this email."
+      "userNotFound": "No account with this email.",
+      "emailPlaceholder": "Search for a customer…",
+      "period": "Duration",
+      "periods": {
+        "monthly": "Monthly (30 days)",
+        "quarterly": "Quarterly (90 days)",
+        "yearly": "Yearly (365 days)"
+      },
+      "amountHint": "Plan price: {price} — editable if the amount received differs.",
+      "periodUnavailable": "This plan does not offer that duration."
+    },
+    "origin": {
+      "auto": "Automatic",
+      "manual": "Manual"
     }
   },
   "qrcodes": {

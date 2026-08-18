@@ -104,6 +104,8 @@ export function PlanEditor({
     name: plan?.name ?? "",
     description: plan?.description ?? "",
     price_monthly: Number(plan?.price_monthly ?? 0),
+    price_quarterly: Number(plan?.price_quarterly ?? 0),
+    price_yearly: Number(plan?.price_yearly ?? 0),
     currency: plan?.currency ?? "XOF",
     sort_order: plan?.sort_order ?? 0,
     is_active: plan?.is_active ?? true,
@@ -179,6 +181,21 @@ export function PlanEditor({
           value={form.price_monthly}
           onChange={(v) => set({ price_monthly: v })}
         />
+        <div className="grid grid-cols-2 gap-3">
+          <NumberField
+            label={t("fields.priceQuarterly")}
+            min={0}
+            value={form.price_quarterly}
+            onChange={(v) => set({ price_quarterly: v })}
+          />
+          <NumberField
+            label={t("fields.priceYearly")}
+            min={0}
+            value={form.price_yearly}
+            onChange={(v) => set({ price_yearly: v })}
+          />
+        </div>
+        <p className="-mt-1 text-xs text-slate-500">{t("fields.periodHint")}</p>
         <div className="grid grid-cols-2 gap-3">
           <label className="block">
             <span className="label">{t("fields.currency")}</span>

@@ -42,7 +42,18 @@
       "password": "Password protection",
       "customDomain": "Custom domain"
     },
-    "payWith": "Orange Money, MTN MoMo, Moov, Wave, bank card"
+    "payWith": "Orange Money, MTN MoMo, Moov, Wave, bank card",
+    "periods": {
+      "monthly": "Monthly",
+      "quarterly": "Quarterly",
+      "yearly": "Yearly"
+    },
+    "per": {
+      "quarterly": "/quarter",
+      "yearly": "/year"
+    },
+    "saving": "Save {percent}% — that is {months} months free",
+    "savingPercent": "Save {percent}%"
   },
   "history": {
     "title": "Payment history",
@@ -56,6 +67,11 @@
       "failed": "Failed",
       "cancelled": "Cancelled",
       "refunded": "Refunded"
+    },
+    "origin": "Source",
+    "origins": {
+      "auto": "Online",
+      "manual": "Recorded by our team"
     }
   },
   "errors": {

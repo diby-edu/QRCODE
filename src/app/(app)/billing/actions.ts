@@ -3,12 +3,17 @@
 import { createClient } from "@/lib/supabase/server";
 import { paydunya } from "@/lib/payments/paydunya";
 import { appUrl } from "@/lib/url";
-import type { Plan } from "@/lib/types";
+import { isBillingPeriod, planPrice } from "@/lib/billing-period";
+import type { BillingPeriod, Plan } from "@/lib/types";
 
 export type CheckoutResult = { error: string } | { url: string };
 
 /** Crée une facture PayDunya pour le plan choisi et redirige vers le paiement. */
-export async function startCheckout(planId: string): Promise<CheckoutResult> {
+export async function startCheckout(
+  planId: string,
+  billingPeriod: BillingPeriod = "monthly"
+): Promise<CheckoutResult> {
+  if (!isBillingPeriod(billingPeriod)) return { error: "generic" };
   const supabase = await createClient();
   const {
     data: { user },
@@ -22,13 +27,19 @@ export async function startCheckout(planId: string): Promise<CheckoutResult> {
   const plan = planRaw as Plan | null;
   if (!plan || Number(plan.price_monthly) <= 0) return { error: "generic" };
 
+  // Prix de la durée demandée : null = ce plan ne propose pas cette durée,
+  // il faut refuser plutôt que retomber sur le tarif mensuel.
+  const amount = planPrice(plan, billingPeriod);
+  if (amount === null || amount <= 0) return { error: "generic" };
+
   try {
     const session = await paydunya.createCheckout({
       userId: user.id,
       planId: plan.id,
       planName: plan.name,
-      amount: Number(plan.price_monthly),
+      amount,
       currency: plan.currency,
+      billingPeriod,
       customerName: profile?.full_name ?? undefined,
       customerEmail: user.email ?? undefined,
       // PayDunya ajoute lui-même ?token=… à l'URL de retour

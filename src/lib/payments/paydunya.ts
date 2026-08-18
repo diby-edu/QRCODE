@@ -11,6 +11,14 @@ import type {
   VerifiedPayment,
 } from "./gateway";
 import { getPaydunyaConfig, type PaydunyaConfig } from "./config";
+import { isBillingPeriod } from "@/lib/billing-period";
+import type { BillingPeriod } from "@/lib/types";
+
+const PERIOD_LABEL: Record<BillingPeriod, string> = {
+  monthly: "abonnement mensuel",
+  quarterly: "abonnement trimestriel",
+  yearly: "abonnement annuel",
+};
 
 function apiBase(config: PaydunyaConfig) {
   return config.mode === "live"
@@ -57,7 +65,7 @@ export const paydunya: PaymentGateway = {
       body: JSON.stringify({
         invoice: {
           total_amount: req.amount,
-          description: `${req.planName} — abonnement mensuel`,
+          description: `${req.planName} — ${PERIOD_LABEL[req.billingPeriod]}`,
           // Pré-remplit Nom/Email sur la page PayDunya hébergée — le
           // téléphone reste vide volontairement (c'est l'identifiant du
           // moyen de paiement mobile money, le payeur doit le ressaisir).
@@ -76,7 +84,11 @@ export const paydunya: PaymentGateway = {
           cancel_url: req.cancelUrl,
           callback_url: req.callbackUrl,
         },
-        custom_data: { user_id: req.userId, plan_id: req.planId },
+        custom_data: {
+          user_id: req.userId,
+          plan_id: req.planId,
+          billing_period: req.billingPeriod,
+        },
       }),
     });
 
@@ -122,6 +134,11 @@ export const paydunya: PaymentGateway = {
       amount: Number(json.invoice?.total_amount ?? 0),
       userId: typeof custom.user_id === "string" ? custom.user_id : null,
       planId: typeof custom.plan_id === "string" ? custom.plan_id : null,
+      // Absent des paiements antérieurs à la migration 020 : l'appelant
+      // retombe alors sur le mensuel, seule durée qui existait.
+      billingPeriod: isBillingPeriod(custom.billing_period)
+        ? custom.billing_period
+        : null,
       raw: json as Record<string, unknown>,
     };
   },

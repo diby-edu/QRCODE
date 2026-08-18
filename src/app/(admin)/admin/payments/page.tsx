@@ -20,8 +20,13 @@ export default async function AdminPaymentsPage() {
       .limit(200),
     supabase
       .from("plans")
-      .select("id, name, price_monthly")
+      .select("id, name, price_monthly, price_quarterly, price_yearly")
       .eq("is_active", true)
+      // Le plan gratuit n'a pas sa place dans un formulaire de paiement :
+      // enregistrer un règlement hors-ligne pour un plan à 0 n'a pas de sens,
+      // et l'action refuse de toute façon un montant nul. Faire redescendre
+      // quelqu'un en Free relève de /admin/users.
+      .gt("price_monthly", 0)
       .order("sort_order"),
   ]);
 
@@ -29,7 +34,25 @@ export default async function AdminPaymentsPage() {
     Payment,
     "id" | "user_id" | "gateway" | "gateway_ref" | "amount" | "currency" | "status" | "created_at"
   >[];
-  const plans = (plansRaw ?? []) as { id: string; name: string; price_monthly: number }[];
+  const plans = (plansRaw ?? []) as {
+    id: string;
+    name: string;
+    price_monthly: number;
+    price_quarterly: number | null;
+    price_yearly: number | null;
+  }[];
+
+  // Liste des comptes pour le sélecteur du formulaire manuel : saisir l'email
+  // à la main faisait échouer l'enregistrement à la moindre faute de frappe.
+  const { data: allUsersRaw } = await supabase
+    .from("profiles")
+    .select("email, full_name")
+    .not("email", "is", null)
+    .order("full_name");
+  const selectableUsers = (allUsersRaw ?? []) as {
+    email: string;
+    full_name: string | null;
+  }[];
 
   // Emails des payeurs (pas de FK profiles↔payments : jointure applicative)
   const userIds = [...new Set(payments.map((p) => p.user_id))];
@@ -44,7 +67,7 @@ export default async function AdminPaymentsPage() {
     <div className="animate-fade-up">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-bold text-slate-900">{tNav("payments")}</h1>
-        {plans.length > 0 && <ManualPaymentForm plans={plans} />}
+        {plans.length > 0 && <ManualPaymentForm plans={plans} users={selectableUsers} />}
       </div>
 
       <div className="card overflow-hidden">
@@ -80,7 +103,18 @@ export default async function AdminPaymentsPage() {
                     <td className="px-4 py-3 font-medium">
                       {formatMoney(Number(p.amount), p.currency, locale)}
                     </td>
-                    <td className="px-4 py-3 text-slate-500">{p.gateway}</td>
+                    <td className="px-4 py-3">
+                      {/* Libellé lisible plutôt que la valeur brute : distinguer
+                          d'un coup d'œil ce qui vient de la passerelle de ce qui
+                          a été saisi à la main change la lecture des chiffres. */}
+                      <span
+                        className={
+                          p.gateway === "paydunya" ? "badge-indigo" : "badge-amber"
+                        }
+                      >
+                        {t(`origin.${p.gateway === "paydunya" ? "auto" : "manual"}`)}
+                      </span>
+                    </td>
                     <td className="px-4 py-3">
                       <code className="text-xs text-slate-400">
                         {p.gateway_ref ?? "—"}

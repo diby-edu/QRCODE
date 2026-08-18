@@ -1,7 +1,8 @@
 import { getTranslations } from "next-intl/server";
 import { normalizeLimits, isUnlimited } from "@/lib/plans";
 import { formatMoney, formatNumber } from "@/lib/utils";
-import type { Plan } from "@/lib/types";
+import { periodDiscount, planPrice } from "@/lib/billing-period";
+import type { BillingPeriod, Plan } from "@/lib/types";
 
 /** Liste des caractéristiques d'un plan, dérivée de ses limites JSONB. */
 async function featureList(plan: Plan, locale: string): Promise<string[]> {
@@ -39,17 +40,20 @@ export async function PlanCard({
   locale,
   isCurrent = false,
   action,
+  period = "monthly",
 }: {
   plan: Plan;
   locale: string;
   isCurrent?: boolean;
   action?: React.ReactNode;
+  period?: BillingPeriod;
 }) {
   const t = await getTranslations("billing.plans");
   const tCurrent = await getTranslations("billing.current");
   const isFree = Number(plan.price_monthly) <= 0;
   const highlighted = !isFree;
   const features = await featureList(plan, locale);
+  const discount = periodDiscount(plan, period);
 
   return (
     <div
@@ -67,12 +71,27 @@ export async function PlanCard({
         {isCurrent && <span className="badge-indigo shrink-0">{t("current")}</span>}
       </div>
 
+      {/* Prix de la durée sélectionnée. `null` = ce plan ne vend pas cette
+          durée : on retombe alors sur le mensuel plutôt que d'afficher un
+          vide, et le bouton d'achat est masqué par l'appelant. */}
       <p className="mt-4 text-3xl font-extrabold text-slate-900">
-        {isFree ? formatMoney(0, plan.currency, locale) : formatMoney(Number(plan.price_monthly), plan.currency, locale)}
+        {isFree
+          ? formatMoney(0, plan.currency, locale)
+          : formatMoney(planPrice(plan, period) ?? Number(plan.price_monthly), plan.currency, locale)}
         <span className="text-sm font-medium text-slate-400">
-          {tCurrent("perMonth")}
+          {period === "monthly" ? tCurrent("perMonth") : t(`per.${period}`)}
         </span>
       </p>
+      {!isFree && discount && (
+        <p className="mt-1 text-sm font-semibold text-emerald-600">
+          {/* « X mois offerts » ne se dit que si l'économie vaut au moins un
+              mois entier : sur le trimestre elle représente moins de la
+              moitié d'un mois, et « 0 mois offert » ne veut rien dire. */}
+          {discount.monthsFree >= 1
+            ? t("saving", { percent: discount.percent, months: discount.monthsFree })
+            : t("savingPercent", { percent: discount.percent })}
+        </p>
+      )}
 
       <ul className="mt-5 flex-1 space-y-2.5">
         {features.map((f) => (
