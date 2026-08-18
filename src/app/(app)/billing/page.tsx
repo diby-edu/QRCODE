@@ -39,10 +39,17 @@ export default async function BillingPage({
   const [userPlan, { count: totalQr }, { count: dynamicQr }, { data: storageBytes }, { data: plansRaw }, { data: paymentsRaw }] =
     await Promise.all([
       getUserPlan(supabase, user!.id),
-      supabase.from("qr_codes").select("id", { count: "exact", head: true }),
+      // Même raison que sur /dashboard et /qr : la consommation affichée doit
+      // être celle du compte, pas celle de la plateforme quand un admin la
+      // consulte (voir la policy qr_codes_admin_select).
       supabase
         .from("qr_codes")
         .select("id", { count: "exact", head: true })
+        .eq("user_id", user!.id),
+      supabase
+        .from("qr_codes")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user!.id)
         .eq("is_dynamic", true),
       supabase.rpc("user_storage_bytes"),
       supabase

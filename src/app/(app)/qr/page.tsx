@@ -37,9 +37,14 @@ export default async function QrListPage({
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Filtre explicite plutôt que confiance à la RLS : un admin a le droit de
+  // lire tous les QR (policy qr_codes_admin_select), et sa page « Mes QR
+  // codes » listait donc ceux de tous les clients — avec le bouton Supprimer
+  // à côté, qu'une policy admin autorise effectivement.
   let query = supabase
     .from("qr_codes")
     .select("id, type, title, slug, is_dynamic, is_active, expires_at, scan_count, folder_id, created_at, custom_domain_id")
+    .eq("user_id", user!.id)
     .order(sortField, { ascending: sortDir === "asc" });
 
   if (q) query = query.ilike("title", `%${q}%`);

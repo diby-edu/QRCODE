@@ -146,6 +146,7 @@ export async function updateQrCode(
     .from("qr_codes")
     .select("id, password")
     .eq("id", id)
+    .eq("user_id", user.id)
     .single();
   if (!existing) return { error: "generic" };
 
@@ -203,10 +204,15 @@ export async function toggleQrActive(
   isActive: boolean
 ): Promise<QrActionResult> {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "generic" };
   const { error } = await supabase
     .from("qr_codes")
     .update({ is_active: isActive })
-    .eq("id", id);
+    .eq("id", id)
+    .eq("user_id", user.id);
   if (error) {
     console.error(`toggleQrActive(${id}) a échoué:`, error.message);
     return { error: "generic" };
@@ -217,7 +223,20 @@ export async function toggleQrActive(
 
 export async function deleteQrCode(id: string): Promise<QrActionResult> {
   const supabase = await createClient();
-  const { error } = await supabase.from("qr_codes").delete().eq("id", id);
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "generic" };
+  // Filtre user_id sur les ÉCRITURES aussi, pas seulement sur l'affichage :
+  // la policy qr_codes_admin_delete autorise un admin à supprimer n'importe
+  // quel QR. Ces actions-ci servent l'espace personnel ; la gestion des QR
+  // d'autrui a ses propres actions dans (admin)/admin/actions.ts, tracées
+  // dans le journal d'activité.
+  const { error } = await supabase
+    .from("qr_codes")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", user.id);
   if (error) {
     console.error(`deleteQrCode(${id}) a échoué:`, error.message);
     return { error: "generic" };
@@ -233,10 +252,13 @@ export async function duplicateQrCode(id: string): Promise<QrActionResult> {
   } = await supabase.auth.getUser();
   if (!user) return { error: "generic" };
 
+  // Filtre explicite : un admin lit tous les QR (qr_codes_admin_select), donc
+  // sans lui la duplication recopiait le QR d'un client dans son propre compte.
   const { data: original } = await supabase
     .from("qr_codes")
     .select("*, qr_code_data(data)")
     .eq("id", id)
+    .eq("user_id", user.id)
     .single();
   if (!original) return { error: "generic" };
 
@@ -305,10 +327,15 @@ export async function moveQrToFolder(
   folderId: string | null
 ): Promise<QrActionResult> {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "generic" };
   const { error } = await supabase
     .from("qr_codes")
     .update({ folder_id: folderId })
-    .eq("id", id);
+    .eq("id", id)
+    .eq("user_id", user.id);
   if (error) {
     console.error(`moveQrToFolder(${id}) a échoué:`, error.message);
     return { error: "generic" };
@@ -316,12 +343,21 @@ export async function moveQrToFolder(
   revalidatePath("/qr");
 }
 
-/** Actions groupées depuis la liste (sélection multiple) — RLS scope déjà
- * le "in" aux QR du user courant, pas besoin de re-vérifier user_id ici. */
+/** Actions groupées depuis la liste (sélection multiple). Le filtre user_id
+ * est explicite : la RLS ne cadre au propriétaire que pour un utilisateur
+ * ordinaire, un admin ayant le droit de supprimer les QR de tout le monde. */
 export async function bulkDeleteQr(ids: string[]): Promise<QrActionResult> {
   if (ids.length === 0) return;
   const supabase = await createClient();
-  const { error } = await supabase.from("qr_codes").delete().in("id", ids);
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "generic" };
+  const { error } = await supabase
+    .from("qr_codes")
+    .delete()
+    .in("id", ids)
+    .eq("user_id", user.id);
   if (error) {
     console.error(`bulkDeleteQr(${ids.length} QR) a échoué:`, error.message);
     return { error: "generic" };
@@ -336,10 +372,15 @@ export async function bulkMoveToFolder(
 ): Promise<QrActionResult> {
   if (ids.length === 0) return;
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "generic" };
   const { error } = await supabase
     .from("qr_codes")
     .update({ folder_id: folderId })
-    .in("id", ids);
+    .in("id", ids)
+    .eq("user_id", user.id);
   if (error) {
     console.error(`bulkMoveToFolder(${ids.length} QR) a échoué:`, error.message);
     return { error: "generic" };

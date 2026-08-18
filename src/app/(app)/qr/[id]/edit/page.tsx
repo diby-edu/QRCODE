@@ -19,7 +19,13 @@ export default async function EditQrPage({
 
   const [{ data: qrRaw }, { limits }, { data: folders }, domains] =
     await Promise.all([
-      supabase.from("qr_codes").select("*, qr_code_data(data)").eq("id", id).single(),
+      // Voir /qr/[id]/page.tsx : l'espace personnel ne sert que ses propres QR.
+      supabase
+        .from("qr_codes")
+        .select("*, qr_code_data(data)")
+        .eq("id", id)
+        .eq("user_id", user!.id)
+        .single(),
       getUserPlan(supabase, user!.id),
       supabase.from("folders").select("id, name").order("name"),
       fetchActiveDomains(supabase, user!.id),

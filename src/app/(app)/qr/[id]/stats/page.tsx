@@ -30,6 +30,7 @@ export default async function QrStatsPage({
     .from("qr_codes")
     .select("id, type, title, is_dynamic, scan_count")
     .eq("id", id)
+    .eq("user_id", user!.id)
     .single();
   if (!qrRaw) notFound();
 

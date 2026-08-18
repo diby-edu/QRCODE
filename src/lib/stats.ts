@@ -72,15 +72,24 @@ const EMPTY_VISITS_SUMMARY: SiteVisitsSummary = {
   totalVisitsAllTime: 0,
 };
 
-/** Scans par jour (jours vides à 0) via la RPC scans_per_day — RLS appliquée. */
+/**
+ * Scans par jour (jours vides à 0) via la RPC scans_per_day.
+ *
+ * `userId` cadre le résultat sur un propriétaire : les pages personnelles le
+ * passent, /admin le laisse vide pour obtenir la plateforme entière. Sans ce
+ * paramètre, la RLS seule décidait — et comme elle accorde tout aux admins,
+ * leur tableau de bord PERSONNEL affichait les chiffres de tout le monde.
+ */
 export async function fetchScansPerDay(
   supabase: SupabaseClient,
   days = 30,
-  qrCodeId?: string
+  qrCodeId?: string,
+  userId?: string
 ): Promise<DayPoint[]> {
   const { data } = await supabase.rpc("scans_per_day", {
     p_days: days,
     p_qr_code_id: qrCodeId ?? null,
+    p_user_id: userId ?? null,
   });
   return ((data ?? []) as { day: string; scans: number }[]).map((r) => ({
     day: r.day,
@@ -116,11 +125,13 @@ export async function fetchSiteVisitsPerDay(
 export async function fetchScanBreakdowns(
   supabase: SupabaseClient,
   days = 30,
-  qrCodeId?: string
+  qrCodeId?: string,
+  userId?: string
 ): Promise<ScanBreakdowns> {
   const { data } = await supabase.rpc("scan_breakdowns", {
     p_days: days,
     p_qr_code_id: qrCodeId ?? null,
+    p_user_id: userId ?? null,
   });
   if (!data || typeof data !== "object") return EMPTY_BREAKDOWNS;
   const raw = data as Partial<ScanBreakdowns>;

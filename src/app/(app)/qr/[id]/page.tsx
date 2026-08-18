@@ -36,7 +36,16 @@ export default async function QrDetailPage({
   } = await supabase.auth.getUser();
 
   const [{ data: qrRaw }, { limits }] = await Promise.all([
-    supabase.from("qr_codes").select("*, qr_code_data(data)").eq("id", id).single(),
+    // Un admin peut lire tous les QR (qr_codes_admin_select) : sans ce filtre,
+    // sa fiche personnelle ouvrait le QR d'un autre client, bouton Supprimer
+    // compris — et qr_codes_admin_delete l'y autorise. La gestion des QR des
+    // autres comptes se fait dans /admin/qrcodes, pas ici.
+    supabase
+      .from("qr_codes")
+      .select("*, qr_code_data(data)")
+      .eq("id", id)
+      .eq("user_id", user!.id)
+      .single(),
     getUserPlan(supabase, user!.id),
   ]);
   if (!qrRaw) notFound();

@@ -30,10 +30,17 @@ async function buildNotifications(
   const [userPlan, { count: totalQr }, { count: dynamicQr }, { data: storageBytes }] =
     await Promise.all([
       getUserPlan(supabase, userId),
-      supabase.from("qr_codes").select("id", { count: "exact", head: true }),
+      // Filtre explicite : la policy qr_codes_admin_select laisse un admin
+      // lire tous les QR, et ses alertes de quota se calculaient donc sur la
+      // plateforme entière au lieu de son propre compte.
       supabase
         .from("qr_codes")
         .select("id", { count: "exact", head: true })
+        .eq("user_id", userId),
+      supabase
+        .from("qr_codes")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", userId)
         .eq("is_dynamic", true),
       supabase.rpc("user_storage_bytes"),
     ]);

@@ -25,9 +25,10 @@ export default async function GlobalStatsPage() {
     supabase
       .from("qr_codes")
       .select("id", { count: "exact", head: true })
+      .eq("user_id", user!.id)
       .eq("is_dynamic", true),
-    supabase.rpc("total_scan_count"),
-    fetchScansPerDay(supabase, 30),
+    supabase.rpc("total_scan_count", { p_user_id: user!.id }),
+    fetchScansPerDay(supabase, 30, undefined, user!.id),
   ]);
 
   const header = (
@@ -68,10 +69,11 @@ export default async function GlobalStatsPage() {
   };
 
   const [breakdowns, { data: topQrRaw }] = await Promise.all([
-    fullStats ? fetchScanBreakdowns(supabase, 30) : Promise.resolve(null),
+    fullStats ? fetchScanBreakdowns(supabase, 30, undefined, user!.id) : Promise.resolve(null),
     supabase
       .from("qr_codes")
       .select("id, type, title, scan_count")
+      .eq("user_id", user!.id)
       .eq("is_dynamic", true)
       .order("scan_count", { ascending: false })
       .limit(10),

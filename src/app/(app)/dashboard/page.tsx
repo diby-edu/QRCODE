@@ -28,16 +28,27 @@ export default async function DashboardPage() {
     { data: profile },
     { limits },
   ] = await Promise.all([
-    supabase.from("qr_codes").select("id", { count: "exact", head: true }),
+    // `.eq("user_id")` explicite, et non un simple appui sur la RLS : la
+    // policy qr_codes_admin_select autorise un admin à lire TOUS les QR de la
+    // plateforme. Sans ce filtre, l'espace personnel d'un administrateur
+    // affichait les chiffres de tout le monde — 5 QR au lieu de 2 — et
+    // comparait ce total à ses propres limites de plan. L'espace personnel ne
+    // doit jamais dépendre du rôle de celui qui le consulte.
     supabase
       .from("qr_codes")
       .select("id", { count: "exact", head: true })
+      .eq("user_id", user!.id),
+    supabase
+      .from("qr_codes")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user!.id)
       .eq("is_dynamic", true),
-    supabase.rpc("total_scan_count"),
-    fetchScansPerDay(supabase, 30),
+    supabase.rpc("total_scan_count", { p_user_id: user!.id }),
+    fetchScansPerDay(supabase, 30, undefined, user!.id),
     supabase
       .from("qr_codes")
       .select("id, type, title, is_dynamic, is_active, scan_count, created_at")
+      .eq("user_id", user!.id)
       .order("created_at", { ascending: false })
       .limit(5),
     supabase.from("profiles").select("full_name").eq("id", user!.id).single(),

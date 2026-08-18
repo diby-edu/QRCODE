@@ -27,7 +27,8 @@ export default async function AdminOverviewPage() {
   ] = await Promise.all([
     supabase.from("profiles").select("id", { count: "exact", head: true }),
     supabase.from("qr_codes").select("id", { count: "exact", head: true }),
-    supabase.rpc("total_scan_count"),
+    // null = toute la plateforme, c'est bien l'objet de cette page.
+    supabase.rpc("total_scan_count", { p_user_id: null }),
     supabase.rpc("total_revenue"),
     fetchScansPerDay(supabase, 30),
     fetchRevenuePerDay(supabase, 30),
