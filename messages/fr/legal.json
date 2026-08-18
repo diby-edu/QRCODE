@@ -1,7 +1,7 @@
 {
   "about": {
     "title": "À propos de QRHub",
-    "lead": "QRHub est la plateforme de QR codes dynamiques conçue pour les entreprises et indépendants d'Afrique de l'Ouest et d'ailleurs.",
+    "lead": "QRHub est la plateforme de QR codes dynamiques pour les entreprises et les indépendants, où qu'ils soient.",
     "sections": [
       {
         "title": "Notre mission",
@@ -13,7 +13,7 @@
       },
       {
         "title": "Qui sommes-nous",
-        "body": "QRHub est développé et édité par Numerik360, basé en Côte d'Ivoire. Nous construisons des outils numériques pensés pour le marché ouest-africain, avec des moyens de paiement locaux."
+        "body": "QRHub est édité par Numerik360, basé en Côte d'Ivoire. Conçue en Côte d'Ivoire, la plateforme est utilisée partout — nous construisons des outils numériques exigeants, avec des moyens de paiement adaptés à chaque marché."
       },
       {
         "title": "Paiement local",

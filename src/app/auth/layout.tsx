@@ -1,6 +1,8 @@
+import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Logo } from "@/components/brand/Logo";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { AuthShowcase } from "@/components/marketing/AuthShowcase";
 
 export default async function AuthLayout({
   children,
@@ -8,33 +10,49 @@ export default async function AuthLayout({
   children: React.ReactNode;
 }) {
   const t = await getTranslations("common");
+  const tl = await getTranslations("landing.hero.showcase");
 
   return (
     <div className="flex min-h-screen">
-      {/* Brand panel */}
+      {/* Panneau de marque.
+          Il répétait le nom du produit et une phrase de catégorie — l'espace
+          le plus visible du parcours ne disait rien à quelqu'un qui hésite
+          encore. Il montre désormais la promesse au lieu de l'énoncer : le QR
+          reste identique pendant que sa destination change en boucle. */}
       <div className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-gradient-to-br from-indigo-600 via-indigo-700 to-violet-800 p-12 lg:flex">
-        <div className="absolute -right-24 -top-24 h-96 w-96 rounded-full bg-white/5" />
+        <div className="absolute -right-24 -top-24 h-96 w-96 rounded-full bg-white/5 animate-blob" />
         <div className="absolute -bottom-32 -left-16 h-96 w-96 rounded-full bg-white/5" />
-        <Logo name={t("appName")} />
-        <div className="relative">
+
+        {/* Logo cliquable : sans ça, un visiteur arrivé ici n'avait aucun
+            moyen de revenir consulter les tarifs. */}
+        <Link href="/" className="relative w-fit">
+          <Logo name={t("appName")} />
+        </Link>
+
+        <div className="relative py-6">
           <h2 className="max-w-md text-4xl font-bold leading-tight text-white">
             {t("tagline")}
           </h2>
-          <p className="mt-4 max-w-md text-lg text-indigo-100">
-            {t("footer.madeWith")}
-          </p>
+          <div className="mt-8">
+            <AuthShowcase
+              label={tl("label")}
+              destinations={tl.raw("destinations") as string[]}
+              caption={tl("caption")}
+            />
+          </div>
         </div>
+
         <p className="relative text-sm text-indigo-200">
           © {new Date().getFullYear()} {t("appName")} — {t("footer.rights")}
         </p>
       </div>
 
-      {/* Form panel */}
+      {/* Panneau formulaire */}
       <div className="flex flex-1 flex-col bg-slate-50 px-6 py-8">
         <div className="flex items-center justify-between lg:justify-end">
-          <span className="lg:hidden">
+          <Link href="/" className="lg:hidden">
             <Logo name={t("appName")} />
-          </span>
+          </Link>
           <LanguageSwitcher />
         </div>
         <div className="flex flex-1 items-center justify-center py-8">

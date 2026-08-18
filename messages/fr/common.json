@@ -1,6 +1,6 @@
 {
   "appName": "QRHub",
-  "tagline": "QR codes dynamiques & statistiques",
+  "tagline": "Imprimez une fois. Modifiez à l'infini.",
   "nav": {
     "dashboard": "Tableau de bord",
     "qrcodes": "Mes QR codes",
@@ -70,7 +70,7 @@
   },
   "footer": {
     "rights": "Tous droits réservés.",
-    "madeWith": "QR codes dynamiques pour l'Afrique et le monde."
+    "madeWith": "QR codes dynamiques, statistiques en temps réel."
   },
   "scans": "{count, plural, =0 {Aucun scan} one {# scan} other {# scans}}",
   "unlimited": "Illimité",
