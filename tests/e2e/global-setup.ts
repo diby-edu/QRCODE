@@ -1,5 +1,3 @@
-import { existsSync } from "node:fs";
-import { join } from "node:path";
 import bcrypt from "bcryptjs";
 import {
   E2E_PASSWORD_QR_SLUG,
@@ -7,13 +5,12 @@ import {
   deleteTestUsers,
   testAdminClient,
 } from "./helpers/supabase-admin";
-
-for (const envFile of [".env.local", ".env"]) {
-  const path = join(process.cwd(), envFile);
-  if (existsSync(path)) process.loadEnvFile(path);
-}
+import { loadTestEnv } from "./helpers/env";
 
 export default async function globalSetup() {
+  // Refuse de tourner contre la production — voir helpers/env.ts.
+  loadTestEnv();
+
   const admin = testAdminClient();
 
   // Repartir propre si un run précédent a été interrompu avant le teardown.
