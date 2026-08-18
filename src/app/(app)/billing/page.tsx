@@ -3,8 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { getUserPlan } from "@/lib/plans";
 import { verifyAndActivate } from "@/lib/payments/activate";
 import { formatDate, formatDateTime, formatMoney } from "@/lib/utils";
-import Link from "next/link";
 import { availablePeriods, isBillingPeriod } from "@/lib/billing-period";
+import { PeriodSwitcher } from "@/components/billing/PeriodSwitcher";
 import type { BillingPeriod, Payment, Plan } from "@/lib/types";
 import { PlanCard } from "@/components/billing/PlanCard";
 import { CheckoutButton } from "@/components/billing/CheckoutButton";
@@ -151,24 +151,15 @@ export default async function BillingPage({
       </div>
 
       {/* Plans disponibles */}
-      <div className="mb-4 mt-8 flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-base font-semibold text-slate-900">{t("plans.title")}</h2>
-        <div className="inline-flex rounded-xl bg-slate-100 p-1">
-          {(["monthly", "quarterly", "yearly"] as BillingPeriod[]).map((p) => (
-            <Link
-              key={p}
-              href={`/billing?period=${p}`}
-              scroll={false}
-              className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
-                period === p
-                  ? "bg-white text-slate-900 shadow-sm"
-                  : "text-slate-500 hover:text-slate-800"
-              }`}
-            >
-              {t(`plans.periods.${p}`)}
-            </Link>
-          ))}
-        </div>
+      <h2 className="mb-4 mt-8 text-base font-semibold text-slate-900">
+        {t("plans.title")}
+      </h2>
+      <div className="mb-6">
+        <PeriodSwitcher
+          current={period}
+          plans={plans}
+          hrefFor={(p) => `/billing?period=${p}`}
+        />
       </div>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
         {plans.map((p) => (

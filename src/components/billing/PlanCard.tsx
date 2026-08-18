@@ -78,9 +78,13 @@ export async function PlanCard({
         {isFree
           ? formatMoney(0, plan.currency, locale)
           : formatMoney(planPrice(plan, period) ?? Number(plan.price_monthly), plan.currency, locale)}
-        <span className="text-sm font-medium text-slate-400">
-          {period === "monthly" ? tCurrent("perMonth") : t(`per.${period}`)}
-        </span>
+        {/* Pas de suffixe de durée sur le plan gratuit : « 0 FCFA/an »
+            laisse croire à un engagement annuel là où il n'y a rien à payer. */}
+        {!isFree && (
+          <span className="text-sm font-medium text-slate-400">
+            {period === "monthly" ? tCurrent("perMonth") : t(`per.${period}`)}
+          </span>
+        )}
       </p>
       {!isFree && discount && (
         <p className="mt-1 text-sm font-semibold text-emerald-600">

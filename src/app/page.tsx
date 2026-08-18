@@ -4,6 +4,9 @@ import { CATEGORIES, QR_TYPES } from "@/lib/qr-types/registry";
 import { createClient } from "@/lib/supabase/server";
 import type { Plan } from "@/lib/types";
 import { PlanCard } from "@/components/billing/PlanCard";
+import { PeriodSwitcher } from "@/components/billing/PeriodSwitcher";
+import { isBillingPeriod } from "@/lib/billing-period";
+import type { BillingPeriod } from "@/lib/types";
 import { SiteFooter, SiteHeader } from "@/components/marketing/SiteChrome";
 import {
   CountUp,
@@ -32,7 +35,14 @@ const FEATURE_ICONS: Record<string, string> = {
   secure: "🔒",
 };
 
-export default async function HomePage() {
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ period?: string }>;
+}) {
+  const { period: periodParam } = await searchParams;
+  const period: BillingPeriod = isBillingPeriod(periodParam) ? periodParam : "monthly";
+
   const t = await getTranslations("landing");
   const locale = (await getLocale()) as "fr" | "en";
   const destinations = t.raw("hero.showcase.destinations") as string[];
@@ -282,12 +292,23 @@ export default async function HomePage() {
               </h2>
               <p className="mt-3 text-lg text-slate-500">{t("pricing.subtitle")}</p>
             </Reveal>
+            {/* Les durées doivent être visibles ici aussi : c'est la page qui
+                vend, et l'annuel est l'offre la plus intéressante. Le lien
+                revient sur l'ancre #pricing pour ne pas remonter en haut. */}
+            <div className="mt-10">
+              <PeriodSwitcher
+                current={period}
+                plans={plans}
+                hrefFor={(p) => `/?period=${p}#pricing`}
+              />
+            </div>
             <div className="mx-auto mt-14 grid max-w-4xl grid-cols-1 gap-6 md:grid-cols-2">
               {plans.map((plan, i) => (
                 <Reveal key={plan.id} delay={(i % 2) * 120}>
                   <PlanCard
                     plan={plan}
                     locale={locale}
+                    period={period}
                     action={
                       <Link
                         href={pricingCtaHref}
